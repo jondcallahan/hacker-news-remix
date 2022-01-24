@@ -1,0 +1,10 @@
+{
+  "cssvar.files": [
+    // Or your custom Pollen bundle
+    "./node_modules/open-props/open-props.min.css"
+  ],
+  // Use Pollen's inbuilt variable ordering
+  "cssvar.disableSort": true,
+  // Add support for autocomplete in other file types
+  "cssvar.extensions": ["css", "html", "jsx", "tsx"]
+}
