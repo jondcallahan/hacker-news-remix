@@ -23,18 +23,6 @@ html {
 
 :root {
   --brand: var(--orange-7);
-  /* color-scheme: light;
-
-
-  --brand: var(--brand-dim);
-  --text-1: var(--text1-dim);
-  --text-2: var(--text2-dim);
-  --surface-1: var(--surface1-dim);
-  --surface-2: var(--surface2-dim);
-  --surface-3: var(--surface3-dim);
-  --surface-4: var(--surface4-dim);
-  --surface-shadow: var(--surface-shadow-dim);
-  --shadow-strength: var(--shadow-strength-dim); */
 }
 
 nav {
@@ -84,8 +72,18 @@ main > section {
   font-size: var(--font-size-3);
 }
 
+.author-line {
+  grid-auto-flow: column;
+  grid-template-columns: auto 1fr;
+  gap: var(--size-2);
+}
+
 .card__comment details {
   margin: var(--size-4) 0;
+}
+
+.card__comment summary {
+  font-family: var(--font-sans);
 }
 
 .text {
@@ -95,8 +93,6 @@ main > section {
 }
 
 .text * {
-  width: var(--size-content-3);
-  overflow-wrap: break-word;
   margin: var(--size-3) 0;
 }
 

@@ -55,14 +55,16 @@ export default function Index() {
                   <p>{story.title}</p>
                 </a>
 
-                <p>
-                  By {story.by}{" "}
-                  {dateFormat.format(new Date(story.time * 1_000))}
-                  {" | "}
+                <section className="grid author-line">
+                  <p>
+                    By {story.by}{" "}
+                    {dateFormat.format(new Date(story.time * 1_000))}
+                    {" | "}
+                  </p>
                   <a href={`/item/${story.id}`}>
-                    {story.descendants || "0"} Comments
+                    <p>{story.descendants || "0"} Comments</p>
                   </a>
-                </p>
+                </section>
               </section>
             </article>
           );
