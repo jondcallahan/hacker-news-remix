@@ -29,8 +29,6 @@ export const loader: LoaderFunction = async ({ request }) => {
     })
   );
 
-  console.log("allStories", allStories);
-
   return json({ allStoryIds, allStories });
 };
 
@@ -48,25 +46,25 @@ export default function Index() {
       <section>
         {data?.allStories.map((story: StoryType) => {
           return (
-            <a href={story.url || `/item/${story.id}`} key={story.id}>
-              <article className="card card__story">
-                <section>
-                  <h2>{story.score}</h2>
-                </section>
-                <section>
+            <article className="card card__story" key={story.id}>
+              <section>
+                <h2>{story.score}</h2>
+              </section>
+              <section className="grid">
+                <a href={story.url || `/item/${story.id}`}>
                   <p>{story.title}</p>
+                </a>
 
-                  <p>
-                    By {story.by}{" "}
-                    {dateFormat.format(new Date(story.time * 1_000))}
-                    {" | "}
-                    <a href={`/item/${story.id}`}>
-                      {story.descendants} Comments
-                    </a>
-                  </p>
-                </section>
-              </article>
-            </a>
+                <p>
+                  By {story.by}{" "}
+                  {dateFormat.format(new Date(story.time * 1_000))}
+                  {" | "}
+                  <a href={`/item/${story.id}`}>
+                    {story.descendants || "0"} Comments
+                  </a>
+                </p>
+              </section>
+            </article>
           );
         })}
       </section>

@@ -1,27 +1,31 @@
-import { json, LoaderFunction, useLoaderData } from "remix";
+import { json, LoaderFunction, redirect, useLoaderData } from "remix";
 
-export const loader: LoaderFunction = async ({ request, params }) => {
-  const { id = "" } = params;
-
-  const allCommentsRes = await fetch(
-    `https://hacker-news.firebaseio.com/v0/item/${id}.json`
-  ).then((res) => res.json());
-  const allCommentIds: string[] = allCommentsRes.kids || [];
-
-  const storiesPerPage = 30;
-  console.log("allCommentIds", allCommentIds);
-  const allComments = await Promise.all(
-    allCommentIds.map(async (id) => {
-      const storyRes = await fetch(
-        `https://hacker-news.firebaseio.com/v0/item/${id}.json`
-      );
-      return storyRes.json();
-    })
+const fetchById = async (id: string) =>
+  fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((res) =>
+    res.json()
   );
 
-  console.log("allCommentsRes", allCommentsRes);
+const fetchAllKids = async (id: string) => {
+  const item = await fetchById(id);
 
-  return json({ allComments, story: allCommentsRes });
+  await Promise.all(
+    item.kids?.map(
+      async (id: string, index: number) =>
+        (item.kids[index] = await fetchAllKids(id))
+    ) || []
+  );
+
+  return item;
+};
+
+export const loader: LoaderFunction = async ({ request, params }) => {
+  const { id } = params;
+
+  if (!id) return redirect("/");
+
+  const story = await fetchAllKids(id);
+
+  return json({ story });
 };
 const dateFormat = new Intl.DateTimeFormat("en", {
   dateStyle: "long",
@@ -33,6 +37,28 @@ export default function Item() {
 
   if (!story) {
     return null;
+  }
+
+  function renderKids(kids) {
+    return (
+      <>
+        {kids?.map((kid) =>
+          kid.dead ? null : (
+            <details key={kid.id} open>
+              <summary>
+                {kid.by} | {kid.kids?.length || "0"}{" "}
+                {kid.kids?.length === 1 ? "comment" : "comments"}
+              </summary>
+              <div
+                className="text"
+                dangerouslySetInnerHTML={{ __html: kid.text }}
+              ></div>
+              {kid.kids?.length && renderKids(kid.kids)}
+            </details>
+          )
+        )}
+      </>
+    );
   }
 
   return (
@@ -47,20 +73,21 @@ export default function Item() {
         dangerouslySetInnerHTML={{ __html: story.text }}
       ></div>
       <section>
-        {allComments?.map((comment) => {
+        {story.kids?.map((comment) => {
           if (!comment || comment.dead) return null;
           return (
-            <a className="card__link" key={comment.id} href={`${comment.id}`}>
-              <article className="card card__comment">
-                <div
-                  className="text"
-                  dangerouslySetInnerHTML={{ __html: comment.text }}
-                ></div>
-                <p className="comment__author">
-                  {comment.by} | {comment.kids?.length || "0"} comments
-                </p>
-              </article>
-            </a>
+            <details className="card card__comment" key={comment.id} open>
+              <summary>
+                {comment.by} | {comment.kids?.length || "0"}{" "}
+                {comment.kids?.length === 1 ? "comment" : "comments"}
+              </summary>
+              <div
+                className="text"
+                dangerouslySetInnerHTML={{ __html: comment.text }}
+              ></div>
+
+              {comment.kids?.length && renderKids(comment.kids)}
+            </details>
           );
         })}
       </section>

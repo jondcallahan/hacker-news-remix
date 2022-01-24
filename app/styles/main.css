@@ -1,6 +1,45 @@
+html {
+  --brand-light: var(--orange-7);
+
+  --text1-light: var(--gray-8);
+  --text2-light: var(--gray-7);
+
+  --surface1-light: var(--gray-2);
+  --surface2-light: var(--gray-0);
+  --surface3-light: var(--gray-1);
+  --surface4-light: var(--gray-3);
+
+  /* dim */
+  --brand-dim: var(--orange-4);
+  --text1-dim: var(--gray-3);
+  --text2-dim: var(--gray-4);
+  --surface1-dim: var(--gray-8);
+  --surface2-dim: var(--gray-7);
+  --surface3-dim: var(--gray-6);
+  --surface4-dim: var(--gray-5);
+  --surface-shadow-dim: 200 10% 13%;
+  --shadow-strength-dim: 0.2;
+}
+
+:root {
+  --brand: var(--orange-7);
+  /* color-scheme: light;
+
+
+  --brand: var(--brand-dim);
+  --text-1: var(--text1-dim);
+  --text-2: var(--text2-dim);
+  --surface-1: var(--surface1-dim);
+  --surface-2: var(--surface2-dim);
+  --surface-3: var(--surface3-dim);
+  --surface-4: var(--surface4-dim);
+  --surface-shadow: var(--surface-shadow-dim);
+  --shadow-strength: var(--shadow-strength-dim); */
+}
+
 nav {
   height: var(--size-7);
-  background-color: var(--orange-7);
+  background-color: var(--brand);
   position: sticky;
   top: 0;
 }
@@ -16,6 +55,10 @@ main > section {
   display: grid;
   gap: var(--size-3);
   margin-top: var(--size-3);
+}
+
+.grid {
+  display: grid;
 }
 
 .card {
@@ -41,9 +84,14 @@ main > section {
   font-size: var(--font-size-3);
 }
 
+.card__comment details {
+  margin: var(--size-4) 0;
+}
+
 .text {
   overflow-wrap: break-word;
   font-size: var(--font-size-2);
+  max-width: var(--size-content-3);
 }
 
 .text * {
@@ -60,7 +108,7 @@ main > section {
   color: var(--gray-6);
 }
 
-article {
+.card__comment {
   font-family: var(--font-serif);
 }
 
