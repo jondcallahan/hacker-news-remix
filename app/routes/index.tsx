@@ -29,7 +29,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     })
   );
 
-  return json({ allStoryIds, allStories });
+  return json({ allStories });
 };
 
 const relativeTimeFormat = new Intl.RelativeTimeFormat("en", {

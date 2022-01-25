@@ -1,9 +1,7 @@
 import { json, LoaderFunction, redirect, useLoaderData } from "remix";
+import { getItem } from "~/utils/api.server";
 
-const fetchById = async (id: string) =>
-  fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((res) =>
-    res.json()
-  );
+const fetchById = async (id: string) => await getItem(id);
 
 const fetchAllKids = async (id: string) => {
   const item = await fetchById(id);
