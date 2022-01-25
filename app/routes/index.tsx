@@ -1,4 +1,4 @@
-import { json, LoaderFunction, useLoaderData } from "remix";
+import { json, Link, LoaderFunction, useLoaderData } from "remix";
 
 type StoryType = {
   by: string;
@@ -51,9 +51,9 @@ export default function Index() {
                 <h2>{story.score}</h2>
               </section>
               <section className="grid">
-                <a href={story.url || `/item/${story.id}`}>
+                <Link to={story.url || `/item/${story.id}`}>
                   <p>{story.title}</p>
-                </a>
+                </Link>
 
                 <section className="grid author-line">
                   <p>
@@ -61,9 +61,9 @@ export default function Index() {
                     {dateFormat.format(new Date(story.time * 1_000))}
                     {" | "}
                   </p>
-                  <a href={`/item/${story.id}`}>
+                  <Link to={`/item/${story.id}`} prefetch="intent">
                     <p>{story.descendants || "0"} Comments</p>
-                  </a>
+                  </Link>
                 </section>
               </section>
             </article>
