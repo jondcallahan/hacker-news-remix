@@ -51,9 +51,9 @@ export default function Index() {
                 <h2>{story.score}</h2>
               </section>
               <section className="grid">
-                <Link to={story.url || `/item/${story.id}`}>
+                <a href={story.url || `/item/${story.id}`}>
                   <p>{story.title}</p>
-                </Link>
+                </a>
 
                 <section className="grid author-line">
                   <p>
