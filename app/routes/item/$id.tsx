@@ -26,7 +26,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   return json({ story });
 };
 const dateFormat = new Intl.DateTimeFormat("en", {
-  dateStyle: "long",
+  // dateStyle: "long",
   timeStyle: "short",
 });
 
@@ -41,11 +41,22 @@ export default function Item() {
     return (
       <>
         {kids?.map((kid) =>
-          kid.dead ? null : (
-            <details key={kid.id} open>
+          !kid || kid.dead || !kid.text ? null : (
+            <details
+              key={kid.id}
+              onClick={(e) => {
+                // TODO: Collapse the details on clicking the text
+                // if (e.nativeEvent.target.tagName !== "A") {
+                //   e.currentTarget.removeAttribute("open");
+                // }
+              }}
+              open
+            >
               <summary>
                 {kid.by} | {kid.kids?.length || "0"}{" "}
                 {kid.kids?.length === 1 ? "comment" : "comments"}
+                {" | "}
+                {dateFormat.format(kid.time * 1_000)}
               </summary>
               <div
                 className="text"
@@ -70,7 +81,7 @@ export default function Item() {
         className="text"
         dangerouslySetInnerHTML={{ __html: story.text }}
       ></div>
-      <section>
+      <section className="comments-container">
         {story.kids?.map((comment) => {
           if (!comment || comment.dead) return null;
           return (
@@ -78,6 +89,8 @@ export default function Item() {
               <summary>
                 {comment.by} | {comment.kids?.length || "0"}{" "}
                 {comment.kids?.length === 1 ? "comment" : "comments"}
+                {" | "}
+                {dateFormat.format(comment.time * 1_000)}
               </summary>
               <div
                 className="text"

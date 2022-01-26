@@ -21,7 +21,7 @@ export const createApp = (): FirebaseApp => {
   return app;
 };
 
-export const getItem = async (id) => {
+export const getItem = async (id: number) => {
   const dbRef = ref(getDatabase(createApp()));
 
   return get(child(dbRef, `v0/item/${id}`))
