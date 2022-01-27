@@ -40,7 +40,7 @@ nav {
 
 nav div,
 main {
-  width: var(--size-content-3);
+  width: 80ch;
   max-width: 100%;
   margin: auto;
 }
