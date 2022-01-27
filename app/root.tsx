@@ -14,6 +14,7 @@ import stylesUrl from "./styles/main.css";
 export const links: LinksFunction = () => [
   {
     rel: "icon",
+    type: "image/png",
     href: "https://emojicdn.elk.sh/👨‍💻",
   },
   {

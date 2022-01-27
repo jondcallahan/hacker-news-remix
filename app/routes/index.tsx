@@ -1,5 +1,5 @@
 import { json, Link, LoaderFunction, useLoaderData } from "remix";
-import { getItem } from "~/utils/api.server";
+import { getItem, getTopStories } from "~/utils/api.server";
 
 type StoryType = {
   by: string;
@@ -14,12 +14,8 @@ type StoryType = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const allStoryRes = await fetch(
-    "https://hacker-news.firebaseio.com/v0/topstories.json"
-  );
-  const allStoryIds: number[] = await allStoryRes.json();
-
   const storiesPerPage = 30;
+  const allStoryIds = await getTopStories(storiesPerPage);
 
   const allStories = await Promise.all(
     allStoryIds.slice(0, storiesPerPage).map(async (id) => {

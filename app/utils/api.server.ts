@@ -38,3 +38,21 @@ export const getItem = async (id: number) => {
       return null;
     });
 };
+
+export const getTopStories = async (limit: number) => {
+  const dbRef = ref(getDatabase(createApp()));
+
+  return get(query(child(dbRef, "/v0/topstories"), limitToFirst(limit)))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else {
+        console.log("No data available");
+        return null;
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      return null;
+    });
+};
