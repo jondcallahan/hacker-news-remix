@@ -10,6 +10,7 @@ import {
 } from "remix";
 import type { MetaFunction } from "remix";
 import stylesUrl from "./styles/main.css";
+import { KeyboardEvent } from "react";
 
 export const links: LinksFunction = () => [
   {
@@ -35,6 +36,12 @@ export const meta: MetaFunction = () => {
   return { title: "Hacker News | Remix" };
 };
 
+function highlightFirstStoryLink(e: KeyboardEvent<HTMLBodyElement>) {
+  if (e.key === "j") {
+    document.querySelector("article a[data-link-type=story]")?.focus?.();
+  }
+}
+
 export default function App() {
   return (
     <html lang="en">
@@ -44,7 +51,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body onKeyPress={highlightFirstStoryLink}>
         <nav>
           <div>
             <h5>

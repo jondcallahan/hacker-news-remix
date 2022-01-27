@@ -1,4 +1,4 @@
-import { json, Link, LoaderFunction, useLoaderData } from "remix";
+import { json, Link, LoaderFunction, useLoaderData, useNavigate } from "remix";
 import { getItem, getTopStories } from "~/utils/api.server";
 
 type StoryType = {
@@ -34,6 +34,8 @@ const dateFormat = new Intl.DateTimeFormat("en", { timeStyle: "short" });
 
 export default function Index() {
   const data = useLoaderData();
+  const navigate = useNavigate();
+
   return (
     <main>
       <h1>Hacker News Remix</h1>
@@ -45,10 +47,50 @@ export default function Index() {
                 <h2>{story.score}</h2>
               </section>
               <section className="grid">
-                <a href={story.url || `/item/${story.id}`}>
+                <a
+                  href={story.url || `/item/${story.id}`}
+                  onKeyPress={(e) => {
+                    // J key will advance to the next story
+                    // K will go to previous
+                    // C will go to comments
+                    if (e.key === "j") {
+                      try {
+                        document
+                          .querySelectorAll("article a[data-link-type=story]")
+                          .forEach((val, idx, list) => {
+                            if (val === document.activeElement) {
+                              list[idx + 1].focus();
+                              e.stopPropagation(); // Stop propogation so the listener on the <body> doesn't pick up the event
+                              throw "stop"; // Using a throw to break the forEach loop
+                            }
+                          });
+                      } catch {}
+                    } else if (e.key === "k") {
+                      // Go to previous story or last if on first
+                      try {
+                        document
+                          .querySelectorAll("article a[data-link-type=story]")
+                          .forEach((val, idx, list) => {
+                            if (val === document.activeElement) {
+                              if (idx === 0) {
+                                list[list.length - 1].focus();
+                              } else {
+                                list[idx - 1].focus();
+                              }
+
+                              throw "stop"; // Using a throw to break the forEach loop
+                            }
+                          });
+                      } catch {}
+                    } else if (e.key === "c") {
+                      navigate(`/item/${story.id}`);
+                    }
+                  }}
+                  data-link-type="story"
+                >
                   <p>{story.title}</p>
                 </a>
-
+                {story.url && <small>{new URL(story.url)?.hostname}</small>}
                 <section className="grid author-line">
                   <p>
                     By {story.by}{" "}
