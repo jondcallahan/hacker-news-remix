@@ -9,7 +9,7 @@ import {
   ScrollRestoration,
 } from "remix";
 import type { MetaFunction } from "remix";
-import stylesUrl from "./styles/main.css";
+import stylesUrl from "./styles/global.css";
 import { KeyboardEvent } from "react";
 
 export const links: LinksFunction = () => [
@@ -53,11 +53,11 @@ export default function App() {
       </head>
       <body onKeyPress={highlightFirstStoryLink}>
         <nav>
-          <div>
+          <section>
             <h5>
               <NavLink to={"/"}>Home</NavLink>
             </h5>
-          </div>
+          </section>
         </nav>
         <Outlet />
         <ScrollRestoration />

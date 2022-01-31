@@ -1,5 +1,19 @@
-import { json, LoaderFunction, redirect, useLoaderData } from "remix";
+import {
+  json,
+  LinksFunction,
+  LoaderFunction,
+  redirect,
+  useLoaderData,
+} from "remix";
 import { getItem } from "~/utils/api.server";
+import stylesUrl from "~/styles/item.css";
+
+export const links: LinksFunction = () => [
+  {
+    rel: "stylesheet",
+    href: stylesUrl,
+  },
+];
 
 const fetchById = async (id: string) => await getItem(id);
 
@@ -46,9 +60,13 @@ export default function Item() {
               key={kid.id}
               onClick={(e) => {
                 // TODO: Collapse the details on clicking the text
-                // if (e.nativeEvent.target.tagName !== "A") {
-                //   e.currentTarget.removeAttribute("open");
-                // }
+                if (
+                  e.nativeEvent.target.tagName !== "A" &&
+                  e.nativeEvent.target.tagName !== "SUMMARY"
+                ) {
+                  e.currentTarget.removeAttribute("open");
+                  e.stopPropagation(); // don't bubble up to the next details
+                }
               }}
               open
             >
@@ -72,20 +90,35 @@ export default function Item() {
 
   return (
     <main>
-      <h3>{story?.title}</h3>
-      <a href={story.url}>{story.url}</a>
-      <p>
-        By {story.by} {dateFormat.format(new Date(story.time * 1_000))}
-      </p>
-      <div
-        className="text"
-        dangerouslySetInnerHTML={{ __html: story.text }}
-      ></div>
+      <section>
+        <h3>{story?.title}</h3>
+        <a href={story.url}>{story.url}</a>
+        <p>
+          By {story.by} {dateFormat.format(new Date(story.time * 1_000))}
+        </p>
+        <div
+          className="text"
+          dangerouslySetInnerHTML={{ __html: story.text }}
+        ></div>
+      </section>
       <section className="comments-container">
         {story.kids?.map((comment) => {
           if (!comment || comment.dead) return null;
           return (
-            <details className="card card__comment" key={comment.id} open>
+            <details
+              className="card card__comment"
+              key={comment.id}
+              onClick={(e) => {
+                // TODO: Collapse the details on clicking the text
+                if (
+                  e.nativeEvent.target.tagName !== "A" &&
+                  e.nativeEvent.target.tagName !== "SUMMARY"
+                ) {
+                  e.currentTarget.removeAttribute("open");
+                }
+              }}
+              open
+            >
               <summary>
                 {comment.by} | {comment.kids?.length || "0"}{" "}
                 {comment.kids?.length === 1 ? "comment" : "comments"}

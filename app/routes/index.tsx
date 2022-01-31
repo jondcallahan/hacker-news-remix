@@ -1,5 +1,20 @@
-import { json, Link, LoaderFunction, useLoaderData, useNavigate } from "remix";
+import {
+  json,
+  Link,
+  LinksFunction,
+  LoaderFunction,
+  useLoaderData,
+  useNavigate,
+} from "remix";
 import { getItem, getTopStories } from "~/utils/api.server";
+import stylesUrl from "~/styles/index.css";
+
+export const links: LinksFunction = () => [
+  {
+    rel: "stylesheet",
+    href: stylesUrl,
+  },
+];
 
 type StoryType = {
   by: string;
@@ -38,7 +53,9 @@ export default function Index() {
 
   return (
     <main>
-      <h1>Hacker News Remix</h1>
+      <section>
+        <h1>Hacker News Remix</h1>
+      </section>
       <section>
         {data?.allStories.map((story: StoryType) => {
           return (
