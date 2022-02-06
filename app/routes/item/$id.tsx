@@ -15,6 +15,10 @@ export const links: LinksFunction = () => [
   },
 ];
 
+export const handle = {
+  showBreadcrumb: true,
+};
+
 const fetchById = async (id: string) => await getItem(id);
 
 const fetchAllKids = async (id: string) => {
