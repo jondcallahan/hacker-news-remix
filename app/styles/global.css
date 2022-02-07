@@ -32,8 +32,13 @@ p {
 }
 
 nav {
-  height: var(--size-8);
+  min-height: var(--size-8);
   background-color: var(--brand);
+}
+
+nav a,
+nav a:visited {
+  color: var(--text-1);
 }
 
 .grid {

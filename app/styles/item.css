@@ -4,11 +4,6 @@ nav {
   box-shadow: var(--shadow-2);
 }
 
-nav a,
-nav a:visited {
-  color: var(--text-1);
-}
-
 nav svg {
   display: inline-block;
   vertical-align: text-bottom;
