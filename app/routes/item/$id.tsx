@@ -2,6 +2,7 @@ import {
   json,
   LinksFunction,
   LoaderFunction,
+  MetaFunction,
   redirect,
   useLoaderData,
 } from "remix";
@@ -18,6 +19,10 @@ export const links: LinksFunction = () => [
 export const handle = {
   showBreadcrumb: true,
 };
+
+export const meta: MetaFunction = ({ data }) => ({
+  title: `HN | ${data.story.title}`,
+});
 
 const fetchById = async (id: string) => await getItem(id);
 
