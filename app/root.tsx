@@ -34,7 +34,7 @@ export const links: LinksFunction = () => [
 ];
 
 export const meta: MetaFunction = () => {
-  return { title: "Hacker News | Remix" };
+  return { title: "Hacker News | Remix", charset: "utf-8" };
 };
 
 function highlightFirstStoryLink(e: KeyboardEvent<HTMLBodyElement>) {

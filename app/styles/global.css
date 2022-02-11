@@ -23,7 +23,7 @@ html {
 
 :root {
   --brand: var(--orange-7);
-  --font-serif: "Charter";
+  --font-serif: "Charter", serif;
 }
 
 /* Undo normalize rules */
