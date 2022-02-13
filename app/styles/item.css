@@ -28,6 +28,7 @@ section {
   padding-top: 0;
   padding-bottom: 0;
   font-family: var(--font-serif);
+  cursor: pointer;
 }
 
 .card__comment details {

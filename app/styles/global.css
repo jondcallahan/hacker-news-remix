@@ -36,6 +36,30 @@ nav {
   background-color: var(--brand);
 }
 
+.loading-spinner {
+  stroke: currentColor;
+  fill: none;
+  position: fixed;
+  aspect-ratio: 1/1;
+  width: var(--size-5);
+  margin-top: var(--size-3);
+  margin-left: calc(100% - var(--size-8));
+  display: none;
+}
+
+.loading-spinner[data-loading="true"] {
+  display: block;
+  animation: rotate 1s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
 nav a,
 nav a:visited {
   color: var(--text-1);
