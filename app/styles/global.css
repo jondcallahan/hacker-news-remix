@@ -49,9 +49,13 @@ nav {
 
 .loading-spinner[data-loading="true"] {
   display: block;
-  animation: rotate 1s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
+  animation: rotate 1s linear infinite, fade-in 1.5s var(--ease-in-1) 1;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
 }
 
 @keyframes rotate {
