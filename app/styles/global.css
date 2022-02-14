@@ -41,14 +41,12 @@ nav {
   fill: none;
   position: fixed;
   aspect-ratio: 1/1;
-  width: var(--size-5);
-  margin-top: var(--size-3);
+  width: var(--size-6);
+  margin-top: var(--size-6);
   margin-left: calc(100% - var(--size-8));
-  display: none;
 }
 
 .loading-spinner[data-loading="true"] {
-  display: block;
   animation: rotate 1s linear infinite, fade-in 1.5s var(--ease-in-1) 1;
 }
 
