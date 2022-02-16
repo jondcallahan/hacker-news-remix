@@ -64,7 +64,7 @@ export default function Item() {
     return (
       <>
         {kids?.map((kid) =>
-          !kid || kid.dead || !kid.text ? null : (
+          !kid || kid.dead || !kid.text || kid.deleted ? null : (
             <details
               key={kid.id}
               onClick={(e) => {
@@ -112,7 +112,7 @@ export default function Item() {
       </section>
       <section className="comments-container">
         {story.kids?.map((comment) => {
-          if (!comment || comment.dead) return null;
+          if (!comment || comment.dead || comment.deleted) return null;
           return (
             <details
               className="card card__comment"
