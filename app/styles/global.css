@@ -23,7 +23,7 @@ html {
 
 :root {
   --brand: var(--orange-7);
-  --font-serif: "Charter";
+  --font-serif: "Charter", serif;
 }
 
 /* Undo normalize rules */
@@ -34,6 +34,32 @@ p {
 nav {
   min-height: var(--size-8);
   background-color: var(--brand);
+}
+
+.loading-spinner {
+  stroke: currentColor;
+  fill: none;
+  position: fixed;
+  aspect-ratio: 1/1;
+  width: var(--size-6);
+  margin-top: var(--size-6);
+  margin-left: calc(100% - var(--size-8));
+  opacity: 0;
+  /* Fade out quickly */
+  transition: opacity 0.25s var(--ease-in-1);
+  animation: rotate 1s linear infinite;
+}
+
+.loading-spinner[data-loading="true"] {
+  opacity: 1;
+  /* Fade in slowly */
+  transition-duration: 1.5s;
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(-360deg);
+  }
 }
 
 nav a,

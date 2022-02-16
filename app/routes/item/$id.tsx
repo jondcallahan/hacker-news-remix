@@ -30,7 +30,7 @@ const fetchAllKids = async (id: string) => {
   const item = await fetchById(id);
 
   await Promise.all(
-    item.kids?.map(
+    item?.kids?.map(
       async (id: string, index: number) =>
         (item.kids[index] = await fetchAllKids(id))
     ) || []

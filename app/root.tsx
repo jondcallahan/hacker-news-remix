@@ -8,6 +8,7 @@ import {
   Scripts,
   ScrollRestoration,
   useMatches,
+  useTransition,
 } from "remix";
 import type { MetaFunction } from "remix";
 import stylesUrl from "./styles/global.css";
@@ -34,7 +35,7 @@ export const links: LinksFunction = () => [
 ];
 
 export const meta: MetaFunction = () => {
-  return { title: "Hacker News | Remix" };
+  return { title: "Hacker News | Remix", charset: "utf-8" };
 };
 
 function highlightFirstStoryLink(e: KeyboardEvent<HTMLBodyElement>) {
@@ -45,6 +46,7 @@ function highlightFirstStoryLink(e: KeyboardEvent<HTMLBodyElement>) {
 
 export default function App() {
   const matches = useMatches();
+  const transition = useTransition();
   return (
     <html lang="en">
       <head>
@@ -66,16 +68,18 @@ export default function App() {
                       /{" "}
                       <a href={data.story.url} target="_blank">
                         {data.story.title}{" "}
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          height={20}
-                          width={20}
-                          fill="currentColor"
-                        >
-                          <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-                        </svg>
+                        {!!data.story.url && (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            height={20}
+                            width={20}
+                            fill="currentColor"
+                          >
+                            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                          </svg>
+                        )}
                       </a>
                     </span>
                   );
@@ -84,6 +88,21 @@ export default function App() {
             </h5>
           </section>
         </nav>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="loading-spinner"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          data-loading={transition?.state === "loading"}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          />
+        </svg>
         <Outlet />
         <ScrollRestoration />
         <Scripts />
