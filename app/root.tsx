@@ -11,7 +11,10 @@ import {
   useTransition,
 } from "remix";
 import type { MetaFunction } from "remix";
+import normalizeStyles from "node_modules/open-props/normalize.min.css";
+import openPropsStyles from "node_modules/open-props/open-props.min.css";
 import stylesUrl from "./styles/global.css";
+
 import { KeyboardEvent } from "react";
 
 export const links: LinksFunction = () => [
@@ -22,11 +25,11 @@ export const links: LinksFunction = () => [
   },
   {
     rel: "stylesheet",
-    href: "https://unpkg.com/open-props/normalize.min.css",
+    href: normalizeStyles,
   },
   {
     rel: "stylesheet",
-    href: "https://unpkg.com/open-props",
+    href: openPropsStyles,
   },
   {
     rel: "stylesheet",
