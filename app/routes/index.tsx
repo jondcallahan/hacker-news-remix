@@ -8,6 +8,7 @@ import {
 } from "remix";
 import { getItem, getTopStories } from "~/utils/api.server";
 import stylesUrl from "~/styles/index.css";
+import { getRelativeTimeString } from "~/utils/time";
 
 export const links: LinksFunction = () => [
   {
@@ -112,7 +113,7 @@ export default function Index() {
                   <p>
                     <span>
                       By {story.by}{" "}
-                      {dateFormat.format(new Date(story.time * 1_000))}
+                      {getRelativeTimeString(story.time * 1_000)}
                     </span>
                   </p>
                   <Link to={`/item/${story.id}`} prefetch="intent">

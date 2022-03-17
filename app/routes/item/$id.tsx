@@ -8,6 +8,7 @@ import {
 } from "remix";
 import { getItem } from "~/utils/api.server";
 import stylesUrl from "~/styles/item.css";
+import { getRelativeTimeString } from "~/utils/time";
 
 export const links: LinksFunction = () => [
   {
@@ -83,7 +84,7 @@ export default function Item() {
                 {kid.by} | {kid.kids?.length || "0"}{" "}
                 {kid.kids?.length === 1 ? "comment" : "comments"}
                 {" | "}
-                {dateFormat.format(kid.time * 1_000)}
+                {getRelativeTimeString(kid.time * 1_000)}
               </summary>
               <div
                 className="text"
@@ -132,7 +133,7 @@ export default function Item() {
                 {comment.by} | {comment.kids?.length || "0"}{" "}
                 {comment.kids?.length === 1 ? "comment" : "comments"}
                 {" | "}
-                {dateFormat.format(comment.time * 1_000)}
+                {getRelativeTimeString(comment.time * 1_000)}
               </summary>
               <div
                 className="text"
