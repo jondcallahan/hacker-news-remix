@@ -1,11 +1,5 @@
-import {
-  json,
-  LinksFunction,
-  LoaderFunction,
-  MetaFunction,
-  redirect,
-  useLoaderData,
-} from "remix";
+import { json, LinksFunction, LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { getItem } from "~/utils/api.server";
 import stylesUrl from "~/styles/item.css";
 import { getRelativeTimeString } from "~/utils/time";
