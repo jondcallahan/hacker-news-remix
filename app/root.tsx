@@ -1,6 +1,8 @@
+import type { MetaFunction } from "@remix-run/node";
+import { LinksFunction } from "@remix-run/node";
+
 import {
   Links,
-  LinksFunction,
   LiveReload,
   Meta,
   NavLink,
@@ -9,8 +11,8 @@ import {
   ScrollRestoration,
   useMatches,
   useTransition,
-} from "remix";
-import type { MetaFunction } from "remix";
+} from "@remix-run/react";
+
 import normalizeStyles from "node_modules/open-props/normalize.min.css";
 import openPropsStyles from "node_modules/open-props/open-props.min.css";
 import stylesUrl from "./styles/global.css";

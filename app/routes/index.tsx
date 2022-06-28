@@ -1,11 +1,5 @@
-import {
-  json,
-  Link,
-  LinksFunction,
-  LoaderFunction,
-  useLoaderData,
-  useNavigate,
-} from "remix";
+import { json, LinksFunction, LoaderFunction } from "@remix-run/node";
+import { Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { getItem, getTopStories } from "~/utils/api.server";
 import stylesUrl from "~/styles/index.css";
 import { getRelativeTimeString } from "~/utils/time";
@@ -112,8 +106,7 @@ export default function Index() {
                 <section className="grid author-line">
                   <p>
                     <span>
-                      By {story.by}{" "}
-                      {getRelativeTimeString(story.time * 1_000)}
+                      By {story.by} {getRelativeTimeString(story.time * 1_000)}
                     </span>
                   </p>
                   <Link to={`/item/${story.id}`} prefetch="intent">
