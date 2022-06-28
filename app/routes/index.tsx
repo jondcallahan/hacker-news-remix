@@ -9,6 +9,7 @@ import {
 import { getItem, getTopStories } from "~/utils/api.server";
 import stylesUrl from "~/styles/index.css";
 import { getRelativeTimeString } from "~/utils/time";
+import { logTraffic } from "~/utils/traffic-logger.server";
 
 export const links: LinksFunction = () => [
   {
@@ -30,6 +31,7 @@ type StoryType = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
+  logTraffic(request);
   const storiesPerPage = 30;
   const allStoryIds = await getTopStories(storiesPerPage);
 
@@ -112,8 +114,7 @@ export default function Index() {
                 <section className="grid author-line">
                   <p>
                     <span>
-                      By {story.by}{" "}
-                      {getRelativeTimeString(story.time * 1_000)}
+                      By {story.by} {getRelativeTimeString(story.time * 1_000)}
                     </span>
                   </p>
                   <Link to={`/item/${story.id}`} prefetch="intent">

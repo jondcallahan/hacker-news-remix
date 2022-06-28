@@ -9,6 +9,7 @@ import {
 import { getItem } from "~/utils/api.server";
 import stylesUrl from "~/styles/item.css";
 import { getRelativeTimeString } from "~/utils/time";
+import { logTraffic } from "~/utils/traffic-logger.server";
 
 export const links: LinksFunction = () => [
   {
@@ -41,6 +42,7 @@ const fetchAllKids = async (id: string) => {
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
+  logTraffic(request);
   const { id } = params;
 
   if (!id) return redirect("/");
