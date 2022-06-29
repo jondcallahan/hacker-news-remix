@@ -101,7 +101,7 @@ export default function Item() {
                 paddingX={2}
                 paddingY={4}
                 backgroundColor="gray.100"
-                borderRadius="md"
+                borderRadius="lg"
               >
                 {kid.by} | {kid.kids?.length || "0"}{" "}
                 {kid.kids?.length === 1 ? "comment" : "comments"}
@@ -143,11 +143,8 @@ export default function Item() {
             if (!comment || comment.dead || comment.deleted) return null;
             return (
               <chakra.details
-                borderWidth="1px"
-                borderStyle="solid"
-                borderColor="gray.100"
-                borderRadius="md"
-                backgroundColor="white"
+                borderRadius="lg"
+                backgroundColor="orange.50"
                 key={comment.id}
                 open
                 cursor="pointer"
@@ -168,7 +165,7 @@ export default function Item() {
                   flex="1"
                   textAlign="left"
                   backgroundColor="gray.100"
-                  borderRadius="md"
+                  borderRadius="lg"
                   padding={4}
                 >
                   {comment.by} | {comment.kids?.length || "0"}{" "}

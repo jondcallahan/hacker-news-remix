@@ -53,9 +53,6 @@ export default function Index() {
           return (
             <Box
               key={story.id}
-              borderWidth="1px"
-              borderStyle="solid"
-              borderColor="gray.100"
               borderRadius="lg"
               display={"grid"}
               gridTemplateColumns="70px 1fr"
@@ -63,7 +60,7 @@ export default function Index() {
                 boxShadow: "lg",
               }}
               transition="box-shadow 0.2s ease-in-out"
-              backgroundColor="white"
+              backgroundColor="orange.50"
               padding="2"
             >
               <Grid placeContent="center">

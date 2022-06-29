@@ -26,7 +26,7 @@ export default function Layout() {
         width="full"
         position="sticky"
         top={0}
-        zIndex={1}
+        zIndex="sticky"
       >
         <Box
           maxWidth="6xl"

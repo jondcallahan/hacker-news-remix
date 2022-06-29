@@ -19,7 +19,7 @@ export const theme = extendTheme({
       },
       body: {
         minHeight: "100%",
-        backgroundColor: "gray.50",
+        backgroundColor: "orange.100",
       },
     },
   },
