@@ -87,6 +87,9 @@ export default function Item() {
                 <Text
                   fontFamily="serif"
                   dangerouslySetInnerHTML={{ __html: kid.text }}
+                  _hover={{
+                    backgroundColor: "orange.100",
+                  }}
                 ></Text>
                 {kid.kids?.length && (
                   <Box paddingLeft={2}>{renderKids(kid.kids)}</Box>
@@ -154,6 +157,9 @@ export default function Item() {
                   <Text
                     fontFamily="serif"
                     dangerouslySetInnerHTML={{ __html: comment.text }}
+                    _hover={{
+                      backgroundColor: "orange.100",
+                    }}
                   ></Text>
 
                   {comment.kids?.length && renderKids(comment.kids)}

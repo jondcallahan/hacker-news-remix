@@ -15,6 +15,7 @@ import {
   Stat,
   StatNumber,
   Container,
+  StatLabel,
 } from "@chakra-ui/react";
 
 type StoryType = {
@@ -65,14 +66,15 @@ export default function Index() {
             >
               <Grid placeContent="center">
                 <Stat>
-                  <StatNumber>{story.score}</StatNumber>
+                  <StatNumber fontSize="xl">{story.score}</StatNumber>
                 </Stat>
               </Grid>
               <Grid gap="1">
+                {story.url && <Text>{new URL(story.url)?.hostname}</Text>}
                 <Heading
                   size="md"
                   as="a"
-                  scrollMarginY={12}
+                  scrollMarginY="64px"
                   href={story.url || `/item/${story.id}`}
                   onKeyPress={(e) => {
                     // J key will advance to the next story
@@ -119,8 +121,6 @@ export default function Index() {
                 >
                   {story.title}
                 </Heading>
-
-                {story.url && <Text>{new URL(story.url)?.hostname}</Text>}
 
                 <Text>
                   By {story.by} {getRelativeTimeString(story.time * 1_000)}
