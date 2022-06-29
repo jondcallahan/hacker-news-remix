@@ -3,7 +3,6 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  Grid,
   Heading,
   Link as ChakraLink,
   Progress,
@@ -59,6 +58,7 @@ export default function Layout() {
                           alignItems="flex-end"
                           gap="1"
                           color={"white"}
+                          _visited={{ color: "white" }}
                         >
                           {data.story.title}{" "}
                           <svg

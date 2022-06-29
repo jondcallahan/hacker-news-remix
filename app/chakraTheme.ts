@@ -21,6 +21,9 @@ export const theme = extendTheme({
         minHeight: "100%",
         backgroundColor: "orange.100",
       },
+      pre: {
+        whiteSpace: "pre-wrap",
+      },
     },
   },
   components: {

@@ -1,33 +1,8 @@
-import {
-  json,
-  LinksFunction,
-  LoaderFunction,
-  MetaFunction,
-  redirect,
-} from "@remix-run/node";
+import { json, LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { getItem } from "~/utils/api.server";
-import stylesUrl from "~/styles/item.css";
 import { getRelativeTimeString } from "~/utils/time";
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  Box,
-  Heading,
-  Text,
-  chakra,
-  Grid,
-  Container,
-} from "@chakra-ui/react";
-
-// export const links: LinksFunction = () => [
-//   {
-//     rel: "stylesheet",
-//     href: stylesUrl,
-//   },
-// ];
+import { Box, Heading, Text, chakra, Grid, Container } from "@chakra-ui/react";
 
 export const handle = {
   showBreadcrumb: true,
@@ -114,7 +89,7 @@ export default function Item() {
                   dangerouslySetInnerHTML={{ __html: kid.text }}
                 ></Text>
                 {kid.kids?.length && (
-                  <Accordion paddingLeft={2}>{renderKids(kid.kids)}</Accordion>
+                  <Box paddingLeft={2}>{renderKids(kid.kids)}</Box>
                 )}
               </Box>
             </chakra.details>

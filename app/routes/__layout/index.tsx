@@ -1,4 +1,4 @@
-import { json, LinksFunction, LoaderFunction } from "@remix-run/node";
+import { json, LoaderFunction } from "@remix-run/node";
 import {
   Link as RemixLink,
   useLoaderData,
@@ -34,7 +34,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const allStoryIds = await getTopStories(storiesPerPage);
 
   const allStories = await Promise.all(
-    allStoryIds.slice(0, storiesPerPage).map(async (id) => {
+    allStoryIds.slice(0, storiesPerPage).map(async (id: string) => {
       return await getItem(id);
     })
   );
