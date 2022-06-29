@@ -1,15 +1,21 @@
 import { json, LinksFunction, LoaderFunction } from "@remix-run/node";
-import { Link, useLoaderData, useNavigate } from "@remix-run/react";
+import {
+  Link as RemixLink,
+  useLoaderData,
+  useNavigate,
+} from "@remix-run/react";
 import { getItem, getTopStories } from "~/utils/api.server";
-import stylesUrl from "~/styles/index.css";
 import { getRelativeTimeString } from "~/utils/time";
-
-export const links: LinksFunction = () => [
-  {
-    rel: "stylesheet",
-    href: stylesUrl,
-  },
-];
+import {
+  Box,
+  Grid,
+  Heading,
+  Text,
+  Link as ChakraLink,
+  Stat,
+  StatNumber,
+  Container,
+} from "@chakra-ui/react";
 
 type StoryType = {
   by: string;
@@ -36,30 +42,40 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json({ allStories });
 };
 
-const relativeTimeFormat = new Intl.RelativeTimeFormat("en", {
-  style: "narrow",
-});
-
-const dateFormat = new Intl.DateTimeFormat("en", { timeStyle: "short" });
-
 export default function Index() {
   const data = useLoaderData();
   const navigate = useNavigate();
 
   return (
-    <main>
-      <section>
-        <h1>Hacker News Remix</h1>
-      </section>
-      <section>
+    <Container>
+      <Grid gap="4" justifyContent="center">
         {data?.allStories.map((story: StoryType) => {
           return (
-            <article className="card card__story" key={story.id}>
-              <section>
-                <h2>{story.score}</h2>
-              </section>
-              <section className="grid">
-                <a
+            <Box
+              key={story.id}
+              borderWidth="1px"
+              borderStyle="solid"
+              borderColor="gray.100"
+              borderRadius="lg"
+              display={"grid"}
+              gridTemplateColumns="70px 1fr"
+              _hover={{
+                boxShadow: "lg",
+              }}
+              transition="box-shadow 0.2s ease-in-out"
+              backgroundColor="white"
+              padding="2"
+            >
+              <Grid placeContent="center">
+                <Stat>
+                  <StatNumber>{story.score}</StatNumber>
+                </Stat>
+              </Grid>
+              <Grid gap="1">
+                <Heading
+                  size="md"
+                  as="a"
+                  scrollMarginY={12}
                   href={story.url || `/item/${story.id}`}
                   onKeyPress={(e) => {
                     // J key will advance to the next story
@@ -68,7 +84,9 @@ export default function Index() {
                     if (e.key === "j") {
                       try {
                         document
-                          .querySelectorAll("article a[data-link-type=story]")
+                          .querySelectorAll<HTMLAnchorElement>(
+                            "a[data-link-type=story]"
+                          )
                           .forEach((val, idx, list) => {
                             if (val === document.activeElement) {
                               list[idx + 1].focus();
@@ -81,7 +99,9 @@ export default function Index() {
                       // Go to previous story or last if on first
                       try {
                         document
-                          .querySelectorAll("article a[data-link-type=story]")
+                          .querySelectorAll<HTMLAnchorElement>(
+                            "a[data-link-type=story]"
+                          )
                           .forEach((val, idx, list) => {
                             if (val === document.activeElement) {
                               if (idx === 0) {
@@ -100,25 +120,29 @@ export default function Index() {
                   }}
                   data-link-type="story"
                 >
-                  <p>{story.title}</p>
-                </a>
-                {story.url && <small>{new URL(story.url)?.hostname}</small>}
-                <section className="grid author-line">
-                  <p>
-                    <span>
-                      By {story.by} {getRelativeTimeString(story.time * 1_000)}
-                    </span>
-                  </p>
-                  <Link to={`/item/${story.id}`} prefetch="intent">
-                    <p>{story.descendants || "0"} Comments</p>
-                  </Link>
-                </section>
-              </section>
-            </article>
+                  {story.title}
+                </Heading>
+
+                {story.url && <Text>{new URL(story.url)?.hostname}</Text>}
+
+                <Text>
+                  By {story.by} {getRelativeTimeString(story.time * 1_000)}
+                </Text>
+
+                <ChakraLink
+                  as={RemixLink}
+                  to={`/item/${story.id}`}
+                  prefetch="intent"
+                  width="full"
+                  display="inline-block"
+                >
+                  {story.descendants || "0"} Comments
+                </ChakraLink>
+              </Grid>
+            </Box>
           );
         })}
-      </section>
-      <pre></pre>
-    </main>
+      </Grid>
+    </Container>
   );
 }
