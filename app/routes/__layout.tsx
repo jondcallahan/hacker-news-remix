@@ -90,7 +90,7 @@ export default function Layout() {
         />
       </Box>
 
-      <Box as="main" paddingY="4">
+      <Box as="main" paddingY="8">
         <Box
           as="section"
           maxWidth="6xl"

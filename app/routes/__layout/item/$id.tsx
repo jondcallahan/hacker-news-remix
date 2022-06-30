@@ -126,7 +126,7 @@ export default function Item() {
                 key={comment.id}
                 open
                 cursor="pointer"
-                maxWidth="full"
+                width="full"
                 onClick={(e) => {
                   // TODO: Collapse the details on clicking the text
                   if (
