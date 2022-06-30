@@ -28,7 +28,7 @@ export const meta: MetaFunction = () => {
   return {
     title: "Hacker News | Remix",
     charset: "utf-8",
-    viewport: "width=device-width",
+    viewport: "width=device-width, initial-scale=1",
   };
 };
 

@@ -1,6 +1,8 @@
 import { extendTheme } from "@chakra-ui/react";
 
 const linkStyles = {
+  fontSize: "1.125rem",
+  lineHeight: "1.65",
   color: "blue.500",
   _visited: {
     color: "purple.500",
@@ -11,6 +13,9 @@ const linkStyles = {
 };
 
 export const theme = extendTheme({
+  fonts: {
+    serif: "Charter, Georgia, serif",
+  },
   styles: {
     global: {
       a: linkStyles,

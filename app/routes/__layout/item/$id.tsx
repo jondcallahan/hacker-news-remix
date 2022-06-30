@@ -2,7 +2,7 @@ import { json, LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { getItem } from "~/utils/api.server";
 import { getRelativeTimeString } from "~/utils/time";
-import { Box, Heading, Text, chakra, Grid, Container } from "@chakra-ui/react";
+import { Box, Heading, Text, chakra, Container, Flex } from "@chakra-ui/react";
 
 export const handle = {
   showBreadcrumb: true,
@@ -116,7 +116,7 @@ export default function Item() {
             dangerouslySetInnerHTML={{ __html: story.text }}
           ></Text>
         </section>
-        <Grid gap={4}>
+        <Flex wrap="wrap" gap={4}>
           {story.kids?.map((comment) => {
             if (!comment || comment.dead || comment.deleted) return null;
             return (
@@ -126,6 +126,7 @@ export default function Item() {
                 key={comment.id}
                 open
                 cursor="pointer"
+                maxWidth="full"
                 onClick={(e) => {
                   // TODO: Collapse the details on clicking the text
                   if (
@@ -167,7 +168,7 @@ export default function Item() {
               </chakra.details>
             );
           })}
-        </Grid>
+        </Flex>
       </Container>
     </main>
   );

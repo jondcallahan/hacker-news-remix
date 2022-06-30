@@ -15,7 +15,7 @@ import {
   Stat,
   StatNumber,
   Container,
-  StatLabel,
+  Flex,
 } from "@chakra-ui/react";
 
 type StoryType = {
@@ -49,7 +49,7 @@ export default function Index() {
 
   return (
     <Container>
-      <Grid gap="4" justifyContent="center">
+      <Flex wrap="wrap" gap="4" justifyContent="center">
         {data?.allStories.map((story: StoryType) => {
           return (
             <Box
@@ -63,6 +63,7 @@ export default function Index() {
               transition="box-shadow 0.2s ease-in-out"
               backgroundColor="orange.50"
               padding="2"
+              width="full"
             >
               <Grid placeContent="center">
                 <Stat>
@@ -70,7 +71,11 @@ export default function Index() {
                 </Stat>
               </Grid>
               <Grid gap="1">
-                {story.url && <Text>{new URL(story.url)?.hostname}</Text>}
+                {story.url && (
+                  <Text wordBreak="break-all">
+                    {new URL(story.url)?.hostname}
+                  </Text>
+                )}
                 <Heading
                   size="md"
                   as="a"
@@ -139,7 +144,7 @@ export default function Index() {
             </Box>
           );
         })}
-      </Grid>
+      </Flex>
     </Container>
   );
 }
