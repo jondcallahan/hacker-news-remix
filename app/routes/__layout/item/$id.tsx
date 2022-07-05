@@ -85,12 +85,13 @@ export default function Item() {
               </chakra.summary>
               <Box marginX={2}>
                 <Text
+                  as="div"
                   fontFamily="serif"
                   dangerouslySetInnerHTML={{ __html: kid.text }}
                   _hover={{
                     backgroundColor: "orange.100",
                   }}
-                ></Text>
+                />
                 {kid.kids?.length && (
                   <Box paddingLeft={2}>{renderKids(kid.kids)}</Box>
                 )}
@@ -112,7 +113,7 @@ export default function Item() {
             By {story.by} {dateFormat.format(new Date(story.time * 1_000))}
           </Text>
           <Text
-            className="text"
+            as="span"
             dangerouslySetInnerHTML={{ __html: story.text }}
           ></Text>
         </section>
@@ -156,12 +157,13 @@ export default function Item() {
 
                 <Box marginX={4} marginY={2}>
                   <Text
+                    as="div"
                     fontFamily="serif"
                     dangerouslySetInnerHTML={{ __html: comment.text }}
                     _hover={{
                       backgroundColor: "orange.100",
                     }}
-                  ></Text>
+                  />
 
                   {comment.kids?.length && renderKids(comment.kids)}
                 </Box>
