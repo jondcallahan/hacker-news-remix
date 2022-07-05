@@ -16,6 +16,7 @@ import {
   StatNumber,
   Container,
   Flex,
+  Image,
 } from "@chakra-ui/react";
 
 type StoryType = {
@@ -72,9 +73,16 @@ export default function Index() {
               </Grid>
               <Grid gap="1">
                 {story.url && (
-                  <Text wordBreak="break-all">
-                    {new URL(story.url)?.hostname}
-                  </Text>
+                  <Flex alignItems="center">
+                    <Image
+                      src={`/api/favicons?url=${new URL(story.url)?.hostname}`}
+                      boxSize="4"
+                      marginRight="2"
+                    />
+                    <Text wordBreak="break-all">
+                      {new URL(story.url)?.hostname}
+                    </Text>
+                  </Flex>
                 )}
                 <Heading
                   size="md"
