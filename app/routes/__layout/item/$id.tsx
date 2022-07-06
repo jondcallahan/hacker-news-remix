@@ -56,6 +56,7 @@ export default function Item() {
     return null;
   }
 
+  // TODO: Remove this duplicated code by extracting the comment details/summary to a separate component
   function renderKids(kids) {
     return (
       <>
@@ -85,6 +86,11 @@ export default function Item() {
                 paddingY={4}
                 backgroundColor="gray.100"
                 borderRadius="lg"
+                sx={{
+                  "details[open]>&": {
+                    borderBottomRadius: "0",
+                  },
+                }}
               >
                 {kid.by} | {kid.kids?.length || "0"}{" "}
                 {kid.kids?.length === 1 ? "comment" : "comments"}
@@ -176,21 +182,24 @@ export default function Item() {
                 }}
                 boxShadow="md"
               >
-                {/* <summary> */}
                 <chakra.summary
                   fontWeight="semibold"
                   flex="1"
+                  padding={4}
                   textAlign="left"
                   backgroundColor="gray.100"
                   borderRadius="lg"
-                  padding={4}
+                  sx={{
+                    "details[open]>&": {
+                      borderBottomRadius: "0",
+                    },
+                  }}
                 >
                   {comment.by} | {comment.kids?.length || "0"}{" "}
                   {comment.kids?.length === 1 ? "comment" : "comments"}
                   {" | "}
                   {getRelativeTimeString(comment.time * 1_000)}
                 </chakra.summary>
-                {/* </summary> */}
 
                 <Box marginX={4} marginY={2}>
                   <Text
