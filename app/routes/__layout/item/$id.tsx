@@ -2,7 +2,15 @@ import { json, LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { getItem } from "~/utils/api.server";
 import { getRelativeTimeString } from "~/utils/time";
-import { Box, Heading, Text, chakra, Container, Flex } from "@chakra-ui/react";
+import {
+  Box,
+  Heading,
+  Text,
+  chakra,
+  Container,
+  Flex,
+  Img,
+} from "@chakra-ui/react";
 
 export const handle = {
   showBreadcrumb: true,
@@ -42,7 +50,7 @@ const dateFormat = new Intl.DateTimeFormat("en", {
 });
 
 export default function Item() {
-  const { story, allComments = [] } = useLoaderData();
+  const { story } = useLoaderData();
 
   if (!story) {
     return null;
@@ -88,8 +96,10 @@ export default function Item() {
                   as="div"
                   fontFamily="serif"
                   dangerouslySetInnerHTML={{ __html: kid.text }}
-                  _hover={{
-                    backgroundColor: "orange.100",
+                  sx={{
+                    "@media (hover: hover)": {
+                      _hover: { backgroundColor: "orange.100" },
+                    },
                   }}
                 />
                 {kid.kids?.length && (
@@ -106,17 +116,44 @@ export default function Item() {
   return (
     <main>
       <Container>
-        <section>
-          <Heading size="md">{story?.title}</Heading>
-          <a href={story.url}>{story.url}</a>
-          <Text>
-            By {story.by} {dateFormat.format(new Date(story.time * 1_000))}
-          </Text>
-          <Text
-            as="span"
-            dangerouslySetInnerHTML={{ __html: story.text }}
-          ></Text>
-        </section>
+        {/* Story Card */}
+        <Box
+          backgroundColor="orange.50"
+          borderRadius="lg"
+          marginBottom={4}
+          boxShadow="md"
+        >
+          {story.url ? (
+            <a href={story.url}>
+              <Img
+                src={`/api/ogImage?url=${story.url}`}
+                width="full"
+                height={["150px", "300px"]}
+                borderBottomWidth="2px"
+                borderBottomColor="gray.100"
+                borderBottomStyle="solid"
+                borderTopRadius="lg"
+                objectFit="cover"
+                backgroundImage={`url(https://images.placeholders.dev/?width=1200&height=600&text=${
+                  new URL(story.url).hostname
+                }&fontFamily=Helvetica%20Neue&fontSize=64)`}
+                backgroundSize="cover"
+              />
+            </a>
+          ) : null}
+          <Box padding={2}>
+            <Heading size="md">{story?.title}</Heading>
+            <a href={story.url}>{story.url}</a>
+            <Text>
+              By {story.by} {dateFormat.format(new Date(story.time * 1_000))}
+            </Text>
+            <Text
+              as="span"
+              dangerouslySetInnerHTML={{ __html: story.text }}
+            ></Text>
+          </Box>
+        </Box>
+        {/* End story card */}
         <Flex wrap="wrap" gap={4}>
           {story.kids?.map((comment) => {
             if (!comment || comment.dead || comment.deleted) return null;
@@ -160,8 +197,10 @@ export default function Item() {
                     as="div"
                     fontFamily="serif"
                     dangerouslySetInnerHTML={{ __html: comment.text }}
-                    _hover={{
-                      backgroundColor: "orange.100",
+                    sx={{
+                      "@media (hover: hover)": {
+                        _hover: { backgroundColor: "orange.100" },
+                      },
                     }}
                   />
 

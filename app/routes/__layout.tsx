@@ -20,14 +20,7 @@ export default function Layout() {
   const transition = useTransition();
   return (
     <>
-      <Box
-        as="nav"
-        backgroundColor="orange.400"
-        width="full"
-        position="sticky"
-        top={0}
-        zIndex="sticky"
-      >
+      <Box as="nav" backgroundColor="orange.400" width="full">
         <Box
           maxWidth="6xl"
           marginX="auto"
@@ -83,13 +76,16 @@ export default function Layout() {
             </Breadcrumb>
           </Heading>
         </Box>
-        <Progress
-          size="xs"
-          colorScheme="orange"
-          isIndeterminate
-          visibility={transition.state === "idle" ? "hidden" : "visible"}
-        />
       </Box>
+      <Progress
+        size="xs"
+        colorScheme="orange"
+        isIndeterminate
+        visibility={transition.state === "idle" ? "hidden" : "visible"}
+        position="sticky"
+        top={0}
+        zIndex="sticky"
+      />
 
       <Box as="main" paddingY="8">
         <Box
