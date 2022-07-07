@@ -10,6 +10,7 @@ import {
   Container,
   Flex,
   Img,
+  Grid,
 } from "@chakra-ui/react";
 
 export const handle = {
@@ -33,6 +34,10 @@ const fetchAllKids = async (id: string) => {
   );
 
   return item;
+};
+
+const getBackgroundImage = (text: string) => {
+  return `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='1200' height='600' viewBox='0 0 1200 600'><rect fill='lightgrey' width='1200' height='600'></rect><text dy='22.4' x='50%' y='50%' text-anchor='middle' font-weight='bold' fill='rgba(0,0,0,0.5)' font-size='64' font-family='sans-serif'>${text}</text></svg>")`;
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -140,14 +145,14 @@ export default function Item() {
                 borderBottomStyle="solid"
                 borderTopRadius="lg"
                 objectFit="cover"
-                backgroundImage={`url(https://images.placeholders.dev/?width=1200&height=600&text=${
-                  new URL(story.url).hostname
-                }&fontFamily=Helvetica%20Neue&fontSize=64)`}
                 backgroundSize="cover"
+                backgroundImage={getBackgroundImage(
+                  new URL(story.url).hostname
+                )}
               />
             </a>
           ) : null}
-          <Box padding={2}>
+          <Grid gap={1} paddingX={3} paddingY={2}>
             <Heading size="md">{story?.title}</Heading>
             <a href={story.url}>{story.url}</a>
             <Text>
@@ -157,7 +162,7 @@ export default function Item() {
               as="span"
               dangerouslySetInnerHTML={{ __html: story.text }}
             ></Text>
-          </Box>
+          </Grid>
         </Box>
         {/* End story card */}
         <Flex wrap="wrap" gap={4}>
