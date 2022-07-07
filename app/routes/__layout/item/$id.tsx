@@ -18,9 +18,9 @@ export const handle = {
 };
 
 export const meta: MetaFunction = ({ data }) => ({
-  title: `HN | ${data.story.title}`,
-  "og:title": "Hacker News",
-  "og:description": data.story.title,
+  title: `${data.story.title} | HN`,
+  "og:title": data.story.title,
+  "og:description": data.story.text,
   "og:image": data.story.url ? `/api/ogImage?url=${data.story.url}` : undefined, // Only add og image if url is defined
 });
 

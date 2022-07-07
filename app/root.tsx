@@ -26,9 +26,10 @@ export const links: LinksFunction = () => [
 
 export const meta: MetaFunction = () => {
   return {
-    title: "Hacker News | Remix",
+    title: "Hacker News",
     charset: "utf-8",
     viewport: "width=device-width, initial-scale=1, viewport-fit=cover",
+    "og:site_name": "Jon's Hacker News Reader",
   };
 };
 
