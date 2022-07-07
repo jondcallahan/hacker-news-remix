@@ -19,6 +19,9 @@ export const handle = {
 
 export const meta: MetaFunction = ({ data }) => ({
   title: `HN | ${data.story.title}`,
+  "og:title": "Hacker News",
+  "og:description": data.story.title,
+  "og:image": data.story.url ? `/api/ogImage?url=${data.story.url}` : undefined, // Only add og image if url is defined
 });
 
 const fetchById = async (id: string) => await getItem(id);
