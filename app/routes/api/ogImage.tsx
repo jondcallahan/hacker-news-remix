@@ -28,10 +28,19 @@ export const loader: LoaderFunction = async ({ request }) => {
       `https://images.placeholders.dev/?width=1200&height=600&text=${text}&fontFamily=Helvetica%20Neue&fontSize=64`
     );
   }
-  console.log("Accept", request.headers.get("Accept"));
-  return fetch(ogImageUrl[1], {
+
+  const imageRes = await fetch(ogImageUrl[1], {
     headers: {
       Accept: request.headers.get("Accept") || "image/*",
+      "If-None-Match": request.headers.get("If-none-match") || "",
     },
   });
+
+  imageRes.headers.delete("set-cookie");
+
+  if (!imageRes.headers.get("cache-control")) {
+    imageRes.headers.set("cache-control", "public, max-age=" + 60 * 60 * 24);
+  }
+
+  return imageRes;
 };
