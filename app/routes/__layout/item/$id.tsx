@@ -105,16 +105,23 @@ export default function Item() {
                 {" | "}
                 {getRelativeTimeString(kid.time * 1_000)}
               </chakra.summary>
-              <Box marginX={2}>
+              <Box
+                borderLeft="1px"
+                borderColor={"transparent"}
+                transition="border-color ease-in 0.17s"
+                sx={{
+                  "@media (hover: hover)": {
+                    _hover: {
+                      borderColor: "orange.300",
+                    },
+                  },
+                }}
+              >
                 <Text
                   as="div"
                   fontFamily="serif"
+                  marginX={2}
                   dangerouslySetInnerHTML={{ __html: kid.text }}
-                  sx={{
-                    "@media (hover: hover)": {
-                      _hover: { backgroundColor: "orange.100" },
-                    },
-                  }}
                 />
                 {kid.kids?.length && (
                   <Box paddingLeft={2}>{renderKids(kid.kids)}</Box>
@@ -209,16 +216,24 @@ export default function Item() {
                   {getRelativeTimeString(comment.time * 1_000)}
                 </chakra.summary>
 
-                <Box marginX={4} marginY={2}>
+                <Box
+                  paddingY={2}
+                  borderLeft="1px"
+                  borderColor={"transparent"}
+                  transition="border-color ease-in 0.17s"
+                  sx={{
+                    "@media (hover: hover)": {
+                      _hover: {
+                        borderColor: "orange.300",
+                      },
+                    },
+                  }}
+                >
                   <Text
                     as="div"
                     fontFamily="serif"
+                    marginX={4}
                     dangerouslySetInnerHTML={{ __html: comment.text }}
-                    sx={{
-                      "@media (hover: hover)": {
-                        _hover: { backgroundColor: "orange.100" },
-                      },
-                    }}
                   />
 
                   {comment.kids?.length && renderKids(comment.kids)}
