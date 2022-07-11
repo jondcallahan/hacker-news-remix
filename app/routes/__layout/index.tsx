@@ -80,7 +80,7 @@ export default function Index() {
                       marginRight="2"
                     />
                     <Text wordBreak="break-all">
-                      {new URL(story.url)?.hostname}
+                      {new URL(story.url)?.hostname?.replace("www.", "")}
                     </Text>
                   </Flex>
                 )}
@@ -136,7 +136,7 @@ export default function Index() {
                 </Heading>
 
                 <Text>
-                  By {story.by} {getRelativeTimeString(story.time * 1_000)}
+                  By {story.by} at {getRelativeTimeString(story.time * 1_000)}
                 </Text>
 
                 <ChakraLink
