@@ -1,4 +1,5 @@
 import { LoaderFunction } from "@remix-run/node";
+import { getOGImagePlaceholderContent } from "../__layout/item/$id";
 
 export const loader: LoaderFunction = async ({ request }) => {
   // Request will come in like /api/ogImage?url=https://remix.one
@@ -20,13 +21,16 @@ export const loader: LoaderFunction = async ({ request }) => {
   // Get the og:image from the html text
   const ogImageUrl = text.match(/<meta property="og:image" content="(.*?)"/);
 
-  // If there is no og:image, return null
+  // If there is no og:image, return the placeholder image
   if (!ogImageUrl) {
-    // return new Response(null, { status: 404 });
     const text = new URL(url).hostname;
-    return fetch(
-      `https://images.placeholders.dev/?width=1200&height=600&text=${text}&fontFamily=Helvetica%20Neue&fontSize=64`
-    );
+    return new Response(getOGImagePlaceholderContent(text), {
+      status: 200,
+      headers: {
+        "Content-Type": "image/svg+xml",
+        "Cache-Control": "public, max-age=" + 60 * 60 * 24,
+      },
+    });
   }
 
   const imageRes = await fetch(ogImageUrl[1], {

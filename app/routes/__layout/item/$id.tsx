@@ -11,6 +11,7 @@ import {
   Flex,
   Img,
   Grid,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 
 export const handle = {
@@ -39,8 +40,12 @@ const fetchAllKids = async (id: string) => {
   return item;
 };
 
+export function getOGImagePlaceholderContent(text: string): string {
+  return `<svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='1200' height='600' viewBox='0 0 1200 600'><rect fill='lightgrey' width='1200' height='600'></rect><text dy='22.4' x='50%' y='50%' text-anchor='middle' font-weight='bold' fill='rgba(0,0,0,0.5)' font-size='64' font-family='sans-serif'>${text}</text></svg>`;
+}
+
 const getBackgroundImage = (text: string) => {
-  return `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='1200' height='600' viewBox='0 0 1200 600'><rect fill='lightgrey' width='1200' height='600'></rect><text dy='22.4' x='50%' y='50%' text-anchor='middle' font-weight='bold' fill='rgba(0,0,0,0.5)' font-size='64' font-family='sans-serif'>${text}</text></svg>")`;
+  return `url("data:image/svg+xml;utf8,${getOGImagePlaceholderContent(text)}")`;
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -164,7 +169,14 @@ export default function Item() {
           ) : null}
           <Grid gap={1} paddingX={3} paddingY={2}>
             <Heading size="md">{story?.title}</Heading>
-            <a href={story.url}>{story.url}</a>
+            <ChakraLink
+              whiteSpace="nowrap"
+              overflow="hidden"
+              textOverflow="ellipsis"
+              href={story.url}
+            >
+              {story.url}
+            </ChakraLink>
             <Text>
               By {story.by} {dateFormat.format(new Date(story.time * 1_000))}
             </Text>
