@@ -87,7 +87,7 @@ export default function Item() {
                   e.stopPropagation(); // don't bubble up to the next details
                 }
               }}
-              paddingLeft="2"
+              paddingX="2"
               marginTop="2"
               open
             >
@@ -178,7 +178,7 @@ export default function Item() {
               {story.url}
             </ChakraLink>
             <Text>
-              By {story.by} {dateFormat.format(new Date(story.time * 1_000))}
+              By {story.by} at {dateFormat.format(new Date(story.time * 1_000))}
             </Text>
             <Text
               as="span"

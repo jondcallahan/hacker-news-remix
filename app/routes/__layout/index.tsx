@@ -136,7 +136,7 @@ export default function Index() {
                 </Heading>
 
                 <Text>
-                  By {story.by} at {getRelativeTimeString(story.time * 1_000)}
+                  By {story.by} {getRelativeTimeString(story.time * 1_000)}
                 </Text>
 
                 <ChakraLink
