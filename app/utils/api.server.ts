@@ -7,6 +7,7 @@ import {
   query,
   ref,
 } from "firebase/database";
+import { getOrSetToCache } from "./caching.server";
 
 export const createApp = (): FirebaseApp => {
   let app;
@@ -24,35 +25,49 @@ export const createApp = (): FirebaseApp => {
 export const getItem = async (id: string) => {
   const dbRef = ref(getDatabase(createApp()));
 
-  return get(child(dbRef, `v0/item/${id}`))
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        return snapshot.val();
-      } else {
-        console.log("No data available");
+  const item = await getOrSetToCache(`item:${id}`, () => {
+    return get(child(dbRef, `v0/item/${id}`))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          return snapshot.val();
+        } else {
+          console.log("No data available");
+          return null;
+        }
+      })
+      .catch((error) => {
+        console.error(error);
         return null;
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      return null;
-    });
+      });
+  });
+
+  return item;
 };
 
 export const getTopStories = async (limit: number) => {
   const dbRef = ref(getDatabase(createApp()));
+  const key = "/v0/topstories";
 
-  return get(query(child(dbRef, "/v0/topstories"), limitToFirst(limit)))
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        return snapshot.val();
-      } else {
-        console.log("No data available");
+  return getOrSetToCache(key, async () => {
+    return get(query(child(dbRef, "/v0/topstories"), limitToFirst(limit)))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const topStoryIds: number[] = snapshot.val();
+          return Promise.all(
+            topStoryIds.map(async (id) => {
+              return await getItem(id.toString());
+            })
+          );
+
+          // return topStoryIds;
+        } else {
+          console.log("No data available");
+          return null;
+        }
+      })
+      .catch((error) => {
+        console.error(error);
         return null;
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      return null;
-    });
+      });
+  });
 };

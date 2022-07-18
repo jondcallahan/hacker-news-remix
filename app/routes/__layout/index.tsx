@@ -32,16 +32,16 @@ type StoryType = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
+  const timerStart = process.hrtime();
+
   const storiesPerPage = 30;
-  const allStoryIds = await getTopStories(storiesPerPage);
+  const allStories = await getTopStories(storiesPerPage);
 
-  const allStories = await Promise.all(
-    allStoryIds.slice(0, storiesPerPage).map(async (id: string) => {
-      return await getItem(id);
-    })
-  );
+  // Log the time it took to get the value in ms
+  const timerEnd = process.hrtime(timerStart);
+  console.log(`topstories took ${timerEnd[0] * 1e3 + timerEnd[1] / 1e6}ms`);
 
-  return json({ allStories });
+  return json({ allStories: allStories });
 };
 
 export default function Index() {
@@ -75,7 +75,9 @@ export default function Index() {
                 {story.url && (
                   <Flex alignItems="center">
                     <Image
-                      src={`/api/favicons?url=${new URL(story.url)?.hostname}`}
+                      src={`https://icons.duckduckgo.com/ip3/${
+                        new URL(story.url)?.hostname
+                      }.ico`}
                       boxSize="4"
                       marginRight="2"
                     />

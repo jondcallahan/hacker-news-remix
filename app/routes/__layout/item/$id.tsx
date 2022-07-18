@@ -49,11 +49,16 @@ const getBackgroundImage = (text: string) => {
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
+  const timerStart = process.hrtime();
   const { id } = params;
 
   if (!id) return redirect("/");
 
   const story = await fetchAllKids(id);
+
+  // Log the time it took to get the value in ms
+  const timerEnd = process.hrtime(timerStart);
+  console.log(`item:${id} took ${timerEnd[0] * 1e3 + timerEnd[1] / 1e6}ms`);
 
   return json({ story });
 };
