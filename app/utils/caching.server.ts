@@ -14,7 +14,11 @@ export async function getOrSetToCache(
   }
 
   const value = await getter();
-  await redis.setex(key, ttl, JSON.stringify(value));
+  if (value) {
+    // Only set the cache if the value is not null
+    await redis.setex(key, ttl, JSON.stringify(value));
+    return value;
+  }
 
-  return value;
+  return null;
 }
