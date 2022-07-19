@@ -126,7 +126,7 @@ export default function Item() {
                 <Text
                   as="div"
                   fontFamily="serif"
-                  marginX={2}
+                  marginX={4}
                   dangerouslySetInnerHTML={{ __html: kid.text }}
                 />
                 {kid.kids?.length && (
