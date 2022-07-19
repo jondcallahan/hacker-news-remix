@@ -25,10 +25,8 @@ export const meta: MetaFunction = ({ data }) => ({
   "og:image": data.story.url ? `/api/ogImage?url=${data.story.url}` : undefined, // Only add og image if url is defined
 });
 
-const fetchById = async (id: string) => await getItem(id);
-
 const fetchAllKids = async (id: string) => {
-  const item = await fetchById(id);
+  const item = await getItem(id);
 
   await Promise.all(
     item?.kids?.map(
@@ -92,7 +90,6 @@ export default function Item() {
                   e.stopPropagation(); // don't bubble up to the next details
                 }
               }}
-              paddingX="2"
               marginTop="2"
               open
             >
@@ -100,8 +97,7 @@ export default function Item() {
                 fontWeight="semibold"
                 flex="1"
                 textAlign="left"
-                paddingX={2}
-                paddingY={4}
+                padding={4}
                 backgroundColor="gray.100"
                 borderRadius="lg"
                 sx={{
@@ -134,7 +130,7 @@ export default function Item() {
                   dangerouslySetInnerHTML={{ __html: kid.text }}
                 />
                 {kid.kids?.length && (
-                  <Box paddingLeft={2}>{renderKids(kid.kids)}</Box>
+                  <Box paddingX={2}>{renderKids(kid.kids)}</Box>
                 )}
               </Box>
             </chakra.details>
@@ -253,7 +249,9 @@ export default function Item() {
                     dangerouslySetInnerHTML={{ __html: comment.text }}
                   />
 
-                  {comment.kids?.length && renderKids(comment.kids)}
+                  {comment.kids?.length && (
+                    <Box paddingX={2}>{renderKids(comment.kids)}</Box>
+                  )}
                 </Box>
               </chakra.details>
             );

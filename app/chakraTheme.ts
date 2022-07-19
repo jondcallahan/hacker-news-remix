@@ -41,5 +41,10 @@ export const theme = extendTheme({
     Link: {
       baseStyle: linkStyles,
     },
+    Container: {
+      baseStyle: {
+        paddingX: "initial",
+      },
+    },
   },
 });
