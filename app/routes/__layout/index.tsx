@@ -12,8 +12,6 @@ import {
   Heading,
   Text,
   Link as ChakraLink,
-  Stat,
-  StatNumber,
   Container,
   Flex,
   Image,
@@ -182,6 +180,11 @@ export default function Index() {
                     _groupHover={{
                       borderStyle: "solid",
                       borderColor: "blue.500",
+                    }}
+                    sx={{
+                      "a:visited &": {
+                        color: "purple.500",
+                      },
                     }}
                   >
                     <TagLeftIcon
