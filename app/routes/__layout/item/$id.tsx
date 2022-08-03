@@ -1,4 +1,4 @@
-import { json, LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
+import { json, LoaderArgs, MetaFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { getItem } from "~/utils/api.server";
 import { getRelativeTimeString } from "~/utils/time";
@@ -46,7 +46,7 @@ const getBackgroundImage = (text: string) => {
   return `url("data:image/svg+xml;utf8,${getOGImagePlaceholderContent(text)}")`;
 };
 
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   const timerStart = process.hrtime();
   const { id } = params;
 
@@ -66,7 +66,7 @@ const dateFormat = new Intl.DateTimeFormat("en", {
 });
 
 export default function Item() {
-  const { story } = useLoaderData();
+  const { story } = useLoaderData<typeof loader>();
 
   if (!story) {
     return null;
@@ -141,123 +141,119 @@ export default function Item() {
   }
 
   return (
-    <main>
-      <Container>
-        {/* Story Card */}
-        <Box
-          backgroundColor="orange.50"
-          borderRadius="lg"
-          marginBottom={4}
-          boxShadow="md"
-        >
-          {story.url ? (
-            <a href={story.url}>
-              <Img
-                src={`/api/ogImage?url=${story.url}`}
-                width="full"
-                height={["150px", "300px"]}
-                borderBottomWidth="2px"
-                borderBottomColor="gray.100"
-                borderBottomStyle="solid"
-                borderTopRadius="lg"
-                objectFit="cover"
-                backgroundSize="cover"
-                backgroundImage={getBackgroundImage(
-                  new URL(story.url).hostname
-                )}
-              />
-            </a>
-          ) : null}
-          <Grid gap={1} paddingX={3} paddingY={2}>
-            <Heading size="md">{story?.title}</Heading>
-            <ChakraLink
-              whiteSpace="nowrap"
-              overflow="hidden"
-              textOverflow="ellipsis"
-              href={story.url}
+    <Container>
+      {/* Story Card */}
+      <Box
+        backgroundColor="orange.50"
+        borderRadius="lg"
+        marginBottom={4}
+        boxShadow="md"
+      >
+        {story.url ? (
+          <a href={story.url}>
+            <Img
+              src={`/api/ogImage?url=${story.url}`}
+              width="full"
+              height={["150px", "300px"]}
+              borderBottomWidth="2px"
+              borderBottomColor="gray.100"
+              borderBottomStyle="solid"
+              borderTopRadius="lg"
+              objectFit="cover"
+              backgroundSize="cover"
+              backgroundImage={getBackgroundImage(new URL(story.url).hostname)}
+            />
+          </a>
+        ) : null}
+        <Grid gap={1} paddingX={3} paddingY={2}>
+          <Heading size="md">{story?.title}</Heading>
+          <ChakraLink
+            whiteSpace="nowrap"
+            overflow="hidden"
+            textOverflow="ellipsis"
+            href={story.url}
+          >
+            {story.url}
+          </ChakraLink>
+          <Text>
+            By {story.by} at {dateFormat.format(new Date(story.time * 1_000))}
+          </Text>
+          <Text
+            as="span"
+            dangerouslySetInnerHTML={{ __html: story.text }}
+          ></Text>
+        </Grid>
+      </Box>
+      {/* End story card */}
+      <Flex wrap="wrap" gap={4}>
+        {story.kids?.map((comment) => {
+          if (!comment || comment.dead || comment.deleted) return null;
+          return (
+            <chakra.details
+              borderRadius="lg"
+              backgroundColor="orange.50"
+              key={comment.id}
+              open
+              cursor="pointer"
+              width="full"
+              onClick={(e) => {
+                // TODO: Collapse the details on clicking the text
+                if (
+                  e.nativeEvent.target.tagName !== "A" &&
+                  e.nativeEvent.target.tagName !== "SUMMARY"
+                ) {
+                  e.currentTarget.removeAttribute("open");
+                }
+              }}
+              boxShadow="md"
             >
-              {story.url}
-            </ChakraLink>
-            <Text>
-              By {story.by} at {dateFormat.format(new Date(story.time * 1_000))}
-            </Text>
-            <Text
-              as="span"
-              dangerouslySetInnerHTML={{ __html: story.text }}
-            ></Text>
-          </Grid>
-        </Box>
-        {/* End story card */}
-        <Flex wrap="wrap" gap={4}>
-          {story.kids?.map((comment) => {
-            if (!comment || comment.dead || comment.deleted) return null;
-            return (
-              <chakra.details
+              <chakra.summary
+                fontWeight="semibold"
+                flex="1"
+                padding={4}
+                textAlign="left"
+                backgroundColor="gray.100"
                 borderRadius="lg"
-                backgroundColor="orange.50"
-                key={comment.id}
-                open
-                cursor="pointer"
-                width="full"
-                onClick={(e) => {
-                  // TODO: Collapse the details on clicking the text
-                  if (
-                    e.nativeEvent.target.tagName !== "A" &&
-                    e.nativeEvent.target.tagName !== "SUMMARY"
-                  ) {
-                    e.currentTarget.removeAttribute("open");
-                  }
+                sx={{
+                  "details[open]>&": {
+                    borderBottomRadius: "0",
+                  },
                 }}
-                boxShadow="md"
               >
-                <chakra.summary
-                  fontWeight="semibold"
-                  flex="1"
-                  padding={4}
-                  textAlign="left"
-                  backgroundColor="gray.100"
-                  borderRadius="lg"
-                  sx={{
-                    "details[open]>&": {
-                      borderBottomRadius: "0",
-                    },
-                  }}
-                >
-                  {comment.by} | {comment.kids?.length || "0"}{" "}
-                  {comment.kids?.length === 1 ? "comment" : "comments"}
-                  {" | "}
-                  {getRelativeTimeString(comment.time * 1_000)}
-                </chakra.summary>
+                {comment.by} | {comment.kids?.length || "0"}{" "}
+                {comment.kids?.length === 1 ? "comment" : "comments"}
+                {" | "}
+                {getRelativeTimeString(comment.time * 1_000)}
+              </chakra.summary>
 
-                <Box
-                  paddingY={2}
-                  borderLeft="1px"
-                  borderColor={"transparent"}
-                  transition="border-color ease-in 0.17s"
-                  sx={{
-                    "@media (hover: hover)": {
-                      _hover: {
-                        borderColor: "orange.300",
-                      },
+              <Box
+                paddingY={2}
+                borderLeft="1px"
+                borderColor={"transparent"}
+                transition="border-color ease-in 0.17s"
+                sx={{
+                  "@media (hover: hover)": {
+                    _hover: {
+                      borderColor: "orange.300",
                     },
-                  }}
-                >
-                  <Text
-                    as="div"
-                    fontFamily="serif"
-                    marginX={4}
-                    dangerouslySetInnerHTML={{ __html: comment.text }}
-                  />
+                  },
+                }}
+              >
+                <Text
+                  as="div"
+                  fontFamily="serif"
+                  marginX={4}
+                  dangerouslySetInnerHTML={{ __html: comment.text }}
+                />
 
-                  {comment.kids?.length && (
-                    <Box paddingX={2}>{renderKids(comment.kids)}</Box>
-                  )}
-                </Box>
-              </chakra.details>
-            );
-          })}
-        </Flex>
-      </Container>
-    </main>
+                {comment.kids?.length && (
+                  <Box paddingX={2}>{renderKids(comment.kids)}</Box>
+                )}
+              </Box>
+            </chakra.details>
+          );
+        })}
+      </Flex>
+    </Container>
   );
 }

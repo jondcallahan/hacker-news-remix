@@ -7,6 +7,11 @@ import {
   Link as ChakraLink,
   Progress,
   chakra,
+  Link,
+  Text,
+  Grid,
+  ListItem,
+  UnorderedList,
 } from "@chakra-ui/react";
 import {
   Link as RemixLink,
@@ -19,7 +24,12 @@ export default function Layout() {
   const matches = useMatches();
   const transition = useTransition();
   return (
-    <>
+    <Grid
+      gridTemplateRows="auto auto 1fr auto"
+      height="full"
+      width="full"
+      position="absolute"
+    >
       <Box as="nav" backgroundColor="orange.400" width="full">
         <Box
           maxWidth="6xl"
@@ -97,6 +107,34 @@ export default function Layout() {
           <Outlet />
         </Box>
       </Box>
-    </>
+
+      <Box as="footer" backgroundColor="orange.400" width="full">
+        <Box
+          maxWidth="6xl"
+          marginX="auto"
+          paddingX={{ base: 4, sm: 6, lg: 8 }}
+          paddingY="4"
+        >
+          <Text fontSize="sm" color="white">
+            Please enjoy this presentation of Hacker News:
+          </Text>
+          <UnorderedList>
+            <ListItem color="white">
+              <Text fontSize="sm" color="white">
+                Homepage intentionally limited to top 30 stories
+              </Text>
+            </ListItem>
+            <ListItem color="white">
+              <Text fontSize="sm" color="white">
+                All content comes from{" "}
+                <Link fontSize="sm" href="https://news.ycombinator.com">
+                  Hacker News
+                </Link>
+              </Text>
+            </ListItem>
+          </UnorderedList>
+        </Box>
+      </Box>
+    </Grid>
   );
 }

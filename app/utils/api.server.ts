@@ -22,7 +22,19 @@ export const createApp = (): FirebaseApp => {
   return app;
 };
 
-export const getItem = async (id: string) => {
+type Item = {
+  by: string;
+  descendants: number;
+  id: number;
+  kids: number[] | Item[];
+  score: number;
+  time: number;
+  title: string;
+  type: string;
+  url: string;
+};
+
+export const getItem = async (id: string): Promise<Item | null> => {
   const dbRef = ref(getDatabase(createApp()));
 
   const item = await getOrSetToCache(`item:${id}`, () => {
@@ -44,7 +56,7 @@ export const getItem = async (id: string) => {
   return item;
 };
 
-export const getTopStories = async (limit: number) => {
+export const getTopStories = async (limit: number): Promise<Item[] | null> => {
   const dbRef = ref(getDatabase(createApp()));
   const key = "/v0/topstories";
 
