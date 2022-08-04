@@ -1,6 +1,6 @@
 import { json, LoaderArgs, MetaFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { getItem } from "~/utils/api.server";
+import { getItem, Item } from "~/utils/api.server";
 import { getRelativeTimeString } from "~/utils/time";
 import {
   Box,
@@ -46,7 +46,7 @@ const getBackgroundImage = (text: string) => {
   return `url("data:image/svg+xml;utf8,${getOGImagePlaceholderContent(text)}")`;
 };
 
-export const loader = async ({ request, params }: LoaderArgs) => {
+export const loader = async ({ params }: LoaderArgs) => {
   const timerStart = process.hrtime();
   const { id } = params;
 
@@ -61,7 +61,6 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   return json({ story });
 };
 const dateFormat = new Intl.DateTimeFormat("en", {
-  // dateStyle: "long",
   timeStyle: "short",
 });
 

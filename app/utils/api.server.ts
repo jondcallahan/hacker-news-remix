@@ -22,11 +22,11 @@ export const createApp = (): FirebaseApp => {
   return app;
 };
 
-type Item = {
+export type Item = {
   by: string;
   descendants: number;
   id: number;
-  kids: number[] | Item[];
+  kids: string[];
   score: number;
   time: number;
   title: string;
