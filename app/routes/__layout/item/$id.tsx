@@ -140,7 +140,7 @@ export default function Item() {
   }
 
   return (
-    <Container>
+    <>
       {/* Story Card */}
       <Box
         backgroundColor="orange.50"
@@ -253,6 +253,6 @@ export default function Item() {
           );
         })}
       </Flex>
-    </Container>
+    </>
   );
 }

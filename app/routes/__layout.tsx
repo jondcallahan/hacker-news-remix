@@ -6,14 +6,17 @@ import {
   Heading,
   Link as ChakraLink,
   Progress,
-  chakra,
+  Container,
+  Text,
 } from "@chakra-ui/react";
 import {
   Link as RemixLink,
+  NavLink,
   Outlet,
   useMatches,
   useTransition,
 } from "@remix-run/react";
+import ExternalLinkIcon from "~/components/icons/external";
 
 export default function Layout() {
   const matches = useMatches();
@@ -22,7 +25,7 @@ export default function Layout() {
     <>
       <Box as="nav" backgroundColor="orange.400" width="full">
         <Box
-          maxWidth="6xl"
+          maxWidth="min(100vw, 72rem)"
           marginX="auto"
           paddingX={{ base: 4, sm: 6, lg: 8 }}
           paddingY="4"
@@ -54,17 +57,7 @@ export default function Layout() {
                           color={"white"}
                           _visited={{ color: "white" }}
                         >
-                          {data.story.title}{" "}
-                          <chakra.svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            boxSize="5"
-                            marginTop="2px"
-                          >
-                            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-                          </chakra.svg>
+                          {data.story.title} <ExternalLinkIcon />
                         </BreadcrumbLink>
                       ) : (
                         <>{data.story.title}</>
@@ -87,14 +80,57 @@ export default function Layout() {
         zIndex="sticky"
       />
 
-      <Box as="main" paddingY="8">
+      <Box
+        as="main"
+        marginTop="8"
+        marginBottom="9" // The progress bar is 4px tall so add 1 to the bottom padding
+        maxWidth="min(100vw, 72rem)"
+        marginX="auto"
+        paddingX={{ base: 4, sm: 6, lg: 8 }}
+      >
+        <Container>
+          <Outlet />
+        </Container>
+      </Box>
+      <Box as="footer" width="full" backgroundColor="orange.400">
         <Box
-          as="section"
-          maxWidth="6xl"
+          maxWidth="min(100vw, 72rem)"
           marginX="auto"
           paddingX={{ base: 4, sm: 6, lg: 8 }}
+          paddingY="4"
         >
-          <Outlet />
+          <NavLink to="/">
+            <Heading fontSize="xl" fontWeight="black" color="white">
+              Home
+            </Heading>
+          </NavLink>
+          <Text color="white">
+            All content comes from{" "}
+            <ChakraLink
+              href="https://news.ycombinator.com"
+              isExternal
+              display="inline-flex"
+              gap={1}
+              alignItems="center"
+            >
+              Hacker News <ExternalLinkIcon />
+            </ChakraLink>
+            .
+          </Text>
+          <Text color="white">
+            Please enjoy{" "}
+            <ChakraLink
+              href="https://joncallahan.com"
+              isExternal
+              display="inline-flex"
+              gap={1}
+              alignItems="center"
+            >
+              my <ExternalLinkIcon marginInlineEnd={1} />{" "}
+            </ChakraLink>
+            reader. Front page intentionally limited to top 30 stories. Get back
+            to work.
+          </Text>
         </Box>
       </Box>
     </>

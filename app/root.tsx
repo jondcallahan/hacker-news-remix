@@ -77,12 +77,17 @@ const Document = withEmotionCache(
             />
           ))}
         </head>
-        <body onKeyPress={highlightFirstStoryLink}>
+        <chakra.body
+          onKeyPress={highlightFirstStoryLink}
+          display="grid"
+          gridTemplateRows="auto auto 1fr auto"
+          gridTemplateAreas="'nav' 'progress-bar' 'content' 'footer'"
+        >
           {children}
           <ScrollRestoration />
           <Scripts />
           <LiveReload />
-        </body>
+        </chakra.body>
       </html>
     );
   }

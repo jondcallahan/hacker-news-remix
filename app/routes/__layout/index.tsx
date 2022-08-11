@@ -51,7 +51,7 @@ export default function Index() {
   const navigate = useNavigate();
 
   return (
-    <Container>
+    <>
       <Flex wrap="wrap" gap="4" justifyContent="center">
         {data?.allStories.map((story: StoryType) => {
           return (
@@ -216,6 +216,6 @@ export default function Index() {
           );
         })}
       </Flex>
-    </Container>
+    </>
   );
 }
