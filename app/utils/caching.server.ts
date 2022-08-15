@@ -17,8 +17,7 @@ export async function getOrSetToCache(
   const value = await getter();
   if (value) {
     // Only set the cache if the value is not null
-    const serializedValue =
-      typeof value === "string" ? value : JSON.stringify(value);
+    const serializedValue = JSON.stringify(value);
     await redis.setex(key, ttl, serializedValue);
     return value;
   }
