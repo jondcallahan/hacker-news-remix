@@ -16,7 +16,6 @@ import {
   useMatches,
   useTransition,
 } from "@remix-run/react";
-import ExternalLinkIcon from "~/components/icons/external";
 
 export default function Layout() {
   const matches = useMatches();
@@ -57,7 +56,7 @@ export default function Layout() {
                           color={"white"}
                           _visited={{ color: "white" }}
                         >
-                          {data.story.title} <ExternalLinkIcon />
+                          {data.story.title} ↗
                         </BreadcrumbLink>
                       ) : (
                         <>{data.story.title}</>
@@ -106,28 +105,16 @@ export default function Layout() {
           </NavLink>
           <Text color="white">
             All content comes from{" "}
-            <ChakraLink
-              href="https://news.ycombinator.com"
-              isExternal
-              display="inline-flex"
-              gap={1}
-              alignItems="center"
-            >
-              Hacker News <ExternalLinkIcon />
+            <ChakraLink href="https://news.ycombinator.com" isExternal>
+              Hacker News ↗
             </ChakraLink>
             .
           </Text>
           <Text color="white">
             Please enjoy{" "}
-            <ChakraLink
-              href="https://joncallahan.com"
-              isExternal
-              display="inline-flex"
-              gap={1}
-              alignItems="center"
-            >
-              my <ExternalLinkIcon marginInlineEnd={1} />{" "}
-            </ChakraLink>
+            <ChakraLink href="https://joncallahan.com" isExternal>
+              my ↗
+            </ChakraLink>{" "}
             reader. Front page intentionally limited to top 30 stories. Get back
             to work.
           </Text>
