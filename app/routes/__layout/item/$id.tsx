@@ -7,7 +7,6 @@ import {
   Heading,
   Text,
   chakra,
-  Container,
   Flex,
   Img,
   Grid,

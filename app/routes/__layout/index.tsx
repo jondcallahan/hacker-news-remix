@@ -12,13 +12,13 @@ import {
   Heading,
   Text,
   Link as ChakraLink,
-  Container,
   Flex,
   Image,
   chakra,
   Tag,
   TagLeftIcon,
   TagLabel,
+  Code,
 } from "@chakra-ui/react";
 
 type StoryType = {
@@ -45,6 +45,15 @@ export const loader: LoaderFunction = async () => {
 
   return json({ allStories: allStories });
 };
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <Box>
+      <Text>Something went wrong</Text>
+      <Code colorScheme="red">{error.message}</Code>
+    </Box>
+  );
+}
 
 export default function Index() {
   const data = useLoaderData();
