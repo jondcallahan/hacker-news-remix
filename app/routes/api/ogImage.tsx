@@ -21,7 +21,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (!url) return new Response(null, { status: 400 });
 
   // Get the og:image from the html text
-  const ogImageUrl = await getOrSetToCache(
+  let ogImageUrl = await getOrSetToCache(
     `ogimage:${url}`,
     async () => {
       return getOgImageUrlFromUrl(url);
@@ -39,6 +39,11 @@ export const loader: LoaderFunction = async ({ request }) => {
         "Cache-Control": "public, max-age=" + 60 * 60 * 24,
       },
     });
+  }
+
+  // ogImageUrl may be a relative path, if so prepend the url to get the full path
+  if (!ogImageUrl.startsWith("http")) {
+    ogImageUrl = new URL(ogImageUrl, url).href;
   }
 
   const imageRes = await fetch(ogImageUrl, {
