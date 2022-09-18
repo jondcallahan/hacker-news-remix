@@ -22,6 +22,19 @@ export const links: LinksFunction = () => [
     type: "image/png",
     href: "https://emojicdn.elk.sh/👨‍💻",
   },
+  {
+    rel: "preconnect",
+    href: "https://fonts.googleapis.com",
+  },
+  {
+    rel: "preconnect",
+    href: "https://fonts.gstatic.com",
+    crossOrigin: "anonymous",
+  },
+  {
+    rel: "stylesheet",
+    href: "https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400&display=swap",
+  },
 ];
 
 export const meta: MetaFunction = () => {

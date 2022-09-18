@@ -14,7 +14,7 @@ const linkStyles = {
 
 export const theme = extendTheme({
   fonts: {
-    serif: "Charter, Georgia, serif",
+    serif: "'Crimson Pro', Charter, Georgia, serif",
   },
   styles: {
     global: {
