@@ -124,7 +124,7 @@ export default function Item() {
                 <Text
                   as="div"
                   fontFamily="serif"
-                  fontSize="1.225rem"
+                  fontSize="1.23rem"
                   marginX={4}
                   sx={{
                     "& a": {
@@ -246,7 +246,7 @@ export default function Item() {
                 <Text
                   as="div"
                   fontFamily="serif"
-                  fontSize="1.225rem"
+                  fontSize="1.23rem"
                   marginX={4}
                   sx={{
                     "& a": {
