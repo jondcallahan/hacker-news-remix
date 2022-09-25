@@ -124,13 +124,7 @@ export default function Item() {
                 <Text
                   as="div"
                   fontFamily="serif"
-                  fontSize="1.23rem"
                   marginX={4}
-                  sx={{
-                    "& a": {
-                      fontSize: "inherit", // Since the fontSize is set explicitly on this tag, we need to pass it down to children as well
-                    },
-                  }}
                   dangerouslySetInnerHTML={{ __html: kid.text }}
                 />
                 {kid.kids?.length && (
@@ -246,13 +240,7 @@ export default function Item() {
                 <Text
                   as="div"
                   fontFamily="serif"
-                  fontSize="1.23rem"
                   marginX={4}
-                  sx={{
-                    "& a": {
-                      fontSize: "inherit", // Since the fontSize is set explicitly on this tag, we need to pass it down to children as well
-                    },
-                  }}
                   dangerouslySetInnerHTML={{ __html: comment.text }}
                 />
 

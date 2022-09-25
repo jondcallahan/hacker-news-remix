@@ -7,14 +7,17 @@ const linkStyles = {
   _visited: {
     color: "purple.500",
   },
+  textDecoration: "underline",
+  textDecorationColor: "transparent",
+  transition: "text-decoration-color ease-in 0.17s",
   _hover: {
-    textDecoration: "underline",
+    textDecorationColor: "blue.500",
   },
 };
 
 export const theme = extendTheme({
   fonts: {
-    serif: "'Crimson Pro', Charter, Georgia, serif",
+    serif: "Vollkorn, Charter, Georgia, serif",
   },
   styles: {
     global: {

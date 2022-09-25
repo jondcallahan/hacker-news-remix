@@ -33,7 +33,7 @@ export const links: LinksFunction = () => [
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Crimson+Pro:ital@0;1&display=swap",
+    href: "https://fonts.googleapis.com/css2?family=Vollkorn:ital@0;1&display=swap",
   },
 ];
 
