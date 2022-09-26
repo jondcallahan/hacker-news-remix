@@ -24,16 +24,11 @@ export const links: LinksFunction = () => [
   },
   {
     rel: "preconnect",
-    href: "https://fonts.googleapis.com",
-  },
-  {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
+    href: "https://fonts.bunny.net",
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Vollkorn:ital@0;1&display=swap",
+    href: "https://fonts.bunny.net/css2?family=Vollkorn:ital@0;1&display=swap",
   },
 ];
 
