@@ -11,7 +11,7 @@ const linkStyles = {
   textDecorationColor: "transparent",
   transition: "text-decoration-color ease-in 0.17s",
   _hover: {
-    textDecorationColor: "blue.500",
+    textDecorationColor: "currentcolor",
   },
 };
 
