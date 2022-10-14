@@ -151,7 +151,7 @@ export default function Index() {
                 <ChakraLink
                   as={RemixLink}
                   to={`/item/${story.id}`}
-                  prefetch="render"
+                  prefetch="intent"
                   width="full"
                   display="flex"
                   justifyContent="space-between"
