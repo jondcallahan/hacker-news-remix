@@ -63,6 +63,9 @@ export default function Index() {
     <>
       <Flex wrap="wrap" gap="4" justifyContent="center">
         {data?.allStories.map((story: StoryType) => {
+          let storyUrl;
+          if (story.url) storyUrl = new URL(story.url);
+
           return (
             <Box
               key={story.id}
@@ -80,14 +83,13 @@ export default function Index() {
                 {story.url && (
                   <Flex alignItems="center">
                     <Image
-                      src={`https://icons.duckduckgo.com/ip3/${
-                        new URL(story.url)?.hostname
-                      }.ico`}
+                      src={`https://icons.duckduckgo.com/ip3/${storyUrl?.hostname}.ico`}
                       boxSize="4"
                       marginRight="2"
+                      alt={`Icon for ${storyUrl?.hostname}`}
                     />
                     <Text wordBreak="break-all">
-                      {new URL(story.url)?.hostname?.replace("www.", "")}
+                      {storyUrl?.hostname?.replace("www.", "")}
                     </Text>
                   </Flex>
                 )}
@@ -158,6 +160,7 @@ export default function Index() {
                   _hover={{
                     textDecoration: "none",
                   }}
+                  aria-label={`View comments for ${story.title}`}
                 >
                   <Tag size="lg">
                     <TagLeftIcon
