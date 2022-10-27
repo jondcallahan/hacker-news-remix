@@ -26,7 +26,7 @@ export default function handleRequest(
         <RemixServer context={remixContext} url={request.url} />
       </EmotionCacheProvider>,
       {
-        onShellReady() {
+        onShellReady: () => {
           const reactBody = new PassThrough();
           const emotionServer = createEmotionServer(emotionCache);
 
