@@ -1,14 +1,12 @@
-import { PassThrough } from "stream";
-
-import type { EntryContext } from "@remix-run/node";
-import { Response } from "@remix-run/node";
-import { RemixServer } from "@remix-run/react";
-import { renderToPipeableStream } from "react-dom/server";
-import createEmotionCache from "@emotion/cache";
-import { CacheProvider as EmotionCacheProvider } from "@emotion/react";
+// entry.server.tsx
+import { renderToString } from "react-dom/server";
+import { CacheProvider } from "@emotion/react";
 import createEmotionServer from "@emotion/server/create-instance";
+import { RemixServer } from "@remix-run/react";
+import type { EntryContext } from "@remix-run/node"; // Depends on the runtime you choose
 
-const ABORT_DELAY = 5000;
+import { ServerStyleContext } from "./context";
+import createEmotionCache from "./createEmotionCache";
 
 export default function handleRequest(
   request: Request,
@@ -16,45 +14,31 @@ export default function handleRequest(
   responseHeaders: Headers,
   remixContext: EntryContext
 ) {
-  return new Promise((resolve, reject) => {
-    let didError = false;
+  const cache = createEmotionCache();
+  const { extractCriticalToChunks } = createEmotionServer(cache);
 
-    const emotionCache = createEmotionCache({ key: "css" });
-
-    const { pipe, abort } = renderToPipeableStream(
-      <EmotionCacheProvider value={emotionCache}>
+  const html = renderToString(
+    <ServerStyleContext.Provider value={null}>
+      <CacheProvider value={cache}>
         <RemixServer context={remixContext} url={request.url} />
-      </EmotionCacheProvider>,
-      {
-        onShellReady: () => {
-          const reactBody = new PassThrough();
-          const emotionServer = createEmotionServer(emotionCache);
+      </CacheProvider>
+    </ServerStyleContext.Provider>
+  );
 
-          const bodyWithStyles = emotionServer.renderStylesToNodeStream();
-          reactBody.pipe(bodyWithStyles);
+  const chunks = extractCriticalToChunks(html);
 
-          responseHeaders.set("Content-Type", "text/html");
+  const markup = renderToString(
+    <ServerStyleContext.Provider value={chunks.styles}>
+      <CacheProvider value={cache}>
+        <RemixServer context={remixContext} url={request.url} />
+      </CacheProvider>
+    </ServerStyleContext.Provider>
+  );
 
-          resolve(
-            new Response(bodyWithStyles, {
-              headers: responseHeaders,
-              status: didError ? 500 : responseStatusCode,
-            })
-          );
+  responseHeaders.set("Content-Type", "text/html");
 
-          pipe(reactBody);
-        },
-        onShellError(err: unknown) {
-          reject(err);
-        },
-        onError(error: unknown) {
-          didError = true;
-
-          console.error(error);
-        },
-      }
-    );
-
-    setTimeout(abort, ABORT_DELAY);
+  return new Response(`<!DOCTYPE html>${markup}`, {
+    status: responseStatusCode,
+    headers: responseHeaders,
   });
 }
