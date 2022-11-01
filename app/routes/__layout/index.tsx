@@ -87,6 +87,7 @@ export default function Index() {
                       boxSize="4"
                       marginRight="2"
                       alt={`Icon for ${storyUrl?.hostname}`}
+                      color="transparent" // Hide the alt text when the image is unavailable
                     />
                     <Text wordBreak="break-all">
                       {storyUrl?.hostname?.replace("www.", "")}
