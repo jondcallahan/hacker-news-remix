@@ -1,4 +1,5 @@
 import { LoaderFunction } from "@remix-run/node";
+import { getPlaiceholder } from "plaiceholder";
 import { getOrSetToCache } from "~/utils/caching.server";
 import { getOGImagePlaceholderContent } from "../__layout/item/$id";
 
@@ -57,6 +58,19 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   if (!imageRes.headers.get("cache-control")) {
     imageRes.headers.set("cache-control", "public, max-age=" + 60 * 60 * 24);
+  }
+
+  if (imageRes.status === 200) {
+    // Use getOrSetToCache to avoid computing the image placeholder if it's already in the cache
+    getOrSetToCache(
+      `ogimage:placeholder:${url}`,
+      async () => {
+        // TODO: Under the hood this will refetch the image, we should be able to use the imageRes from above
+        const plaiceholder = await getPlaiceholder(ogImageUrl);
+        return plaiceholder;
+      },
+      60 * 60 * 24
+    );
   }
 
   return imageRes;

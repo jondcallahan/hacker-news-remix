@@ -24,3 +24,11 @@ export async function getOrSetToCache(
 
   return null;
 }
+
+export async function getFromCache(key: string) {
+  const cachedValue = await redis.get(key);
+  if (cachedValue) {
+    return JSON.parse(cachedValue);
+  }
+  return null;
+}

@@ -87,7 +87,15 @@ export default function Layout() {
         marginX="auto"
         paddingX={{ base: 4, sm: 6, lg: 8 }}
       >
-        <Container>
+        <Container
+          width={[
+            "full",
+            "container.sm",
+            "container.md",
+            "container.lg",
+            "container.xl",
+          ]}
+        >
           <Outlet />
         </Container>
       </Box>

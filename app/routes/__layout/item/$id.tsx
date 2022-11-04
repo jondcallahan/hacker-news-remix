@@ -1,6 +1,6 @@
 import { json, LoaderArgs, MetaFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { getItem, Item } from "~/utils/api.server";
+import { fetchAllKids, Item } from "~/utils/api.server";
 import { getRelativeTimeString } from "~/utils/time";
 import {
   Box,
@@ -12,6 +12,8 @@ import {
   Grid,
   Link as ChakraLink,
 } from "@chakra-ui/react";
+import { getFromCache } from "~/utils/caching.server";
+import type { IGetPlaiceholderReturn } from "plaiceholder";
 
 export const handle = {
   showBreadcrumb: true,
@@ -23,19 +25,6 @@ export const meta: MetaFunction = ({ data }) => ({
   "og:description": data.story.text,
   "og:image": data.story.url ? `/api/ogImage?url=${data.story.url}` : undefined, // Only add og image if url is defined
 });
-
-const fetchAllKids = async (id: string) => {
-  const item = await getItem(id);
-
-  await Promise.all(
-    item?.kids?.map(
-      async (id: string, index: number) =>
-        (item.kids[index] = await fetchAllKids(id))
-    ) || []
-  );
-
-  return item;
-};
 
 export function getOGImagePlaceholderContent(text: string): string {
   return `<svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='1200' height='600' viewBox='0 0 1200 600'><rect fill='lightgrey' width='1200' height='600'></rect><text dy='22.4' x='50%' y='50%' text-anchor='middle' font-weight='bold' fill='rgba(0,0,0,0.5)' font-size='64' font-family='sans-serif'>${text}</text></svg>`;
@@ -52,19 +41,25 @@ export const loader = async ({ params }: LoaderArgs) => {
   if (!id) return redirect("/");
 
   const story = await fetchAllKids(id);
+  // TODO: Figure out how to get the story url before fetching all kids
+  // That way we can get the og image placeholder before fetching all kids
+  const OGImagePlaceholder: IGetPlaiceholderReturn | null = story?.url
+    ? await getFromCache(`ogimage:placeholder:${story.url}`)
+    : null;
 
   // Log the time it took to get the value in ms
   const timerEnd = process.hrtime(timerStart);
   console.log(`item:${id} took ${timerEnd[0] * 1e3 + timerEnd[1] / 1e6}ms`);
 
-  return json({ story });
+  return json({ story, OGImagePlaceholder });
 };
+
 const dateFormat = new Intl.DateTimeFormat("en", {
   timeStyle: "short",
 });
 
 export default function Item() {
-  const { story } = useLoaderData<typeof loader>();
+  const { story, OGImagePlaceholder } = useLoaderData<typeof loader>();
 
   if (!story) {
     return null;
@@ -159,7 +154,10 @@ export default function Item() {
               borderTopRadius="lg"
               objectFit="cover"
               backgroundSize="cover"
-              backgroundImage={getBackgroundImage(new URL(story.url).hostname)}
+              backgroundImage={
+                OGImagePlaceholder?.base64 ||
+                getBackgroundImage(new URL(story.url).hostname)
+              }
             />
           </a>
         ) : null}
