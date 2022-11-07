@@ -26,12 +26,15 @@ export type Item = {
   by: string;
   descendants: number;
   id: number;
-  kids: string[];
+  kids?: Item[];
   score: number;
   time: number;
   title: string;
   type: string;
   url: string;
+  text?: string;
+  dead?: boolean;
+  deleted?: boolean;
 };
 
 export const getItem = async (id: string): Promise<Item | null> => {
@@ -43,7 +46,7 @@ export const getItem = async (id: string): Promise<Item | null> => {
         if (snapshot.exists()) {
           return snapshot.val();
         } else {
-          console.log("No data available");
+          console.log(`Error getting item ${id} No data available`);
           return null;
         }
       })
@@ -73,7 +76,7 @@ export const getTopStories = async (limit: number): Promise<Item[] | null> => {
 
           // return topStoryIds;
         } else {
-          console.log("No data available");
+          console.log(`Error getting top stories No data available`);
           return null;
         }
       })
@@ -82,4 +85,17 @@ export const getTopStories = async (limit: number): Promise<Item[] | null> => {
         return null;
       });
   });
+};
+
+export const fetchAllKids = async (id: string) => {
+  const item = await getItem(id);
+
+  await Promise.all(
+    item?.kids?.map(
+      async (id: string, index: number) =>
+        (item.kids[index] = await fetchAllKids(id))
+    ) || []
+  );
+
+  return item;
 };

@@ -19,7 +19,9 @@
     "@remix-run/serve": "^1.7.4",
     "firebase": "^9.13.0",
     "framer-motion": "^7.6.4",
+    "happy-dom": "^7.6.6",
     "ioredis": "^5.2.3",
+    "plaiceholder": "^2.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -28,6 +30,9 @@
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
     "typescript": "^4.8.4"
+  },
+  "peerDependencies": {
+    "sharp": "^0.31.2"
   },
   "engines": {
     "node": ">=18"

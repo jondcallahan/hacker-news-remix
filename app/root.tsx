@@ -32,6 +32,10 @@ export const links: LinksFunction = () => [
     href: "https://fonts.bunny.net",
   },
   {
+    rel: "dns-prefetch",
+    href: "https://fonts.bunny.net",
+  },
+  {
     rel: "stylesheet",
     href: "https://fonts.bunny.net/css2?family=Vollkorn:ital@0;1&display=swap",
   },

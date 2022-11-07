@@ -1,19 +1,39 @@
 import { LoaderFunction } from "@remix-run/node";
+import { getPlaiceholder } from "plaiceholder";
 import { getOrSetToCache } from "~/utils/caching.server";
 import { getOGImagePlaceholderContent } from "../__layout/item/$id";
+import { Window } from "happy-dom";
 
 async function getOgImageUrlFromUrl(url: string) {
-  const res = await fetch(url);
-  if (!res.ok) return null;
+  const res = await fetch(url, {});
+  if (!res.ok) {
+    console.log("Failed to fetch url", url);
+    return null;
+  }
+
   const text = await res.text();
 
-  const match = text.match(/<meta property="og:image" content="(.*?)"/);
-  if (!match) return null;
-  return match[1];
+  const window = new Window();
+  const document = window.document;
+  document.body.innerHTML = text;
+
+  const metaTags = document.getElementsByTagName("meta");
+
+  const ogImageMetaTag = Array.from(metaTags).find((metaTag) => {
+    return metaTag.getAttribute("property") === "og:image";
+  });
+
+  if (!ogImageMetaTag) {
+    return null;
+  }
+
+  const ogImageUrl = ogImageMetaTag.getAttribute("content");
+
+  return ogImageUrl;
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // Request will come in like /api/ogImage?url=https://remix.one
+  // Request will come in like /api/ogImage?url=https://remix.run
   // Get the url from the request
   const { searchParams } = new URL(request.url);
   const url = searchParams.get("url");
@@ -57,6 +77,19 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   if (!imageRes.headers.get("cache-control")) {
     imageRes.headers.set("cache-control", "public, max-age=" + 60 * 60 * 24);
+  }
+
+  if (imageRes.status === 200) {
+    // Use getOrSetToCache to avoid computing the image placeholder if it's already in the cache
+    getOrSetToCache(
+      `ogimage:placeholder:${url}`,
+      async () => {
+        // TODO: Under the hood this will refetch the image, we should be able to use the imageRes from above
+        const plaiceholder = await getPlaiceholder(ogImageUrl);
+        return plaiceholder;
+      },
+      60 * 60 * 24
+    );
   }
 
   return imageRes;
