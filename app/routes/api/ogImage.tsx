@@ -2,21 +2,34 @@ import { LoaderFunction } from "@remix-run/node";
 import { getPlaiceholder } from "plaiceholder";
 import { getOrSetToCache } from "~/utils/caching.server";
 import { getOGImagePlaceholderContent } from "../__layout/item/$id";
+import { Window } from "happy-dom";
 
 async function getOgImageUrlFromUrl(url: string) {
-  const res = await fetch(url);
-  if (!res.ok) return null;
+  const res = await fetch(url, {});
+  if (!res.ok) {
+    console.log("Failed to fetch url", url);
+    return null;
+  }
+
   const text = await res.text();
 
-  // Get the image from the open graph meta tag
-  // Meta tag may be in the form of <meta property="og:image" content="https://remix.run/og-image.png">
-  // or <meta content="https://remix.run/og-image.png" property="og:image" />
-  // or <meta data-rh="true" property="og:image" content="https://remix.run/og-image.png" />
-  // so we need to match all of these
-  const match = text.match(/<meta.*?property="og:image".*?content="(.*?)"/);
+  const window = new Window();
+  const document = window.document;
+  document.body.innerHTML = text;
 
-  if (match?.[1]) return match[1];
-  return null;
+  const metaTags = document.getElementsByTagName("meta");
+
+  const ogImageMetaTag = Array.from(metaTags).find((metaTag) => {
+    return metaTag.getAttribute("property") === "og:image";
+  });
+
+  if (!ogImageMetaTag) {
+    return null;
+  }
+
+  const ogImageUrl = ogImageMetaTag.getAttribute("content");
+
+  return ogImageUrl;
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
