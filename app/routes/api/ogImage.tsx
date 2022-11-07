@@ -8,13 +8,19 @@ async function getOgImageUrlFromUrl(url: string) {
   if (!res.ok) return null;
   const text = await res.text();
 
-  const match = text.match(/<meta property="og:image" content="(.*?)"/);
-  if (!match) return null;
-  return match[1];
+  // Get the image from the open graph meta tag
+  // Meta tag may be in the form of <meta property="og:image" content="https://remix.run/og-image.png">
+  // or <meta content="https://remix.run/og-image.png" property="og:image" />
+  // or <meta data-rh="true" property="og:image" content="https://remix.run/og-image.png" />
+  // so we need to match all of these
+  const match = text.match(/<meta.*?property="og:image".*?content="(.*?)"/);
+
+  if (match?.[1]) return match[1];
+  return null;
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // Request will come in like /api/ogImage?url=https://remix.one
+  // Request will come in like /api/ogImage?url=https://remix.run
   // Get the url from the request
   const { searchParams } = new URL(request.url);
   const url = searchParams.get("url");
