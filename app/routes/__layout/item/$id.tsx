@@ -1,12 +1,10 @@
 import { json, LoaderArgs, MetaFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { fetchAllKids, Item } from "~/utils/api.server";
-import { getRelativeTimeString } from "~/utils/time";
 import {
   Box,
   Heading,
   Text,
-  chakra,
   Flex,
   Img,
   Grid,
@@ -14,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { getFromCache } from "~/utils/caching.server";
 import type { IGetPlaiceholderReturn } from "plaiceholder";
+import { Comment } from "~/components/Comment";
 
 export const handle = {
   showBreadcrumb: true,
@@ -41,8 +40,6 @@ export const loader = async ({ params }: LoaderArgs) => {
   if (!id) return redirect("/");
 
   const story = await fetchAllKids(id);
-  // TODO: Figure out how to get the story url before fetching all kids
-  // That way we can get the og image placeholder before fetching all kids
   const OGImagePlaceholder: IGetPlaiceholderReturn | null = story?.url
     ? await getFromCache(`ogimage:placeholder:${story.url}`)
     : null;
@@ -58,79 +55,26 @@ const dateFormat = new Intl.DateTimeFormat("en", {
   timeStyle: "short",
 });
 
+// Recursively render all comments and their children
+function renderNestedComments(kids: Item[]) {
+  return (
+    <>
+      {kids?.map((kid) =>
+        !kid || kid.dead || !kid.text || kid.deleted ? null : (
+          <Comment key={kid.id} comment={kid}>
+            {kid.kids?.length && renderNestedComments(kid.kids)}
+          </Comment>
+        )
+      )}
+    </>
+  );
+}
+
 export default function Item() {
   const { story, OGImagePlaceholder } = useLoaderData<typeof loader>();
 
   if (!story) {
     return null;
-  }
-
-  // TODO: Remove this duplicated code by extracting the comment details/summary to a separate component
-  function renderKids(kids) {
-    return (
-      <>
-        {kids?.map((kid) =>
-          !kid || kid.dead || !kid.text || kid.deleted ? null : (
-            <chakra.details
-              key={kid.id}
-              onClick={(e) => {
-                // TODO: Collapse the details on clicking the text
-                if (
-                  e.nativeEvent.target.tagName !== "A" &&
-                  e.nativeEvent.target.tagName !== "SUMMARY"
-                ) {
-                  e.currentTarget.removeAttribute("open");
-                  e.stopPropagation(); // don't bubble up to the next details
-                }
-              }}
-              marginTop="2"
-              open
-            >
-              <chakra.summary
-                fontWeight="semibold"
-                flex="1"
-                textAlign="left"
-                padding={4}
-                backgroundColor="gray.100"
-                borderRadius="lg"
-                sx={{
-                  "details[open]>&": {
-                    borderBottomRadius: "0",
-                  },
-                }}
-              >
-                {kid.by} | {kid.kids?.length || "0"}{" "}
-                {kid.kids?.length === 1 ? "comment" : "comments"}
-                {" | "}
-                {getRelativeTimeString(kid.time * 1_000)}
-              </chakra.summary>
-              <Box
-                borderLeft="1px"
-                borderColor={"transparent"}
-                transition="border-color ease-in 0.17s"
-                sx={{
-                  "@media (hover: hover)": {
-                    _hover: {
-                      borderColor: "orange.300",
-                    },
-                  },
-                }}
-              >
-                <Text
-                  as="div"
-                  fontFamily="serif"
-                  marginX={4}
-                  dangerouslySetInnerHTML={{ __html: kid.text }}
-                />
-                {kid.kids?.length && (
-                  <Box paddingX={2}>{renderKids(kid.kids)}</Box>
-                )}
-              </Box>
-            </chakra.details>
-          )
-        )}
-      </>
-    );
   }
 
   return (
@@ -185,68 +129,20 @@ export default function Item() {
         {story.kids?.map((comment) => {
           if (!comment || comment.dead || comment.deleted) return null;
           return (
-            <chakra.details
+            <Comment
+              key={comment.id}
+              comment={comment}
               borderRadius="lg"
               backgroundColor="orange.50"
-              key={comment.id}
-              open
-              cursor="pointer"
               width="full"
-              onClick={(e) => {
-                // TODO: Collapse the details on clicking the text
-                if (
-                  e.nativeEvent.target.tagName !== "A" &&
-                  e.nativeEvent.target.tagName !== "SUMMARY"
-                ) {
-                  e.currentTarget.removeAttribute("open");
-                }
-              }}
               boxShadow="md"
+              boxProps={{
+                paddingY: 2,
+              }}
+              marginTop={0}
             >
-              <chakra.summary
-                fontWeight="semibold"
-                flex="1"
-                padding={4}
-                textAlign="left"
-                backgroundColor="gray.100"
-                borderRadius="lg"
-                sx={{
-                  "details[open]>&": {
-                    borderBottomRadius: "0",
-                  },
-                }}
-              >
-                {comment.by} | {comment.kids?.length || "0"}{" "}
-                {comment.kids?.length === 1 ? "comment" : "comments"}
-                {" | "}
-                {getRelativeTimeString(comment.time * 1_000)}
-              </chakra.summary>
-
-              <Box
-                paddingY={2}
-                borderLeft="1px"
-                borderColor={"transparent"}
-                transition="border-color ease-in 0.17s"
-                sx={{
-                  "@media (hover: hover)": {
-                    _hover: {
-                      borderColor: "orange.300",
-                    },
-                  },
-                }}
-              >
-                <Text
-                  as="div"
-                  fontFamily="serif"
-                  marginX={4}
-                  dangerouslySetInnerHTML={{ __html: comment.text }}
-                />
-
-                {comment.kids?.length && (
-                  <Box paddingX={2}>{renderKids(comment.kids)}</Box>
-                )}
-              </Box>
-            </chakra.details>
+              {comment.kids?.length && renderNestedComments(comment.kids)}
+            </Comment>
           );
         })}
       </Flex>

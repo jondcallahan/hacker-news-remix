@@ -26,12 +26,15 @@ export type Item = {
   by: string;
   descendants: number;
   id: number;
-  kids: string[];
+  kids?: Item[];
   score: number;
   time: number;
   title: string;
   type: string;
   url: string;
+  text?: string;
+  dead?: boolean;
+  deleted?: boolean;
 };
 
 export const getItem = async (id: string): Promise<Item | null> => {
