@@ -13,6 +13,7 @@ import {
 import { getFromCache } from "~/utils/caching.server";
 import type { IGetPlaiceholderReturn } from "plaiceholder";
 import { Comment } from "~/components/Comment";
+import { useState } from "react";
 
 export const handle = {
   showBreadcrumb: true,
@@ -87,23 +88,49 @@ export default function Item() {
         boxShadow="md"
       >
         {story.url ? (
-          <a href={story.url}>
-            <Img
-              src={`/api/ogImage?url=${story.url}`}
-              width="full"
-              height={["150px", "300px"]}
-              borderBottomWidth="2px"
-              borderBottomColor="gray.100"
-              borderBottomStyle="solid"
-              borderTopRadius="lg"
-              objectFit="cover"
-              backgroundSize="cover"
-              backgroundImage={
-                OGImagePlaceholder?.base64 ||
-                getBackgroundImage(new URL(story.url).hostname)
-              }
-            />
-          </a>
+          <Box
+            width="full"
+            overflow="hidden"
+            borderTopRadius="lg"
+            position="relative"
+            height={["150px", "300px"]}
+            borderBottomWidth="2px"
+            borderBottomColor="gray.100"
+            borderBottomStyle="solid"
+          >
+            <a href={story.url}>
+              <Img
+                src={OGImagePlaceholder?.base64}
+                position="absolute"
+                top={0}
+                left={0}
+                right={0}
+                bottom={0}
+                width="full"
+                height={["150px", "300px"]}
+                objectFit="cover"
+                filter={OGImagePlaceholder?.base64 ? "blur(10px)" : undefined}
+                transform={
+                  OGImagePlaceholder?.base64 ? "scale(1.1)" : undefined
+                }
+                backgroundImage={getBackgroundImage(
+                  new URL(story.url).hostname
+                )}
+                backgroundSize="cover"
+              />
+              <Img
+                src={`/api/ogImage?url=${story.url}`}
+                position="absolute"
+                top={0}
+                left={0}
+                right={0}
+                bottom={0}
+                width="full"
+                height={["150px", "300px"]}
+                objectFit="cover"
+              />
+            </a>
+          </Box>
         ) : null}
         <Grid gap={1} paddingX={3} paddingY={2}>
           <Heading size="md">{story?.title}</Heading>
