@@ -19,17 +19,37 @@ async function getOgImageUrlFromUrl(url: string) {
 
   const metaTags = document.getElementsByTagName("meta");
 
-  const ogImageMetaTag = Array.from(metaTags).find((metaTag) => {
-    return metaTag.getAttribute("property") === "og:image";
+  // Cast a wide net for og:image, any of these can be used but they are in priority order
+  const imgUrls = {
+    "og:image": "",
+    "og:image:url": "",
+    "twitter:image": "",
+    "twitter:image:src": "",
+  };
+
+  Array.from(metaTags).forEach((metaTag) => {
+    switch (metaTag.getAttribute("property")) {
+      case "og:image":
+        imgUrls["og:image"] = metaTag.getAttribute("content");
+        break;
+      case "og:image:url":
+        imgUrls["og:image:url"] = metaTag.getAttribute("content");
+        break;
+      case "twitter:image":
+        imgUrls["twitter:image"] = metaTag.getAttribute("content");
+        break;
+      case "twitter:image:src":
+        imgUrls["twitter:image:src"] = metaTag.getAttribute("content");
+        break;
+    }
   });
 
-  if (!ogImageMetaTag) {
-    return null;
-  }
+  if (imgUrls["og:image"]) return imgUrls["og:image"];
+  if (imgUrls["og:image:url"]) return imgUrls["og:image:url"];
+  if (imgUrls["twitter:image"]) return imgUrls["twitter:image"];
+  if (imgUrls["twitter:image:src"]) return imgUrls["twitter:image:src"];
 
-  const ogImageUrl = ogImageMetaTag.getAttribute("content");
-
-  return ogImageUrl;
+  return null;
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
