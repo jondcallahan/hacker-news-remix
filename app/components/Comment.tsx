@@ -7,9 +7,10 @@ export function Comment(
     comment: Item;
     children?: React.ReactNode;
     boxProps?: React.ComponentProps<typeof Box>;
+    originalPoster?: string;
   } & React.ComponentProps<typeof chakra.details>
 ) {
-  const { comment, children, boxProps, ...rest } = props;
+  const { comment, children, boxProps, originalPoster, ...rest } = props;
 
   return (
     <chakra.details
@@ -42,7 +43,12 @@ export function Comment(
           },
         }}
       >
-        {comment.by} | {comment.kids?.length || "0"}{" "}
+        <chakra.span
+          color={originalPoster === comment.by ? "purple.600" : undefined}
+        >
+          {comment.by}
+        </chakra.span>{" "}
+        | {comment.kids?.length || "0"}{" "}
         {comment.kids?.length === 1 ? "comment" : "comments"}
         {" | "}
         {getRelativeTimeString(comment.time * 1_000)}

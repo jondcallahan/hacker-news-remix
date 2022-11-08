@@ -57,12 +57,12 @@ const dateFormat = new Intl.DateTimeFormat("en", {
 });
 
 // Recursively render all comments and their children
-function renderNestedComments(kids: Item[]) {
+function renderNestedComments(kids: Item[], originalPoster?: string) {
   return (
     <>
       {kids?.map((kid) =>
         !kid || kid.dead || !kid.text || kid.deleted ? null : (
-          <Comment key={kid.id} comment={kid}>
+          <Comment key={kid.id} comment={kid} originalPoster={originalPoster}>
             {kid.kids?.length && renderNestedComments(kid.kids)}
           </Comment>
         )
@@ -167,8 +167,10 @@ export default function Item() {
                 paddingY: 2,
               }}
               marginTop={0}
+              originalPoster={story.by}
             >
-              {comment.kids?.length && renderNestedComments(comment.kids)}
+              {comment.kids?.length &&
+                renderNestedComments(comment.kids, story.by)}
             </Comment>
           );
         })}
