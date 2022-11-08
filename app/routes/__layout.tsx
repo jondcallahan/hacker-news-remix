@@ -88,9 +88,9 @@ export default function Layout() {
         paddingX={{ base: 4, sm: 6, lg: 8 }}
       >
         <Container
-          maxWidth={{
+          width={{
             base: "full",
-            md: "container.sm",
+            md: "prose",
           }}
         >
           <Outlet />
