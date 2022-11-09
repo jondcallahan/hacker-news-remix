@@ -71,7 +71,7 @@ function renderNestedComments(kids: Item[], originalPoster?: string) {
   );
 }
 
-export default function Item() {
+export default function ItemPage() {
   const { story, OGImagePlaceholder } = useLoaderData<typeof loader>();
 
   if (!story) {
