@@ -101,12 +101,20 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   if (imageRes.status === 200) {
     // Use getOrSetToCache to avoid computing the image placeholder if it's already in the cache
-    getOrSetToCache(
+    await getOrSetToCache(
       `ogimage:placeholder:${url}`,
       async () => {
-        // TODO: Under the hood this will refetch the image, we should be able to use the imageRes from above
-        const plaiceholder = await getPlaiceholder(ogImageUrl);
-        return plaiceholder;
+        try {
+          // We need to clone the response because we need to read the body twice
+          const imageResClone = imageRes.clone();
+
+          // Get the image buffer
+          const buffer = Buffer.from(await imageResClone.arrayBuffer());
+
+          return getPlaiceholder(buffer);
+        } catch (error) {
+          console.error("error", error);
+        }
       },
       60 * 60 * 24
     );
