@@ -29,3 +29,10 @@ export function getRelativeTimeString(
   const formatter = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
   return formatter.format(Math.floor(deltaSeconds / divider), units[unitIndex]);
 }
+
+export function formatDate(date: Date, lang = "en-us"): string {
+  return new Intl.DateTimeFormat(lang, {
+    timeStyle: "short",
+    dateStyle: "long",
+  }).format(date);
+}

@@ -3,7 +3,11 @@ import Redis from "ioredis";
 const redis = new Redis(process.env.REDIS_URL as string);
 const DEFAULT_CACHE_TTL = 60; // 1 minute
 
-// This function returns the value that getter function returns.
+/* This function returns the value that getter function returns.
+ * If the value is not in the cache, it will call the getter function
+ * and store the value in the cache.
+ * Default TTL of 1 minute is used if no TTL is provided.
+ */
 export async function getOrSetToCache(
   key: string,
   getter: () => Promise<any>,
