@@ -5,11 +5,28 @@ import { getOGImagePlaceholderContent } from "../__layout/item/$id";
 import { Window } from "happy-dom";
 import satori from "satori";
 import { formatDate } from "~/utils/time";
+import fs from "fs/promises";
+import path from "path";
 
 function getFontBlobs() {
+  const fontFiles = [
+    "inter-latin-400-normal.woff",
+    "inter-latin-700-normal.woff",
+  ];
+  // Return an array of promises that can be awaited in parallel
   return [
-    fetch("https://fonts.bunny.net/inter/files/inter-latin-400-normal.woff"),
-    fetch("https://fonts.bunny.net/inter/files/inter-latin-700-normal.woff"),
+    fs.readFile(
+      path.join(
+        __dirname,
+        `../node_modules/@fontsource/inter/files/${fontFiles[0]}`
+      )
+    ),
+    fs.readFile(
+      path.join(
+        __dirname,
+        `../node_modules/@fontsource/inter/files/${fontFiles[1]}`
+      )
+    ),
   ];
 }
 
@@ -108,13 +125,13 @@ async function getTweetCard({
       fonts: [
         {
           name: "Inter",
-          data: await inter400.arrayBuffer(),
+          data: inter400,
           weight: 400,
           style: "normal",
         },
         {
           name: "Inter",
-          data: await inter700.arrayBuffer(),
+          data: inter700,
           weight: 700,
           style: "normal",
         },
