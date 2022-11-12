@@ -18,7 +18,14 @@ export async function getOrSetToCache(
     return JSON.parse(cachedValue);
   }
 
-  const value = await getter();
+  let value: any;
+
+  try {
+    value = await getter();
+  } catch (error) {
+    console.error("Error calling getter for key: ", key, error);
+  }
+
   if (value) {
     // Only set the cache if the value is not null
     const serializedValue = JSON.stringify(value);

@@ -286,8 +286,8 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   if (imageRes.status === 200) {
-    // Use getOrSetToCache to avoid computing the image placeholder if it's already in the cache
     await getOrSetToCache(
+      // Use getOrSetToCache to avoid computing the image placeholder if it's already in the cache
       `ogimage:placeholder:${url}`,
       async () => {
         try {
@@ -297,9 +297,12 @@ export const loader: LoaderFunction = async ({ request }) => {
           // Get the image buffer
           const buffer = Buffer.from(await imageResClone.arrayBuffer());
 
-          return getPlaiceholder(buffer);
+          // This will fail if the image is an avif, but the filesize savings are worth not having a placeholder -- the image _should_ download quick enough
+          // Bug in dependency of plaiceholder causing failure: https://github.com/image-size/image-size/issues/125
+          return await getPlaiceholder(buffer);
         } catch (error) {
-          console.error("error", error);
+          console.error("Error getting placeholder", error);
+          return null;
         }
       },
       60 * 60 * 24
