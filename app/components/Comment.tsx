@@ -45,8 +45,7 @@ export function Comment(
       >
         <chakra.span
           // Use a custom color for the original poster
-          // This doesn't use a theme color because teal.600 is just under a11y contrast and teal.700 is too dark
-          color={originalPoster === comment.by ? "#0F766E" : undefined}
+          color={originalPoster === comment.by ? "orange.600" : undefined}
         >
           {comment.by}
         </chakra.span>{" "}
