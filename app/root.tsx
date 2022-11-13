@@ -15,7 +15,7 @@ import { KeyboardEvent, useContext, useEffect } from "react";
 import { withEmotionCache } from "@emotion/react";
 import { ChakraProvider, chakra } from "@chakra-ui/react";
 import { theme } from "./chakraTheme";
-import VollkornStyles from "@fontsource/vollkorn/index.css";
+import VollkornStyles from "@fontsource/vollkorn/latin.css";
 
 export const links: LinksFunction = () => [
   {
