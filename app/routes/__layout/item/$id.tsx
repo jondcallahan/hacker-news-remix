@@ -63,7 +63,7 @@ function renderNestedComments(kids: Item[], originalPoster?: string) {
       {kids?.map((kid) =>
         !kid || kid.dead || !kid.text || kid.deleted ? null : (
           <Comment key={kid.id} comment={kid} originalPoster={originalPoster}>
-            {kid.kids?.length && renderNestedComments(kid.kids)}
+            {kid.kids?.length && renderNestedComments(kid.kids, originalPoster)}
           </Comment>
         )
       )}
