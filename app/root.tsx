@@ -16,6 +16,7 @@ import { withEmotionCache } from "@emotion/react";
 import { ChakraProvider, chakra } from "@chakra-ui/react";
 import { theme } from "./chakraTheme";
 import VollkornStyles from "@fontsource/vollkorn/latin.css";
+import VollkornItalicStyles from "@fontsource/vollkorn/400-italic.css";
 
 export const links: LinksFunction = () => [
   {
@@ -31,6 +32,10 @@ export const links: LinksFunction = () => [
   {
     rel: "stylesheet",
     href: VollkornStyles,
+  },
+  {
+    rel: "stylesheet",
+    href: VollkornItalicStyles,
   },
 ];
 
