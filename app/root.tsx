@@ -99,7 +99,7 @@ const Document = withEmotionCache(
           gridTemplateAreas="'nav' 'progress-bar' 'content' 'footer'"
         >
           {children}
-          <ScrollRestoration />
+          <ScrollRestoration getKey={(location) => location.pathname} />
           <Scripts />
           <LiveReload />
         </chakra.body>
