@@ -14,12 +14,13 @@ import {
   NavLink,
   Outlet,
   useMatches,
-  useTransition,
+  useNavigation,
 } from "@remix-run/react";
 
 export default function Layout() {
   const matches = useMatches();
-  const transition = useTransition();
+  const navigation = useNavigation();
+
   return (
     <>
       <Box as="nav" backgroundColor="orange.400" width="full">
@@ -73,7 +74,7 @@ export default function Layout() {
         size="xs"
         colorScheme="orange"
         isIndeterminate
-        visibility={transition.state === "idle" ? "hidden" : "visible"}
+        visibility={navigation.state === "idle" ? "hidden" : "visible"}
         position="sticky"
         top={0}
         zIndex="sticky"
