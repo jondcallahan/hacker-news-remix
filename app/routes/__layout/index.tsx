@@ -221,7 +221,10 @@ export default function Index() {
                         </chakra.svg>
                       )}
                     />
-                    <TagLabel>{story.descendants || "0"} comments</TagLabel>
+                    <TagLabel>
+                      {story.descendants || "0"}{" "}
+                      {story.descendants === 1 ? "comment" : "comments"}
+                    </TagLabel>
                   </Tag>
                 </ChakraLink>
               </Grid>
