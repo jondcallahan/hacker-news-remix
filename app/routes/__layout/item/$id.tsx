@@ -13,7 +13,6 @@ import {
 import { getFromCache } from "~/utils/caching.server";
 import type { IGetPlaiceholderReturn } from "plaiceholder";
 import { Comment } from "~/components/Comment";
-import { useState } from "react";
 
 export const handle = {
   showBreadcrumb: true,

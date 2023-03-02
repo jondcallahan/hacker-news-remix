@@ -7,6 +7,7 @@ import satori from "satori";
 import { formatDate } from "~/utils/time";
 import fs from "fs/promises";
 import path from "path";
+import { trytm } from "@bdsqqq/try";
 
 function getFontBlobs() {
   const fontFiles = [
@@ -14,20 +15,11 @@ function getFontBlobs() {
     "inter-latin-700-normal.woff",
   ];
   // Return an array of promises that can be awaited in parallel
-  return [
-    fs.readFile(
-      path.join(
-        __dirname,
-        `../node_modules/@fontsource/inter/files/${fontFiles[0]}`
-      )
-    ),
-    fs.readFile(
-      path.join(
-        __dirname,
-        `../node_modules/@fontsource/inter/files/${fontFiles[1]}`
-      )
-    ),
-  ];
+  return fontFiles.map((file) => {
+    return fs.readFile(
+      path.join(__dirname, `../node_modules/@fontsource/inter/files/${file}`)
+    );
+  });
 }
 
 async function getTweetCard({
@@ -145,8 +137,8 @@ async function getTweetCard({
 }
 
 async function getOgImageUrlFromUrl(url: string) {
-  const res = await fetch(url, {});
-  if (!res.ok) {
+  const [res, error] = await trytm(fetch(url, {}));
+  if (error || !res.ok) {
     console.log("Failed to fetch url", url);
     return null;
   }
@@ -201,20 +193,22 @@ async function getTweetDetails(url: string) {
   const data = await getOrSetToCache(
     `tweet:${url}`,
     async () => {
-      const res = await fetch(`https://api.peekalink.io/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Api-Key": process.env.PEEKALINK_API_KEY as string, // Cast to string since we're checking for it above
-        },
-        body: JSON.stringify({
-          link: url,
-        }),
-      });
+      const [res, error] = await trytm(
+        fetch(`https://api.peekalink.io/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Api-Key": process.env.PEEKALINK_API_KEY as string, // Cast to string since we're checking for it above
+          },
+          body: JSON.stringify({
+            link: url,
+          }),
+        })
+      );
 
-      if (!res.ok) {
+      if (error || !res.ok) {
         console.log("Failed to fetch tweet", url);
-        console.log("Status", res.status);
+        console.log("Status", res?.status);
         return null;
       }
 
@@ -272,16 +266,18 @@ export const loader: LoaderFunction = async ({ request }) => {
     60 * 60 * 24 // Cache OG Image for 1 day
   );
 
+  const text = new URL(url).hostname;
+  const placeholderImageRes = new Response(getOGImagePlaceholderContent(text), {
+    status: 200,
+    headers: {
+      "Content-Type": "image/svg+xml",
+      "Cache-Control": "public, max-age=" + 60 * 60 * 24,
+    },
+  });
+
   // If there is no og:image, return the placeholder image
   if (!ogImageUrl) {
-    const text = new URL(url).hostname;
-    return new Response(getOGImagePlaceholderContent(text), {
-      status: 200,
-      headers: {
-        "Content-Type": "image/svg+xml",
-        "Cache-Control": "public, max-age=" + 60 * 60 * 24,
-      },
-    });
+    return placeholderImageRes;
   }
 
   // ogImageUrl may be a relative path, if so prepend the url to get the full path
@@ -289,12 +285,19 @@ export const loader: LoaderFunction = async ({ request }) => {
     ogImageUrl = new URL(ogImageUrl, url).href;
   }
 
-  const imageRes = await fetch(ogImageUrl, {
-    headers: {
-      Accept: request.headers.get("Accept") || "image/*",
-      "If-None-Match": request.headers.get("If-none-match") || "",
-    },
-  });
+  const [imageRes, error] = await trytm(
+    fetch(ogImageUrl, {
+      headers: {
+        Accept: request.headers.get("Accept") || "image/*",
+        "If-None-Match": request.headers.get("If-none-match") || "",
+      },
+    })
+  );
+
+  if (error) {
+    console.log("Error fetching og:image", error);
+    return placeholderImageRes;
+  }
 
   imageRes.headers.delete("set-cookie");
 
