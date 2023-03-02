@@ -17,6 +17,7 @@ import { ChakraProvider, chakra } from "@chakra-ui/react";
 import { theme } from "./chakraTheme";
 import VollkornStyles from "@fontsource/vollkorn/latin.css";
 import VollkornItalicStyles from "@fontsource/vollkorn/400-italic.css";
+import InterStyles from "@fontsource/inter/variable.css";
 
 export const links: LinksFunction = () => [
   {
@@ -36,6 +37,10 @@ export const links: LinksFunction = () => [
   {
     rel: "stylesheet",
     href: VollkornItalicStyles,
+  },
+  {
+    rel: "stylesheet",
+    href: InterStyles,
   },
 ];
 

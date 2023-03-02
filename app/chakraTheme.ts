@@ -18,6 +18,9 @@ const linkStyles = {
 export const theme = extendTheme({
   fonts: {
     serif: "Vollkorn, Charter, Georgia, serif",
+    heading:
+      "InterVariable, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif",
+    body: "InterVariable, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif",
   },
   styles: {
     global: {
