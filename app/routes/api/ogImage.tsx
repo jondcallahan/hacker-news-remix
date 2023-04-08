@@ -56,7 +56,10 @@ async function getTweetCard({
 
   const svg = await satori(
     <div tw="flex flex-col p-8 h-full w-full justify-center bg-stone-50">
-      <h2 tw="text-3xl font-bold tracking-tight leading-snug text-gray-900">
+      <h2
+        tw="text-3xl font-bold tracking-tight leading-snug text-gray-900"
+        style={{ textWrap: "balance" }}
+      >
         {friendlyText}
       </h2>
       {hasImage && (

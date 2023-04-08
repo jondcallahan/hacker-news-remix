@@ -27,7 +27,7 @@
     "plaiceholder": "^2.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "satori": "0.0.45"
+    "satori": "0.4.7"
   },
   "devDependencies": {
     "@remix-run/dev": "1.14.3",
