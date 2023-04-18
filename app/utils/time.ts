@@ -36,3 +36,8 @@ export function formatDate(date: Date, lang = "en-us"): string {
     dateStyle: "long",
   }).format(date);
 }
+
+export function getTimeZoneFromCookie(cookies: string): string | undefined {
+  const match = cookies.match(/time_zone=([^;]+)/);
+  return match ? match[1] : undefined;
+}

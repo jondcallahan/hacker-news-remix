@@ -14,6 +14,27 @@ export default function handleRequest(
   responseHeaders: Headers,
   remixContext: EntryContext
 ) {
+  // This is a hack to store the users time zone in a cookie
+  // so that when we server render the page, we can format the dates
+  // with the correct time zone. This avoids the "flicker" of the
+  // dates changing when the client side app loads.
+  if (!request.headers.get("cookie")?.includes("time_zone")) {
+    const script = `
+      document.cookie = 'time_zone=' + (Intl.DateTimeFormat().resolvedOptions().timeZone) + '; path=/';
+      window.location.reload();
+    `;
+    return new Response(
+      `<html><body><script>${script}</script></body></html>`,
+      {
+        headers: {
+          "Content-Type": "text/html",
+          "Set-Cookie": "time_zone='America/Los_Angeles'; path=/",
+          Refresh: `0; url=${request.url}`,
+        },
+      }
+    );
+  }
+
   const cache = createEmotionCache();
   const { extractCriticalToChunks } = createEmotionServer(cache);
 

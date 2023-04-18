@@ -13,6 +13,7 @@ import {
 import { getFromCache } from "~/utils/caching.server";
 import type { IGetPlaiceholderReturn } from "plaiceholder";
 import { Comment } from "~/components/Comment";
+import { getTimeZoneFromCookie } from "~/utils/time";
 
 export const handle = {
   showBreadcrumb: true,
@@ -33,11 +34,17 @@ const getBackgroundImage = (text: string) => {
   return `url("data:image/svg+xml;utf8,${getOGImagePlaceholderContent(text)}")`;
 };
 
-export const loader = async ({ params }: LoaderArgs) => {
+export const loader = async ({ params, request }: LoaderArgs) => {
   const timerStart = process.hrtime();
   const { id } = params;
 
   if (!id) return redirect("/");
+
+  const cookies = request.headers.get("Cookie");
+  let timeZone = "";
+  if (cookies) {
+    timeZone = getTimeZoneFromCookie(cookies) || "";
+  }
 
   const story = await fetchAllKids(id);
   const OGImagePlaceholder: IGetPlaiceholderReturn | null = story?.url
@@ -48,12 +55,14 @@ export const loader = async ({ params }: LoaderArgs) => {
   const timerEnd = process.hrtime(timerStart);
   console.log(`item:${id} took ${timerEnd[0] * 1e3 + timerEnd[1] / 1e6}ms`);
 
-  return json({ story, OGImagePlaceholder });
+  return json({ story, OGImagePlaceholder, timeZone });
 };
 
-const dateFormat = new Intl.DateTimeFormat("en", {
-  timeStyle: "short",
-});
+const getDateFormatter = (timeZone: string) =>
+  new Intl.DateTimeFormat("en", {
+    timeStyle: "short",
+    timeZone,
+  });
 
 // Recursively render all comments and their children
 function renderNestedComments(kids: Item[], originalPoster?: string) {
@@ -71,7 +80,8 @@ function renderNestedComments(kids: Item[], originalPoster?: string) {
 }
 
 export default function ItemPage() {
-  const { story, OGImagePlaceholder } = useLoaderData<typeof loader>();
+  const { story, OGImagePlaceholder, timeZone } =
+    useLoaderData<typeof loader>();
 
   if (!story) {
     return null;
@@ -142,12 +152,14 @@ export default function ItemPage() {
             {story.url}
           </ChakraLink>
           <Text>
-            By {story.by} at {dateFormat.format(new Date(story.time * 1_000))}
+            By {story.by} at{" "}
+            <time>
+              {getDateFormatter(timeZone).format(new Date(story.time * 1_000))}
+            </time>
           </Text>
-          <Text
-            as="span"
-            dangerouslySetInnerHTML={{ __html: story.text }}
-          ></Text>
+          {story.text ? (
+            <Text as="span" dangerouslySetInnerHTML={{ __html: story.text }} />
+          ) : null}
         </Grid>
       </Box>
       {/* End story card */}
