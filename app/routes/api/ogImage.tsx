@@ -2,12 +2,12 @@ import { LoaderFunction } from "@remix-run/node";
 import { getPlaiceholder } from "plaiceholder";
 import { getOrSetToCache } from "~/utils/caching.server";
 import { getOGImagePlaceholderContent } from "../__layout/item/$id";
-import { Window } from "happy-dom";
 import satori from "satori";
 import { formatDate } from "~/utils/time";
 import fs from "fs/promises";
 import path from "path";
 import { trytm } from "@bdsqqq/try";
+import { Parser, DomHandler, DomUtils } from "htmlparser2";
 
 function getFontBlobs() {
   const fontFiles = [
@@ -148,11 +148,10 @@ async function getOgImageUrlFromUrl(url: string) {
 
   const text = await res.text();
 
-  const window = new Window();
-  const document = window.document;
-  document.body.innerHTML = text;
+  const handler = new DomHandler();
+  new Parser(handler).end(text);
 
-  const metaTags = document.getElementsByTagName("meta");
+  const metaTags = DomUtils.findAll((el) => el.name === "meta", handler.dom);
 
   // Cast a wide net for og:image, any of these can be used but they are in priority order
   const imgUrls = {
@@ -162,29 +161,22 @@ async function getOgImageUrlFromUrl(url: string) {
     "twitter:image:src": "",
   };
 
-  Array.from(metaTags).forEach((metaTag) => {
-    switch (metaTag.getAttribute("property")) {
-      case "og:image":
-        imgUrls["og:image"] = metaTag.getAttribute("content");
-        break;
-      case "og:image:url":
-        imgUrls["og:image:url"] = metaTag.getAttribute("content");
-        break;
-      case "twitter:image":
-        imgUrls["twitter:image"] = metaTag.getAttribute("content");
-        break;
-      case "twitter:image:src":
-        imgUrls["twitter:image:src"] = metaTag.getAttribute("content");
-        break;
+  metaTags.forEach((metaTag) => {
+    const property = metaTag.attribs.property;
+    const content = metaTag.attribs.content;
+
+    if (property && content && imgUrls.hasOwnProperty(property)) {
+      imgUrls[property] = content;
     }
   });
 
-  if (imgUrls["og:image"]) return imgUrls["og:image"];
-  if (imgUrls["og:image:url"]) return imgUrls["og:image:url"];
-  if (imgUrls["twitter:image"]) return imgUrls["twitter:image"];
-  if (imgUrls["twitter:image:src"]) return imgUrls["twitter:image:src"];
-
-  return null;
+  return (
+    imgUrls["og:image"] ||
+    imgUrls["og:image:url"] ||
+    imgUrls["twitter:image"] ||
+    imgUrls["twitter:image:src"] ||
+    null
+  );
 }
 
 async function getTweetDetails(url: string) {
