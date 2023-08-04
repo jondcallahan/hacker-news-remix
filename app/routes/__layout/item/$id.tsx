@@ -14,6 +14,8 @@ import { getFromCache } from "~/utils/caching.server";
 import type { IGetPlaiceholderReturn } from "plaiceholder";
 import { Comment } from "~/components/Comment";
 import { getTimeZoneFromCookie } from "~/utils/time";
+import HeroImage from "~/components/HeroImage";
+import { getTweet, Tweet } from "react-tweet/api";
 
 export const handle = {
   showBreadcrumb: true,
@@ -29,10 +31,6 @@ export const meta: MetaFunction = ({ data }) => ({
 export function getOGImagePlaceholderContent(text: string): string {
   return `<svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='1200' height='600' viewBox='0 0 1200 600'><rect fill='lightgrey' width='1200' height='600'></rect><text dy='22.4' x='50%' y='50%' text-anchor='middle' font-weight='bold' fill='rgba(0,0,0,0.5)' font-size='64' font-family='sans-serif'>${text}</text></svg>`;
 }
-
-const getBackgroundImage = (text: string) => {
-  return `url("data:image/svg+xml;utf8,${getOGImagePlaceholderContent(text)}")`;
-};
 
 export const loader = async ({ params, request }: LoaderArgs) => {
   const timerStart = process.hrtime();
@@ -53,9 +51,15 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 
   // Log the time it took to get the value in ms
   const timerEnd = process.hrtime(timerStart);
+  let tweet: Tweet | undefined;
+  if (story?.url.startsWith("https://twitter.com/")) {
+    const tweetId = story.url.split("/").pop()!;
+
+    tweet = await getTweet(tweetId);
+  }
   console.log(`item:${id} took ${timerEnd[0] * 1e3 + timerEnd[1] / 1e6}ms`);
 
-  return json({ story, OGImagePlaceholder, timeZone });
+  return json({ story, OGImagePlaceholder, timeZone, tweet });
 };
 
 const getDateFormatter = (timeZone: string) =>
@@ -80,7 +84,7 @@ function renderNestedComments(kids: Item[], originalPoster?: string) {
 }
 
 export default function ItemPage() {
-  const { story, OGImagePlaceholder, timeZone } =
+  const { story, OGImagePlaceholder, timeZone, tweet } =
     useLoaderData<typeof loader>();
 
   if (!story) {
@@ -108,35 +112,10 @@ export default function ItemPage() {
             borderBottomStyle="solid"
           >
             <a href={story.url}>
-              <Img
-                src={OGImagePlaceholder?.base64}
-                position="absolute"
-                top={0}
-                left={0}
-                right={0}
-                bottom={0}
-                width="full"
-                height={["150px", "300px"]}
-                objectFit="cover"
-                filter={OGImagePlaceholder?.base64 ? "blur(10px)" : undefined}
-                transform={
-                  OGImagePlaceholder?.base64 ? "scale(1.1)" : undefined
-                }
-                backgroundImage={getBackgroundImage(
-                  new URL(story.url).hostname
-                )}
-                backgroundSize="cover"
-              />
-              <Img
-                src={`/api/ogImage?url=${story.url}`}
-                position="absolute"
-                top={0}
-                left={0}
-                right={0}
-                bottom={0}
-                width="full"
-                height={["150px", "300px"]}
-                objectFit="cover"
+              <HeroImage
+                story={story}
+                OGImagePlaceholder={OGImagePlaceholder}
+                tweet={tweet}
               />
             </a>
           </Box>
