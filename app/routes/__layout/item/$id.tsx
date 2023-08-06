@@ -52,7 +52,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   // Log the time it took to get the value in ms
   const timerEnd = process.hrtime(timerStart);
   let tweet: Tweet | undefined;
-  if (story?.url.startsWith("https://twitter.com/")) {
+  if (story?.url?.startsWith("https://twitter.com/")) {
     const tweetId = story.url.split("/").pop()!;
 
     tweet = await getTweet(tweetId);
