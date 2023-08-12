@@ -11,7 +11,7 @@ import {
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import { getFromCache } from "~/utils/caching.server";
-import type { IGetPlaiceholderReturn } from "plaiceholder";
+import type { GetPlaiceholderReturn } from "plaiceholder";
 import { Comment } from "~/components/Comment";
 import { getTimeZoneFromCookie } from "~/utils/time";
 import HeroImage from "~/components/HeroImage";
@@ -45,7 +45,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   }
 
   const story = await fetchAllKids(id);
-  const OGImagePlaceholder: IGetPlaiceholderReturn | null = story?.url
+  const OGImagePlaceholder: GetPlaiceholderReturn | null = story?.url
     ? await getFromCache(`ogimage:placeholder:${story.url}`)
     : null;
 

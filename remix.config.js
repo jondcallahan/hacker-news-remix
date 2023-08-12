@@ -8,5 +8,5 @@ module.exports = {
   serverBuildDirectory: "build",
   devServerPort: 8002,
   ignoredRouteFiles: [".*"],
-  serverDependenciesToBundle: ["react-tweet/api"],
+  serverDependenciesToBundle: ["react-tweet/api", "plaiceholder"],
 };
