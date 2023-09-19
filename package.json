@@ -27,6 +27,7 @@
     "plaiceholder": "3.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hotkeys-hook": "^4.4.1",
     "react-tweet": "^3.0.3"
   },
   "devDependencies": {

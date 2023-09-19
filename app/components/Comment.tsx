@@ -8,6 +8,7 @@ export function Comment(
     children?: React.ReactNode;
     boxProps?: React.ComponentProps<typeof Box>;
     originalPoster?: string;
+    "data-testid"?: string;
   } & React.ComponentProps<typeof chakra.details>
 ) {
   const { comment, children, boxProps, originalPoster, ...rest } = props;

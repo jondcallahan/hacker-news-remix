@@ -1,5 +1,5 @@
 import { json, LoaderArgs, MetaFunction, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import { fetchAllKids, Item } from "~/utils/api.server";
 import {
   Box,
@@ -16,6 +16,7 @@ import { Comment } from "~/components/Comment";
 import { getTimeZoneFromCookie } from "~/utils/time";
 import HeroImage from "~/components/HeroImage";
 import { getTweet, Tweet } from "react-tweet/api";
+import { useHotkeys } from "react-hotkeys-hook";
 
 export const handle = {
   showBreadcrumb: true,
@@ -86,6 +87,11 @@ function renderNestedComments(kids: Item[], originalPoster?: string) {
 export default function ItemPage() {
   const { story, OGImagePlaceholder, timeZone, tweet } =
     useLoaderData<typeof loader>();
+  const navigate = useNavigate();
+
+  useHotkeys("h", () => {
+    navigate("/");
+  });
 
   if (!story) {
     return null;
@@ -158,6 +164,7 @@ export default function ItemPage() {
               }}
               marginTop={0}
               originalPoster={story.by}
+              data-testid="comment"
             >
               {comment.kids?.length &&
                 renderNestedComments(comment.kids, story.by)}
