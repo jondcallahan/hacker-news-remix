@@ -103,6 +103,7 @@ const handleBrowserRequest = (
           },
         })
       );
+      return;
     }
 
     let didError = false;

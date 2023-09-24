@@ -16,7 +16,7 @@ export const createApp = (): FirebaseApp => {
   if (app) {
     return app;
   } else {
-    app = initializeApp({ databaseURL: "wss://hacker-news.firebaseio.com" });
+    app = initializeApp({ databaseURL: "https://hacker-news.firebaseio.com" });
     process.__FIREBASE_APP = app;
     console.log("Firebase app created");
     return app;
@@ -39,22 +39,30 @@ export type Item = {
 };
 
 export const getItem = async (id: string): Promise<Item | null> => {
-  const dbRef = ref(getDatabase(createApp()));
+  const item = await getOrSetToCache(`item:${id}`, async () => {
+    // try {
+    //   const dbRef = ref(getDatabase(createApp()));
+    //   const snapshot = await get(child(dbRef, `v0/item/${id}`));
 
-  const item = await getOrSetToCache(`item:${id}`, () => {
-    return get(child(dbRef, `v0/item/${id}`))
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          return snapshot.val();
-        } else {
-          console.log(`Error getting item ${id} No data available`);
-          return null;
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        return null;
-      });
+    //   if (snapshot.exists()) {
+    //     return snapshot.val();
+    //   } else {
+    //     console.log(`Error getting item ${id} No data available`);
+    //     return null;
+    //   }
+    // } catch (error) {
+    //   console.error(error);
+    //   return null;
+    // }
+    try {
+      const itemRes = await fetch(
+        `https://hacker-news.firebaseio.com/v0/item/${id}.json`
+      );
+      return itemRes.json();
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   });
 
   return item;
@@ -64,28 +72,46 @@ export const getTopStories = async (limit: number): Promise<Item[] | null> => {
   const dbRef = ref(getDatabase(createApp()));
   const key = "/v0/topstories";
 
-  return getOrSetToCache(key, async () => {
-    return get(query(child(dbRef, "/v0/topstories"), limitToFirst(limit)))
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const topStoryIds: number[] = snapshot.val();
-          return Promise.all(
-            topStoryIds.map(async (id) => {
-              return await getItem(id.toString());
-            })
-          );
+  return getOrSetToCache(
+    key,
+    async () => {
+      // return get(query(child(dbRef, "/v0/topstories"), limitToFirst(limit)))
+      //   .then((snapshot) => {
+      //     if (snapshot.exists()) {
+      //       const topStoryIds: number[] = snapshot.val();
+      //       return Promise.all(
+      //         topStoryIds.map(async (id) => {
+      //           return getItem(id.toString());
+      //         })
+      //       );
 
-          // return topStoryIds;
-        } else {
-          console.log(`Error getting top stories No data available`);
-          return null;
-        }
-      })
-      .catch((error) => {
+      //       // return topStoryIds;
+      //     } else {
+      //       console.log(`Error getting top stories No data available`);
+      //       return null;
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.error(error);
+      //     return null;
+      //   });
+      try {
+        const topStoryIdsRes = await fetch(
+          "https://hacker-news.firebaseio.com/v0/topstories.json"
+        );
+        const topStoryIds = await topStoryIdsRes.json();
+        return Promise.all(
+          topStoryIds.slice(0, limit).map((id: number) => {
+            return getItem(id.toString());
+          })
+        );
+      } catch (error) {
         console.error(error);
         return null;
-      });
-  });
+      }
+    },
+    1
+  );
 };
 
 export const fetchAllKids = async (id: string) => {
