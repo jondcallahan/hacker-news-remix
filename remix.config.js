@@ -3,7 +3,7 @@ const config = {
   appDirectory: "app",
   assetsBuildDirectory: "public/build",
   publicPath: "/build/",
-  serverBuildDirectory: "build",
+  serverBuildPath: "build",
   devServerPort: 8002,
   ignoredRouteFiles: [".*"],
   serverDependenciesToBundle: ["react-tweet/api", "plaiceholder"],
