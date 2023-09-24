@@ -106,6 +106,64 @@ export default function ItemPage() {
     navigate("/");
   });
 
+  useHotkeys("j", () => {
+    // Get the current scroll position
+    const scrollPosition = window.scrollY;
+
+    // Get all the comments
+    const comments = document.querySelectorAll("[data-testid=comment]");
+
+    // Find the first comment that is below the current scroll position
+    const nextComment = Array.from(comments).find(
+      (comment) => comment.getBoundingClientRect().top > scrollPosition
+    );
+
+    // If we found a comment, focus it
+    if (nextComment) {
+      nextComment.focus();
+    }
+
+    // Otherwise, focus the first comment
+    else {
+      comments[0]?.focus();
+    }
+
+    // Scroll to the focused comment
+    window.scrollTo({
+      top: nextComment?.getBoundingClientRect().top,
+      behavior: "smooth",
+    });
+  });
+
+  useHotkeys("k", () => {
+    // Get the current scroll position
+    const scrollPosition = window.scrollY;
+
+    // Get all the comments
+    const comments = document.querySelectorAll("[data-testid=comment]");
+
+    // Find the last comment that is above the current scroll position
+    const previousComment = Array.from(comments)
+      .reverse()
+      .find((comment) => comment.getBoundingClientRect().top < scrollPosition);
+
+    // If we found a comment, focus it
+    if (previousComment) {
+      previousComment.focus();
+    }
+
+    // Otherwise, focus the last comment
+    else {
+      comments[comments.length - 1]?.focus();
+    }
+
+    // Scroll to the focused comment
+    window.scrollTo({
+      top: previousComment?.getBoundingClientRect().top,
+      behavior: "smooth",
+    });
+  });
+
   if (!story) {
     return null;
   }

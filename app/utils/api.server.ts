@@ -10,16 +10,17 @@ import {
 import { getOrSetToCache } from "./caching.server";
 
 export const createApp = (): FirebaseApp => {
-  let app;
+  let app = process.__FIREBASE_APP;
   // this piece of code may run multiple times in development mode,
   // so we attach the instantiated API to `process` to avoid duplications
-  if (process.__FIREBASE_APP) {
-    app = process.__FIREBASE_APP;
+  if (app) {
+    return app;
   } else {
-    app = initializeApp({ databaseURL: "https://hacker-news.firebaseio.com" });
+    app = initializeApp({ databaseURL: "wss://hacker-news.firebaseio.com" });
     process.__FIREBASE_APP = app;
+    console.log("Firebase app created");
+    return app;
   }
-  return app;
 };
 
 export type Item = {
