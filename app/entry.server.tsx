@@ -94,15 +94,14 @@ const handleBrowserRequest = (
           document.cookie = 'time_zone=' + (Intl.DateTimeFormat().resolvedOptions().timeZone) + '; path=/';
           window.location.reload();
         `;
-      return new Response(
-        `<html><body><script>${script}</script></body></html>`,
-        {
+      resolve(
+        new Response(`<html><body><script>${script}</script></body></html>`, {
           headers: {
             "Content-Type": "text/html",
             "Set-Cookie": "time_zone='America/Los_Angeles'; path=/",
             Refresh: `0; url=${request.url}`,
           },
-        }
+        })
       );
     }
 
