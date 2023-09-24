@@ -22,13 +22,6 @@ export const handle = {
   showBreadcrumb: true,
 };
 
-// export const meta: MetaFunction = ({ data }) => ({
-//   title: `${data.story.title} | HN`,
-//   "og:title": data.story.title,
-//   "og:description": data.story.text,
-//   "og:image": data.story.url ? `/api/ogImage?url=${data.story.url}` : undefined, // Only add og image if url is defined
-// });
-
 export const meta: MetaFunction<typeof loader> = ({ data }) => [
   {
     title: `${data?.story?.title} | HN`,
