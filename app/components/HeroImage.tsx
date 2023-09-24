@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { IGetPlaiceholderReturn } from "plaiceholder";
 import type { Tweet } from "react-tweet/api";
-import { getOGImagePlaceholderContent } from "~/routes/__layout/item/$id";
+import { getOGImagePlaceholderContent } from "~/routes/_layout.item.$id";
 import { Item } from "~/utils/api.server";
 import { formatDate } from "~/utils/time";
 

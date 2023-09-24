@@ -1,9 +1,9 @@
 import { LoaderFunction } from "@remix-run/node";
 import { getPlaiceholder } from "plaiceholder";
 import { getOrSetToCache } from "~/utils/caching.server";
-import { getOGImagePlaceholderContent } from "../__layout/item/$id";
 import { trytm } from "@bdsqqq/try";
 import { Parser, DomHandler, DomUtils } from "htmlparser2";
+import { getOGImagePlaceholderContent } from "./_layout.item.$id";
 
 async function getOgImageUrlFromUrl(url: string) {
   const [res, error] = await trytm(fetch(url, {}));

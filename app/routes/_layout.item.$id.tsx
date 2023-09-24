@@ -22,12 +22,32 @@ export const handle = {
   showBreadcrumb: true,
 };
 
-export const meta: MetaFunction = ({ data }) => ({
-  title: `${data.story.title} | HN`,
-  "og:title": data.story.title,
-  "og:description": data.story.text,
-  "og:image": data.story.url ? `/api/ogImage?url=${data.story.url}` : undefined, // Only add og image if url is defined
-});
+// export const meta: MetaFunction = ({ data }) => ({
+//   title: `${data.story.title} | HN`,
+//   "og:title": data.story.title,
+//   "og:description": data.story.text,
+//   "og:image": data.story.url ? `/api/ogImage?url=${data.story.url}` : undefined, // Only add og image if url is defined
+// });
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => [
+  {
+    title: `${data?.story?.title} | HN`,
+  },
+  {
+    property: "og:title",
+    content: data?.story?.title,
+  },
+  {
+    property: "og:description",
+    content: data?.story?.text,
+  },
+  {
+    property: "og:image",
+    content: data?.story?.url
+      ? `/api/ogImage?url=${data?.story?.url}`
+      : undefined, // Only add og image if url is defined
+  },
+];
 
 export function getOGImagePlaceholderContent(text: string): string {
   return `<svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='1200' height='600' viewBox='0 0 1200 600'><rect fill='lightgrey' width='1200' height='600'></rect><text dy='22.4' x='50%' y='50%' text-anchor='middle' font-weight='bold' fill='rgba(0,0,0,0.5)' font-size='64' font-family='sans-serif'>${text}</text></svg>`;

@@ -1,7 +1,5 @@
-/**
- * @type {import('@remix-run/dev/config').AppConfig}
- */
-module.exports = {
+/** @type {import('@remix-run/dev').AppConfig} */
+const config = {
   appDirectory: "app",
   assetsBuildDirectory: "public/build",
   publicPath: "/build/",
@@ -10,3 +8,4 @@ module.exports = {
   ignoredRouteFiles: [".*"],
   serverDependenciesToBundle: ["react-tweet/api", "plaiceholder"],
 };
+export default config;
