@@ -8,7 +8,6 @@ import {
   Avatar,
   AvatarBadge,
 } from "@chakra-ui/react";
-import { IGetPlaiceholderReturn } from "plaiceholder";
 import type { Tweet } from "react-tweet/api";
 import { getOGImagePlaceholderContent } from "~/routes/_layout.item.$id";
 import { Item } from "~/utils/api.server";
