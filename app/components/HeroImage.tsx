@@ -112,7 +112,7 @@ export default function HeroImage({
   OGImagePlaceholder: IGetPlaiceholderReturn | null;
   tweet: Tweet | undefined;
 }) {
-  if (tweet) {
+  if (tweet && Object.keys(tweet).length > 0) {
     return <TweetEmbed tweet={tweet} />;
   }
 
