@@ -1,27 +1,5 @@
-// import { FirebaseApp, initializeApp } from "firebase/app";
-// import {
-//   child,
-//   get,
-//   limitToFirst,
-//   query,
-//   ref,
-//   getDatabase,
-// } from "firebase/database";
 import { getOrSetToCache } from "./caching.server";
-
-// const createApp = (): FirebaseApp => {
-//   let app = process.__FIREBASE_APP;
-//   // this piece of code may run multiple times in development mode,
-//   // so we attach the instantiated API to `process` to avoid duplications
-//   if (app) {
-//     return app;
-//   } else {
-//     app = initializeApp({ databaseURL: "https://hacker-news.firebaseio.com" });
-//     process.__FIREBASE_APP = app;
-//     console.log("Firebase app created");
-//     return app;
-//   }
-// };
+import { getRelativeTimeString } from "./time";
 
 export type Item = {
   by: string;
@@ -30,6 +8,7 @@ export type Item = {
   kids?: Item[];
   score: number;
   time: number;
+  relativeTime?: string;
   title: string;
   type: string;
   url?: string;
@@ -40,25 +19,16 @@ export type Item = {
 
 export const getItem = async (id: string): Promise<Item | null> => {
   const item = await getOrSetToCache(`item:${id}`, async () => {
-    // try {
-    //   const dbRef = ref(getDatabase(createApp()));
-    //   const snapshot = await get(child(dbRef, `v0/item/${id}`));
-
-    //   if (snapshot.exists()) {
-    //     return snapshot.val();
-    //   } else {
-    //     console.log(`Error getting item ${id} No data available`);
-    //     return null;
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-    //   return null;
-    // }
     try {
       const itemRes = await fetch(
         `https://hacker-news.firebaseio.com/v0/item/${id}.json`
       );
-      return itemRes.json();
+
+      const _item: Item = await itemRes.json();
+      // Calculate relative time server side to prevent rendering 1 second ago on server and 2 seconds ago on client. This fixes a react hydration error.
+      _item.relativeTime = getRelativeTimeString(_item.time * 1_000);
+
+      return new Promise((resolve) => resolve(_item));
     } catch (error) {
       console.error(error);
       return null;
@@ -72,27 +42,6 @@ export const getTopStories = async (limit: number): Promise<Item[] | null> => {
   const key = "/v0/topstories";
 
   return getOrSetToCache(key, async () => {
-    // const dbRef = ref(getDatabase(createApp()));
-    // return get(query(child(dbRef, "/v0/topstories"), limitToFirst(limit)))
-    //   .then((snapshot) => {
-    //     if (snapshot.exists()) {
-    //       const topStoryIds: number[] = snapshot.val();
-    //       return Promise.all(
-    //         topStoryIds.map(async (id) => {
-    //           return getItem(id.toString());
-    //         })
-    //       );
-
-    //       // return topStoryIds;
-    //     } else {
-    //       console.log(`Error getting top stories No data available`);
-    //       return null;
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //     return null;
-    //   });
     try {
       const topStoryIdsRes = await fetch(
         "https://hacker-news.firebaseio.com/v0/topstories.json"

@@ -1,7 +1,6 @@
-export function getRelativeTimeString(
-  date: Date | number,
-  lang = "en-us"
-): string {
+const formatter = new Intl.RelativeTimeFormat("en-us", { numeric: "auto" });
+
+export function getRelativeTimeString(date: Date | number): string {
   const time = typeof date === "number" ? date : date.getTime();
   const deltaSeconds = Math.round((time - Date.now()) / 1000);
   const cutoffs = [
@@ -26,7 +25,6 @@ export function getRelativeTimeString(
     (cutoff) => cutoff > Math.abs(deltaSeconds)
   );
   const divider = unitIndex ? cutoffs[unitIndex - 1] : 1;
-  const formatter = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
   return formatter.format(Math.floor(deltaSeconds / divider), units[unitIndex]);
 }
 

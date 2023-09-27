@@ -5,7 +5,6 @@ import {
   useNavigate,
 } from "@remix-run/react";
 import { getTopStories } from "~/utils/api.server";
-import { getRelativeTimeString } from "~/utils/time";
 import {
   Box,
   Grid,
@@ -28,6 +27,7 @@ type StoryType = {
   kids: number[];
   score: number;
   time: number;
+  relativeTime: string;
   title: string;
   type: string;
   url: string;
@@ -43,14 +43,14 @@ export const loader: LoaderFunction = async () => {
   const timerEnd = process.hrtime(timerStart);
   console.log(`topstories took ${timerEnd[0] * 1e3 + timerEnd[1] / 1e6}ms`);
 
-  return json({ allStories: allStories });
+  return json({ allStories });
 };
 
 export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <Box>
       <Text>Something went wrong</Text>
-      <Code colorScheme="red">{error.message}</Code>
+      <Code colorScheme="red">{error?.message || "Unknown error"}</Code>
     </Box>
   );
 }
@@ -146,7 +146,7 @@ export default function Index() {
                 </Heading>
 
                 <Text>
-                  By {story.by} {getRelativeTimeString(story.time * 1_000)}
+                  By {story.by} {story.relativeTime}
                 </Text>
 
                 <ChakraLink
