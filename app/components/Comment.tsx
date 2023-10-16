@@ -1,6 +1,5 @@
 import { Box, Text, chakra } from "@chakra-ui/react";
 import { Item } from "~/utils/api.server";
-import { getRelativeTimeString } from "~/utils/time";
 
 export function Comment(
   props: {
@@ -53,7 +52,7 @@ export function Comment(
         | {comment.kids?.length || "0"}{" "}
         {comment.kids?.length === 1 ? "comment" : "comments"}
         {" | "}
-        {getRelativeTimeString(comment.time * 1_000)}
+        {comment.relativeTime}
       </chakra.summary>
       <Box
         {...boxProps}

@@ -22,12 +22,25 @@ export const handle = {
   showBreadcrumb: true,
 };
 
-export const meta: MetaFunction = ({ data }) => ({
-  title: `${data.story.title} | HN`,
-  "og:title": data.story.title,
-  "og:description": data.story.text,
-  "og:image": data.story.url ? `/api/ogImage?url=${data.story.url}` : undefined, // Only add og image if url is defined
-});
+export const meta: MetaFunction<typeof loader> = ({ data }) => [
+  {
+    title: `${data?.story?.title} | HN`,
+  },
+  {
+    property: "og:title",
+    content: data?.story?.title,
+  },
+  {
+    property: "og:description",
+    content: data?.story?.text,
+  },
+  {
+    property: "og:image",
+    content: data?.story?.url
+      ? `/api/ogImage?url=${data?.story?.url}`
+      : undefined, // Only add og image if url is defined
+  },
+];
 
 export function getOGImagePlaceholderContent(text: string): string {
   return `<svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='1200' height='600' viewBox='0 0 1200 600'><rect fill='lightgrey' width='1200' height='600'></rect><text dy='22.4' x='50%' y='50%' text-anchor='middle' font-weight='bold' fill='rgba(0,0,0,0.5)' font-size='64' font-family='sans-serif'>${text}</text></svg>`;
@@ -91,6 +104,64 @@ export default function ItemPage() {
 
   useHotkeys("h", () => {
     navigate("/");
+  });
+
+  useHotkeys("j", () => {
+    // Get the current scroll position
+    const scrollPosition = window.scrollY;
+
+    // Get all the comments
+    const comments = document.querySelectorAll("[data-testid=comment]");
+
+    // Find the first comment that is below the current scroll position
+    const nextComment = Array.from(comments).find(
+      (comment) => comment.getBoundingClientRect().top > scrollPosition
+    );
+
+    // If we found a comment, focus it
+    if (nextComment) {
+      nextComment.focus();
+    }
+
+    // Otherwise, focus the first comment
+    else {
+      comments[0]?.focus();
+    }
+
+    // Scroll to the focused comment
+    window.scrollTo({
+      top: nextComment?.getBoundingClientRect().top,
+      behavior: "smooth",
+    });
+  });
+
+  useHotkeys("k", () => {
+    // Get the current scroll position
+    const scrollPosition = window.scrollY;
+
+    // Get all the comments
+    const comments = document.querySelectorAll("[data-testid=comment]");
+
+    // Find the last comment that is above the current scroll position
+    const previousComment = Array.from(comments)
+      .reverse()
+      .find((comment) => comment.getBoundingClientRect().top < scrollPosition);
+
+    // If we found a comment, focus it
+    if (previousComment) {
+      previousComment.focus();
+    }
+
+    // Otherwise, focus the last comment
+    else {
+      comments[comments.length - 1]?.focus();
+    }
+
+    // Scroll to the focused comment
+    window.scrollTo({
+      top: previousComment?.getBoundingClientRect().top,
+      behavior: "smooth",
+    });
   });
 
   if (!story) {

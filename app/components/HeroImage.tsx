@@ -8,9 +8,8 @@ import {
   Avatar,
   AvatarBadge,
 } from "@chakra-ui/react";
-import { IGetPlaiceholderReturn } from "plaiceholder";
 import type { Tweet } from "react-tweet/api";
-import { getOGImagePlaceholderContent } from "~/routes/__layout/item/$id";
+import { getOGImagePlaceholderContent } from "~/routes/_layout.item.$id";
 import { Item } from "~/utils/api.server";
 import { formatDate } from "~/utils/time";
 
@@ -112,7 +111,7 @@ export default function HeroImage({
   OGImagePlaceholder: IGetPlaiceholderReturn | null;
   tweet: Tweet | undefined;
 }) {
-  if (tweet) {
+  if (tweet && Object.keys(tweet).length > 0) {
     return <TweetEmbed tweet={tweet} />;
   }
 

@@ -45,12 +45,15 @@ export const links: LinksFunction = () => [
 ];
 
 export const meta: MetaFunction = () => {
-  return {
-    title: "Hacker News",
-    charset: "utf-8",
-    viewport: "width=device-width, initial-scale=1, viewport-fit=cover",
-    "og:site_name": "Jon's Hacker News Reader",
-  };
+  return [
+    {
+      title: "Hacker News",
+    },
+    {
+      property: "og:site_name",
+      content: "Jon's Hacker News Reader",
+    },
+  ];
 };
 
 function highlightFirstStoryLink(e: KeyboardEvent<HTMLBodyElement>) {
@@ -87,6 +90,11 @@ const Document = withEmotionCache(
     return (
       <html lang="en">
         <head>
+          <meta charSet="utf-8" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, viewport-fit=cover"
+          />
           <Meta />
           <Links />
           {serverStyleData?.map(({ key, ids, css }) => (
