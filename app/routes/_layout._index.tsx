@@ -3,6 +3,7 @@ import {
   Link as RemixLink,
   useLoaderData,
   useNavigate,
+  NavLink,
 } from "@remix-run/react";
 import { getTopStories } from "~/utils/api.server";
 import {
@@ -94,63 +95,63 @@ export default function Index() {
                     </Text>
                   </Flex>
                 )}
-                <Heading
-                  size="md"
-                  as="a"
-                  scrollMarginY="64px"
-                  href={story.url || `/item/${story.id}`}
-                  onKeyPress={(e) => {
-                    // J key will advance to the next story
-                    // K will go to previous
-                    // C will go to comments
-                    if (e.key === "j") {
-                      try {
-                        document
-                          .querySelectorAll<HTMLAnchorElement>(
-                            "a[data-link-type=story]"
-                          )
-                          .forEach((val, idx, list) => {
-                            if (val === document.activeElement) {
-                              list[idx + 1].focus();
-                              e.stopPropagation(); // Stop propogation so the listener on the <body> doesn't pick up the event
-                              throw "stop"; // Using a throw to break the forEach loop
-                            }
-                          });
-                      } catch {}
-                    } else if (e.key === "k") {
-                      // Go to previous story or last if on first
-                      try {
-                        document
-                          .querySelectorAll<HTMLAnchorElement>(
-                            "a[data-link-type=story]"
-                          )
-                          .forEach((val, idx, list) => {
-                            if (val === document.activeElement) {
-                              if (idx === 0) {
-                                list[list.length - 1].focus();
-                              } else {
-                                list[idx - 1].focus();
+                <RemixLink to={story.url || `/item/${story.id}`}>
+                  <Heading
+                    size="md"
+                    scrollMarginY="64px"
+                    onKeyPress={(e) => {
+                      // J key will advance to the next story
+                      // K will go to previous
+                      // C will go to comments
+                      if (e.key === "j") {
+                        try {
+                          document
+                            .querySelectorAll<HTMLAnchorElement>(
+                              "a[data-link-type=story]"
+                            )
+                            .forEach((val, idx, list) => {
+                              if (val === document.activeElement) {
+                                list[idx + 1].focus();
+                                e.stopPropagation(); // Stop propogation so the listener on the <body> doesn't pick up the event
+                                throw "stop"; // Using a throw to break the forEach loop
                               }
+                            });
+                        } catch {}
+                      } else if (e.key === "k") {
+                        // Go to previous story or last if on first
+                        try {
+                          document
+                            .querySelectorAll<HTMLAnchorElement>(
+                              "a[data-link-type=story]"
+                            )
+                            .forEach((val, idx, list) => {
+                              if (val === document.activeElement) {
+                                if (idx === 0) {
+                                  list[list.length - 1].focus();
+                                } else {
+                                  list[idx - 1].focus();
+                                }
 
-                              throw "stop"; // Using a throw to break the forEach loop
-                            }
-                          });
-                      } catch {}
-                    } else if (e.key === "c") {
-                      navigate(`/item/${story.id}`);
-                    }
-                  }}
-                  data-link-type="story"
-                >
-                  {story.title}
-                </Heading>
+                                throw "stop"; // Using a throw to break the forEach loop
+                              }
+                            });
+                        } catch {}
+                      } else if (e.key === "c") {
+                        navigate(`/item/${story.id}`);
+                      }
+                    }}
+                    data-link-type="story"
+                  >
+                    {story.title}
+                  </Heading>
+                </RemixLink>
 
                 <Text>
                   By {story.by} {story.relativeTime}
                 </Text>
 
                 <ChakraLink
-                  as={RemixLink}
+                  as={NavLink}
                   to={`/item/${story.id}`}
                   prefetch="intent"
                   width="full"
@@ -162,6 +163,7 @@ export default function Index() {
                     textDecoration: "none",
                   }}
                   aria-label={`View comments for ${story.title}`}
+                  unstable_viewTransition
                 >
                   <Tag size="lg">
                     <TagLeftIcon

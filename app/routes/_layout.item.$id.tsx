@@ -176,6 +176,9 @@ export default function ItemPage() {
         borderRadius="lg"
         marginBottom={4}
         boxShadow="md"
+        style={{
+          viewTransitionName: "story-title",
+        }}
       >
         {story.url ? (
           <Box
