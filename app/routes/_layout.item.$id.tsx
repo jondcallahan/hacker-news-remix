@@ -198,7 +198,14 @@ export default function ItemPage() {
           </Box>
         ) : null}
         <Grid gap={1} paddingX={3} paddingY={2}>
-          <Heading size="md">{story?.title}</Heading>
+          <Heading
+            size="md"
+            style={{
+              viewTransitionName: "story-title",
+            }}
+          >
+            {story?.title}
+          </Heading>
           <ChakraLink
             whiteSpace="nowrap"
             overflow="hidden"

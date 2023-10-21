@@ -38,6 +38,7 @@ export default function Layout() {
                   to="/"
                   color={"white"}
                   _visited={{ color: "white" }}
+                  unstable_viewTransition
                 >
                   Home
                 </BreadcrumbLink>

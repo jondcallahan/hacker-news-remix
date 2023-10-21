@@ -18,6 +18,7 @@ import { theme } from "./chakraTheme";
 import VollkornStyles from "@fontsource/vollkorn/latin.css";
 import VollkornItalicStyles from "@fontsource/vollkorn/400-italic.css";
 import InterStyles from "@fontsource/inter/variable.css";
+import StylesHref from "./styles.css";
 
 export const links: LinksFunction = () => [
   {
@@ -41,6 +42,10 @@ export const links: LinksFunction = () => [
   {
     rel: "stylesheet",
     href: InterStyles,
+  },
+  {
+    rel: "stylesheet",
+    href: StylesHref,
   },
 ];
 
