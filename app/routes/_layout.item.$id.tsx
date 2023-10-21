@@ -176,6 +176,9 @@ export default function ItemPage() {
         borderRadius="lg"
         marginBottom={4}
         boxShadow="md"
+        style={{
+          viewTransitionName: "story-title",
+        }}
       >
         {story.url ? (
           <Box
@@ -198,14 +201,7 @@ export default function ItemPage() {
           </Box>
         ) : null}
         <Grid gap={1} paddingX={3} paddingY={2}>
-          <Heading
-            size="md"
-            style={{
-              viewTransitionName: "story-title",
-            }}
-          >
-            {story?.title}
-          </Heading>
+          <Heading size="md">{story?.title}</Heading>
           <ChakraLink
             whiteSpace="nowrap"
             overflow="hidden"
