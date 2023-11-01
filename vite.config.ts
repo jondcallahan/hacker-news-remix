@@ -1,6 +1,6 @@
 import { unstable_vitePlugin as remix } from "@remix-run/dev";
 import morgan from "morgan";
-import { defineConfig } from "vite";
+import { defineConfig, type ViteDevServer } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
@@ -8,7 +8,6 @@ export default defineConfig({
     requestLogger(),
     remix({
       ignoredRouteFiles: [".*"],
-      // serverDependenciesToBundle: ["react-tweet/api", "plaiceholder"],
     }),
     tsconfigPaths(),
   ],
@@ -17,7 +16,7 @@ export default defineConfig({
 function requestLogger() {
   return {
     name: "request-logger",
-    configureServer(server) {
+    configureServer(server: ViteDevServer) {
       return () => {
         server.middlewares.use(morgan("dev"));
       };
