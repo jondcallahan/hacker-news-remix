@@ -15,10 +15,10 @@ import { KeyboardEvent, useContext, useEffect } from "react";
 import { withEmotionCache } from "@emotion/react";
 import { ChakraProvider, chakra } from "@chakra-ui/react";
 import { theme } from "./chakraTheme";
-import VollkornStyles from "@fontsource/vollkorn/latin.css";
-import VollkornItalicStyles from "@fontsource/vollkorn/400-italic.css";
-import InterStyles from "@fontsource/inter/variable.css";
-import StylesHref from "./styles.css";
+import "@fontsource/vollkorn/latin.css";
+import "@fontsource/vollkorn/400-italic.css";
+import "@fontsource/inter/variable.css";
+import "./styles.css";
 
 export const links: LinksFunction = () => [
   {
@@ -30,22 +30,6 @@ export const links: LinksFunction = () => [
     rel: "icon",
     type: "image/svg+xml",
     href: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍💻</text></svg>",
-  },
-  {
-    rel: "stylesheet",
-    href: VollkornStyles,
-  },
-  {
-    rel: "stylesheet",
-    href: VollkornItalicStyles,
-  },
-  {
-    rel: "stylesheet",
-    href: InterStyles,
-  },
-  {
-    rel: "stylesheet",
-    href: StylesHref,
   },
 ];
 
@@ -118,8 +102,8 @@ const Document = withEmotionCache(
         >
           {children}
           <ScrollRestoration getKey={(location) => location.pathname} />
-          <Scripts />
           <LiveReload />
+          <Scripts />
         </chakra.body>
       </html>
     );
