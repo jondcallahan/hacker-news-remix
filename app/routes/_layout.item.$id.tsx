@@ -55,7 +55,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   const cookies = request.headers.get("Cookie");
   let timeZone = "";
   if (cookies) {
-    timeZone = getTimeZoneFromCookie(cookies) || "";
+    timeZone = getTimeZoneFromCookie(cookies) || "America/Los_Angeles";
   }
 
   const story = await fetchAllKids(id);

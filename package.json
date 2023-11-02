@@ -4,7 +4,7 @@
   "description": "",
   "license": "",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "vite dev --port 3000",
     "build": "vite build && vite build --ssr",
     "start": "remix-serve ./build/index.js"
   },
