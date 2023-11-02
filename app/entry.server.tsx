@@ -2,7 +2,7 @@ import { PassThrough } from "node:stream";
 import createEmotionCache from "@emotion/cache";
 import { CacheProvider as EmotionCacheProvider } from "@emotion/react";
 import createEmotionServer from "@emotion/server/create-instance";
-import { type AppLoadContext, type EntryContext } from "@remix-run/node";
+import type { AppLoadContext, EntryContext } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import isbot from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
@@ -95,7 +95,7 @@ const handleBrowserRequest = (
           document.cookie = 'time_zone=' + (Intl.DateTimeFormat().resolvedOptions().timeZone) + '; path=/';
           window.location.reload();
         `;
-      resolve(
+      return resolve(
         new Response(`<html><body><script>${script}</script></body></html>`, {
           headers: {
             "Content-Type": "text/html",
@@ -104,7 +104,6 @@ const handleBrowserRequest = (
           },
         })
       );
-      return;
     }
 
     let didError = false;
