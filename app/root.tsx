@@ -13,7 +13,7 @@ import { theme } from "./chakraTheme";
 
 import "@fontsource/vollkorn/latin.css";
 import "@fontsource/vollkorn/400-italic.css";
-import "@fontsource/inter/variable.css";
+import "@fontsource-variable/inter";
 import "./styles.css";
 
 export const links: LinksFunction = () => [

@@ -11,6 +11,9 @@ export default defineConfig({
     }),
     tsconfigPaths(),
   ],
+  optimizeDeps: {
+    exclude: ["sharp"],
+  },
 });
 
 function requestLogger() {
