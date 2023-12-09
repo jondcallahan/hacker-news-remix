@@ -103,7 +103,9 @@ export default function ItemPage() {
   const navigate = useNavigate();
 
   useHotkeys("h", () => {
-    navigate("/");
+    navigate("/", {
+      unstable_viewTransition: true,
+    });
   });
 
   useHotkeys("j", () => {

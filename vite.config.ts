@@ -1,18 +1,16 @@
 import { unstable_vitePlugin as remix } from "@remix-run/dev";
 import morgan from "morgan";
 import { defineConfig, type ViteDevServer } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  plugins: [
-    requestLogger(),
-    remix({
-      ignoredRouteFiles: [".*"],
-    }),
-    tsconfigPaths(),
-  ],
+  plugins: [requestLogger(), remix()],
   optimizeDeps: {
     exclude: ["sharp"],
+  },
+  resolve: {
+    alias: {
+      "~": "/app",
+    },
   },
 });
 
