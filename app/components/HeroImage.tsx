@@ -9,7 +9,7 @@ import {
   AvatarBadge,
 } from "@chakra-ui/react";
 import type { Tweet } from "react-tweet/api";
-import { getOGImagePlaceholderContent } from "~/routes/_layout.item.$id";
+import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
 import { Item } from "~/utils/api.server";
 import { formatDate } from "~/utils/time";
 

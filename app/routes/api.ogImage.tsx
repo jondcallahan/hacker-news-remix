@@ -3,7 +3,7 @@ import { getPlaiceholder } from "plaiceholder";
 import { getOrSetToCache } from "~/utils/caching.server";
 import { trytm } from "@bdsqqq/try";
 import { Parser, DomHandler, DomUtils } from "htmlparser2";
-import { getOGImagePlaceholderContent } from "./_layout.item.$id";
+import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
 
 async function getOgImageUrlFromUrl(url: string) {
   const [res, error] = await trytm(fetch(url, {}));
