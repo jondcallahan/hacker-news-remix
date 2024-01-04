@@ -7,6 +7,7 @@ import {
   Icon,
   Avatar,
   AvatarBadge,
+  chakra,
 } from "@chakra-ui/react";
 import type { Tweet } from "react-tweet/api";
 import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
@@ -14,7 +15,9 @@ import { Item } from "~/utils/api.server";
 import { formatDate } from "~/utils/time";
 
 const getBackgroundImage = (text: string) => {
-  return `url("data:image/svg+xml;utf8,${getOGImagePlaceholderContent(text)}")`;
+  return `url("data:image/svg+xml;base64,${btoa(
+    getOGImagePlaceholderContent(text)
+  )}")`;
 };
 
 function TweetEmbed({ tweet }: { tweet: Tweet }) {
@@ -118,22 +121,17 @@ export default function HeroImage({
   return (
     <>
       <Img
-        src={OGImagePlaceholder?.base64}
-        position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        bottom={0}
-        width="full"
-        height={["150px", "300px"]}
+        height="100%"
+        width="100%"
         objectFit="cover"
-        filter={OGImagePlaceholder?.base64 ? "blur(10px)" : undefined}
-        transform={OGImagePlaceholder?.base64 ? "scale(1.1)" : undefined}
-        backgroundImage={getBackgroundImage(new URL(story.url).hostname)}
         backgroundSize="cover"
+        backgroundPosition="center"
+        backgroundImage={`data:image/svg+xml;base64,${btoa(
+          getOGImagePlaceholderContent(new URL(story.url).hostname)
+        )}`}
       />
-      <Img
-        src={`/api/ogImage?url=${story.url}`}
+      <chakra.iframe
+        src={`/api/ogImage-frame?url=${story.url}`}
         position="absolute"
         top={0}
         left={0}
@@ -142,6 +140,7 @@ export default function HeroImage({
         width="full"
         height={["150px", "300px"]}
         objectFit="cover"
+        background="transparent"
       />
     </>
   );

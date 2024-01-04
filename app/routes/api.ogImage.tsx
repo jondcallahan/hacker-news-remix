@@ -2,48 +2,8 @@ import { LoaderFunction } from "@remix-run/node";
 import { getPlaiceholder } from "plaiceholder";
 import { getOrSetToCache } from "~/utils/caching.server";
 import { trytm } from "@bdsqqq/try";
-import { Parser, DomHandler, DomUtils } from "htmlparser2";
 import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
-
-async function getOgImageUrlFromUrl(url: string) {
-  const [res, error] = await trytm(fetch(url, {}));
-  if (error || !res.ok) {
-    console.log("Failed to fetch url", url);
-    return null;
-  }
-
-  const text = await res.text();
-
-  const handler = new DomHandler();
-  new Parser(handler).end(text);
-
-  const metaTags = DomUtils.findAll((el) => el.name === "meta", handler.dom);
-
-  // Cast a wide net for og:image, any of these can be used but they are in priority order
-  const imgUrls = {
-    "og:image": "",
-    "og:image:url": "",
-    "twitter:image": "",
-    "twitter:image:src": "",
-  };
-
-  metaTags.forEach((metaTag) => {
-    const property = metaTag.attribs.property;
-    const content = metaTag.attribs.content;
-
-    if (property && content && imgUrls.hasOwnProperty(property)) {
-      imgUrls[property] = content;
-    }
-  });
-
-  return (
-    imgUrls["og:image"] ||
-    imgUrls["og:image:url"] ||
-    imgUrls["twitter:image"] ||
-    imgUrls["twitter:image:src"] ||
-    null
-  );
-}
+import { getOgImageUrlFromUrl } from "~/utils/api.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   // Request will come in like /api/ogImage?url=https://remix.run

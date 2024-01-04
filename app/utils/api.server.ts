@@ -1,5 +1,7 @@
+import { trytm } from "@bdsqqq/try";
 import { getOrSetToCache } from "./caching.server";
 import { getRelativeTimeString } from "./time";
+import { DomHandler, DomUtils, Parser } from "htmlparser2";
 
 export type Item = {
   by: string;
@@ -71,3 +73,47 @@ export const fetchAllKids = async (id: string) => {
 
   return item;
 };
+
+export async function getOgImageUrlFromUrl(url: string) {
+  const [res, error] = await trytm(fetch(url, {}));
+  if (error || !res.ok) {
+    console.log("Failed to fetch url", url);
+    return null;
+  }
+
+  const text = await res.text();
+
+  const handler = new DomHandler();
+  new Parser(handler).end(text);
+
+  const metaTags = DomUtils.findAll((el) => el.name === "meta", handler.dom);
+
+  // Cast a wide net for og:image, any of these can be used but they are in priority order
+  const imgUrls = {
+    "og:image": "",
+    "og:image:url": "",
+    "twitter:image": "",
+    "twitter:image:src": "",
+  };
+
+  metaTags.forEach((metaTag) => {
+    const property = metaTag.attribs.property;
+    let content = metaTag.attribs.content;
+
+    if (property && content && imgUrls.hasOwnProperty(property)) {
+      // ogImageUrl may be a relative path, if so prepend the url to get the full path
+      if (!content.startsWith("http")) {
+        content = new URL(content, url).href;
+      }
+      imgUrls[property] = content;
+    }
+  });
+
+  return (
+    imgUrls["og:image"] ||
+    imgUrls["og:image:url"] ||
+    imgUrls["twitter:image"] ||
+    imgUrls["twitter:image:src"] ||
+    null
+  );
+}
