@@ -83,6 +83,9 @@ export const loader: LoaderFunction = async ({ request }) => {
       },
       60 * 60 * 24
     );
+  } else {
+    // read the response body to prevent a memory leak
+    await imageRes.text();
   }
 
   return imageRes;

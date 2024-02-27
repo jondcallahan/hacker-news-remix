@@ -26,6 +26,11 @@ export const getItem = async (id: string): Promise<Item | null> => {
         `https://hacker-news.firebaseio.com/v0/item/${id}.json`
       );
 
+      if (!itemRes.ok) {
+        await itemRes.text(); // Read the response body to prevent a memory leak
+        return null;
+      }
+
       const _item: Item = await itemRes.json();
       // Calculate relative time server side to prevent rendering 1 second ago on server and 2 seconds ago on client. This fixes a react hydration error.
       _item.relativeTime = getRelativeTimeString(_item.time * 1_000);
@@ -78,6 +83,10 @@ export async function getOgImageUrlFromUrl(url: string) {
   const [res, error] = await trytm(fetch(url, {}));
   if (error || !res.ok) {
     console.log("Failed to fetch url", url);
+    // Read the response body to prevent a memory leak
+    if (res) {
+      await res.text();
+    }
     return null;
   }
 
