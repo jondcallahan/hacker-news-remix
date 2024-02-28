@@ -73,7 +73,6 @@ const Document = ({ children }: DocumentProps) => {
       >
         {children}
         <ScrollRestoration getKey={(location) => location.pathname} />
-        <LiveReload />
         <Scripts />
       </chakra.body>
     </html>
