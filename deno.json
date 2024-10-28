@@ -1,0 +1,19 @@
+{
+  "imports": {
+    "~/": "./app/"
+  },
+  "fmt": {
+    "exclude": [
+      "!app/"
+    ]
+  },
+  "compilerOptions": {
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2019"
+    ],
+    "jsx": "react-jsx",
+    "strict": true
+  }
+}

@@ -1,1 +1,8 @@
-{}
+{
+  "deno.enable": true,
+  "deno.lint": true,
+  "[typescript, typescriptreact, javascript, javascriptreact, json, typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "prettier.enable": false
+}

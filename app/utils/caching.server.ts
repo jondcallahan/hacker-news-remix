@@ -11,7 +11,7 @@ const DEFAULT_CACHE_TTL = 60; // 1 minute
 export async function getOrSetToCache(
   key: string,
   getter: () => Promise<any>,
-  ttl: number = DEFAULT_CACHE_TTL
+  ttl: number = DEFAULT_CACHE_TTL,
 ) {
   const cachedValue = await redis.get(key);
   if (cachedValue) {

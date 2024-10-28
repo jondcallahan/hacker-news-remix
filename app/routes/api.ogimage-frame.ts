@@ -1,7 +1,7 @@
-import { LoaderFunction } from "@remix-run/node";
-import { getOgImageUrlFromUrl } from "~/utils/api.server";
-import { getOrSetToCache } from "~/utils/caching.server";
-import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
+import { LoaderFunction } from "@remix-run/server-runtime";
+import { getOgImageUrlFromUrl } from "~/utils/api.server.ts";
+import { getOrSetToCache } from "~/utils/caching.server.ts";
+import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent.tsx";
 // import { getOgImageUrlFromUrl } from "./api/ogImage";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -18,14 +18,16 @@ export const loader: LoaderFunction = async ({ request }) => {
     async () => {
       return getOgImageUrlFromUrl(url);
     },
-    60 * 60 * 24 // Cache OG Image for 1 day
+    60 * 60 * 24, // Cache OG Image for 1 day
   );
 
   // If we couldn't find an og:image, return a default image
   if (!ogImageUrl) {
-    ogImageUrl = `data:image/svg+xml;base64,${btoa(
-      getOGImagePlaceholderContent(new URL(url).hostname)
-    )}`;
+    ogImageUrl = `data:image/svg+xml;base64,${
+      btoa(
+        getOGImagePlaceholderContent(new URL(url).hostname),
+      )
+    }`;
   }
 
   // Return an html string that gets iframe'd into the $id page via HeroImage component
@@ -45,6 +47,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       headers: {
         "content-type": "text/html",
       },
-    }
+    },
   );
 };

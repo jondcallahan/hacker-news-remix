@@ -1,9 +1,9 @@
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction } from "@remix-run/server-runtime";
 import { getPlaiceholder } from "plaiceholder";
-import { getOrSetToCache } from "~/utils/caching.server";
+import { getOrSetToCache } from "~/utils/caching.server.ts";
 import { trytm } from "@bdsqqq/try";
-import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
-import { getOgImageUrlFromUrl } from "~/utils/api.server";
+import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent.tsx";
+import { getOgImageUrlFromUrl } from "~/utils/api.server.ts";
 
 export const loader: LoaderFunction = async ({ request }) => {
   // Request will come in like /api/ogImage?url=https://remix.run
@@ -19,7 +19,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     async () => {
       return getOgImageUrlFromUrl(url);
     },
-    60 * 60 * 24 // Cache OG Image for 1 day
+    60 * 60 * 24, // Cache OG Image for 1 day
   );
 
   const text = new URL(url).hostname;
@@ -47,7 +47,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         Accept: request.headers.get("Accept") || "image/*",
         "If-None-Match": request.headers.get("If-none-match") || "",
       },
-    })
+    }),
   );
 
   if (error) {
@@ -81,7 +81,7 @@ export const loader: LoaderFunction = async ({ request }) => {
           return null;
         }
       },
-      60 * 60 * 24
+      60 * 60 * 24,
     );
   } else {
     // read the response body to prevent a memory leak

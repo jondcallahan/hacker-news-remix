@@ -1,5 +1,5 @@
-import { Box, Text, chakra } from "@chakra-ui/react";
-import { Item } from "~/utils/api.server";
+import { Box, chakra, Text } from "@chakra-ui/react";
+import { Item } from "~/utils/api.server.ts";
 
 export function Comment(
   props: {
@@ -8,7 +8,7 @@ export function Comment(
     boxProps?: React.ComponentProps<typeof Box>;
     originalPoster?: string;
     "data-testid"?: string;
-  } & React.ComponentProps<typeof chakra.details>
+  } & React.ComponentProps<typeof chakra.details>,
 ) {
   const { comment, children, boxProps, originalPoster, ...rest } = props;
 

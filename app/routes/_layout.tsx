@@ -3,10 +3,10 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
+  Container,
   Heading,
   Link as ChakraLink,
   Progress,
-  Container,
   Text,
 } from "@chakra-ui/react";
 import {
@@ -38,7 +38,7 @@ export default function Layout() {
                   to="/"
                   color={"white"}
                   _visited={{ color: "white" }}
-                  unstable_viewTransition
+                  viewTransition
                 >
                   Home
                 </BreadcrumbLink>
@@ -47,22 +47,22 @@ export default function Layout() {
                 if (handle?.showBreadcrumb) {
                   return (
                     <BreadcrumbItem key={data.story.id}>
-                      {data.story.url ? (
-                        <BreadcrumbLink
-                          href={data.story.url}
-                          as={ChakraLink}
-                          isExternal
-                          display="flex"
-                          alignItems="center"
-                          gap="1"
-                          color={"white"}
-                          _visited={{ color: "white" }}
-                        >
-                          {data.story.title} ↗
-                        </BreadcrumbLink>
-                      ) : (
-                        <>{data.story.title}</>
-                      )}
+                      {data.story.url
+                        ? (
+                          <BreadcrumbLink
+                            href={data.story.url}
+                            as={ChakraLink}
+                            isExternal
+                            display="flex"
+                            alignItems="center"
+                            gap="1"
+                            color={"white"}
+                            _visited={{ color: "white" }}
+                          >
+                            {data.story.title} ↗
+                          </BreadcrumbLink>
+                        )
+                        : <>{data.story.title}</>}
                     </BreadcrumbItem>
                   );
                 }

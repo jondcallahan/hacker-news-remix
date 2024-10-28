@@ -22,7 +22,7 @@ export function getRelativeTimeString(date: Date | number): string {
     "year",
   ];
   const unitIndex = cutoffs.findIndex(
-    (cutoff) => cutoff > Math.abs(deltaSeconds)
+    (cutoff) => cutoff > Math.abs(deltaSeconds),
   );
   const divider = unitIndex ? cutoffs[unitIndex - 1] : 1;
   return formatter.format(Math.floor(deltaSeconds / divider), units[unitIndex]);
