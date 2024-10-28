@@ -1,6 +1,8 @@
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 
-const redis = new Redis(process.env.REDIS_URL as string);
+const REDIS_URL = Deno.env.get("REDIS_URL");
+
+const redis = new Redis(REDIS_URL as string);
 const DEFAULT_CACHE_TTL = 60; // 1 minute
 
 /* This function returns the value that getter function returns.
