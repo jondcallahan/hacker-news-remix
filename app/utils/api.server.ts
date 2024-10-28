@@ -1,6 +1,6 @@
 import { trytm } from "@bdsqqq/try";
-import { getOrSetToCache } from "./caching.server";
-import { getRelativeTimeString } from "./time";
+import { getOrSetToCache } from "./caching.server.ts";
+import { getRelativeTimeString } from "./time.ts";
 import { DomHandler, DomUtils, Parser } from "htmlparser2";
 
 export type Item = {
@@ -23,7 +23,7 @@ export const getItem = async (id: string): Promise<Item | null> => {
   const item = await getOrSetToCache(`item:${id}`, async () => {
     try {
       const itemRes = await fetch(
-        `https://hacker-news.firebaseio.com/v0/item/${id}.json`
+        `https://hacker-news.firebaseio.com/v0/item/${id}.json`,
       );
 
       if (!itemRes.ok) {
@@ -51,13 +51,13 @@ export const getTopStories = async (limit: number): Promise<Item[] | null> => {
   return getOrSetToCache(key, async () => {
     try {
       const topStoryIdsRes = await fetch(
-        "https://hacker-news.firebaseio.com/v0/topstories.json"
+        "https://hacker-news.firebaseio.com/v0/topstories.json",
       );
       const topStoryIds = await topStoryIdsRes.json();
       return Promise.all(
         topStoryIds.slice(0, limit).map((id: number) => {
           return getItem(id.toString());
-        })
+        }),
       );
     } catch (error) {
       console.error(error);
@@ -71,9 +71,11 @@ export const fetchAllKids = async (id: string) => {
 
   await Promise.all(
     item?.kids?.map(
-      async (id: string, index: number) =>
-        (item.kids[index] = await fetchAllKids(id))
-    ) || []
+      async (
+        id: string,
+        index: number,
+      ) => (item.kids[index] = await fetchAllKids(id)),
+    ) || [],
   );
 
   return item;

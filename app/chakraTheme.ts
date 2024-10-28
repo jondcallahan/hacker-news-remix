@@ -20,7 +20,8 @@ export const theme = extendTheme({
     serif: "Vollkorn, Charter, Georgia, serif",
     heading:
       "'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif",
-    body: "'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif",
+    body:
+      "'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif",
   },
   styles: {
     global: {

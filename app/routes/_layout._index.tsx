@@ -1,24 +1,24 @@
-import { json, LoaderFunction } from "@remix-run/node";
+import { json, LoaderFunction } from "@remix-run/server-runtime";
 import {
   Link as RemixLink,
+  NavLink,
   useLoaderData,
   useNavigate,
-  NavLink,
 } from "@remix-run/react";
-import { getTopStories } from "~/utils/api.server";
+import { getTopStories } from "~/utils/api.server.ts";
 import {
   Box,
+  chakra,
+  Code,
+  Flex,
   Grid,
   Heading,
-  Text,
-  Link as ChakraLink,
-  Flex,
   Image,
-  chakra,
+  Link as ChakraLink,
   Tag,
-  TagLeftIcon,
   TagLabel,
-  Code,
+  TagLeftIcon,
+  Text,
 } from "@chakra-ui/react";
 
 type StoryType = {
@@ -107,7 +107,7 @@ export default function Index() {
                         try {
                           document
                             .querySelectorAll<HTMLAnchorElement>(
-                              "a[data-link-type=story]"
+                              "a[data-link-type=story]",
                             )
                             .forEach((val, idx, list) => {
                               if (val === document.activeElement) {
@@ -122,7 +122,7 @@ export default function Index() {
                         try {
                           document
                             .querySelectorAll<HTMLAnchorElement>(
-                              "a[data-link-type=story]"
+                              "a[data-link-type=story]",
                             )
                             .forEach((val, idx, list) => {
                               if (val === document.activeElement) {
@@ -163,7 +163,7 @@ export default function Index() {
                     textDecoration: "none",
                   }}
                   aria-label={`View comments for ${story.title}`}
-                  unstable_viewTransition
+                  viewTransition
                 >
                   <Tag size="lg">
                     <TagLeftIcon
@@ -184,7 +184,7 @@ export default function Index() {
                         </chakra.svg>
                       )}
                     />
-                    <TagLabel>{story.score} points </TagLabel>
+                    <TagLabel>{story.score} points</TagLabel>
                   </Tag>
                   <Tag
                     colorScheme="blue"

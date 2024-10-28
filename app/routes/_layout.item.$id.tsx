@@ -3,25 +3,26 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   redirect,
-} from "@remix-run/node";
+} from "@remix-run/server-runtime";
 import { useLoaderData, useNavigate } from "@remix-run/react";
-import { fetchAllKids, Item } from "~/utils/api.server";
+import { fetchAllKids, Item } from "~/utils/api.server.ts";
 import {
   Box,
-  Heading,
-  Text,
   Flex,
-  Img,
   Grid,
+  Heading,
+  Img,
   Link as ChakraLink,
+  Text,
 } from "@chakra-ui/react";
-import { getFromCache } from "~/utils/caching.server";
+import { getFromCache } from "~/utils/caching.server.ts";
 import type { GetPlaiceholderReturn } from "plaiceholder";
-import { Comment } from "~/components/Comment";
-import { getTimeZoneFromCookie } from "~/utils/time";
-import HeroImage from "~/components/HeroImage";
+import { Comment } from "~/components/Comment.tsx";
+import { getTimeZoneFromCookie } from "~/utils/time.ts";
+import HeroImage from "~/components/HeroImage.tsx";
 import { getTweet, Tweet } from "react-tweet/api";
 import { useHotkeys } from "react-hotkeys-hook";
+import process from "node:process";
 
 export const handle = {
   showBreadcrumb: true,
@@ -88,24 +89,28 @@ function renderNestedComments(kids: Item[], originalPoster?: string) {
   return (
     <>
       {kids?.map((kid) =>
-        !kid || kid.dead || !kid.text || kid.deleted ? null : (
-          <Comment key={kid.id} comment={kid} originalPoster={originalPoster}>
-            {kid.kids?.length && renderNestedComments(kid.kids, originalPoster)}
-          </Comment>
-        )
+        !kid || kid.dead || !kid.text || kid.deleted
+          ? null
+          : (
+            <Comment key={kid.id} comment={kid} originalPoster={originalPoster}>
+              {kid.kids?.length &&
+                renderNestedComments(kid.kids, originalPoster)}
+            </Comment>
+          )
       )}
     </>
   );
 }
 
 export default function ItemPage() {
-  const { story, OGImagePlaceholder, timeZone, tweet } =
-    useLoaderData<typeof loader>();
+  const { story, OGImagePlaceholder, timeZone, tweet } = useLoaderData<
+    typeof loader
+  >();
   const navigate = useNavigate();
 
   useHotkeys("h", () => {
     navigate("/", {
-      unstable_viewTransition: true,
+      viewTransition: true,
     });
   });
 
@@ -118,15 +123,13 @@ export default function ItemPage() {
 
     // Find the first comment that is below the current scroll position
     const nextComment = Array.from(comments).find(
-      (comment) => comment.getBoundingClientRect().top > scrollPosition
+      (comment) => comment.getBoundingClientRect().top > scrollPosition,
     );
 
     // If we found a comment, focus it
     if (nextComment) {
       nextComment.focus();
-    }
-
-    // Otherwise, focus the first comment
+    } // Otherwise, focus the first comment
     else {
       comments[0]?.focus();
     }
@@ -153,9 +156,7 @@ export default function ItemPage() {
     // If we found a comment, focus it
     if (previousComment) {
       previousComment.focus();
-    }
-
-    // Otherwise, focus the last comment
+    } // Otherwise, focus the last comment
     else {
       comments[comments.length - 1]?.focus();
     }
@@ -183,26 +184,28 @@ export default function ItemPage() {
           viewTransitionName: "story-title",
         }}
       >
-        {story.url ? (
-          <Box
-            width="full"
-            overflow="hidden"
-            borderTopRadius="lg"
-            position="relative"
-            height={["150px", "300px"]}
-            borderBottomWidth="2px"
-            borderBottomColor="gray.100"
-            borderBottomStyle="solid"
-          >
-            <a href={story.url}>
-              <HeroImage
-                story={story}
-                OGImagePlaceholder={OGImagePlaceholder}
-                tweet={tweet}
-              />
-            </a>
-          </Box>
-        ) : null}
+        {story.url
+          ? (
+            <Box
+              width="full"
+              overflow="hidden"
+              borderTopRadius="lg"
+              position="relative"
+              height={["150px", "300px"]}
+              borderBottomWidth="2px"
+              borderBottomColor="gray.100"
+              borderBottomStyle="solid"
+            >
+              <a href={story.url}>
+                <HeroImage
+                  story={story}
+                  OGImagePlaceholder={OGImagePlaceholder}
+                  tweet={tweet}
+                />
+              </a>
+            </Box>
+          )
+          : null}
         <Grid gap={1} paddingX={3} paddingY={2}>
           <Heading size="md">{story?.title}</Heading>
           <ChakraLink
@@ -219,9 +222,14 @@ export default function ItemPage() {
               {getDateFormatter(timeZone).format(new Date(story.time * 1_000))}
             </time>
           </Text>
-          {story.text ? (
-            <Text as="span" dangerouslySetInnerHTML={{ __html: story.text }} />
-          ) : null}
+          {story.text
+            ? (
+              <Text
+                as="span"
+                dangerouslySetInnerHTML={{ __html: story.text }}
+              />
+            )
+            : null}
         </Grid>
       </Box>
       {/* End story card */}
