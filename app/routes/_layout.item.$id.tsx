@@ -219,7 +219,10 @@ export default function ItemPage() {
           <Text>
             By {story.by} at{" "}
             <time>
-              {getDateFormatter(timeZone).format(new Date(story.time * 1_000))}
+              {getDateFormatter(timeZone)
+                .format(new Date(story.time * 1_000))
+                .split(/\s|&nbsp;/g) // Browser version uses a space, server uses &nbsp; this causes a hydration error so we replace it with a space to make it consistent
+                .join(" ")}
             </time>
           </Text>
           {story.text

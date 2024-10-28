@@ -11,7 +11,7 @@
   "type": "module",
   "dependencies": {
     "@bdsqqq/try": "^2.3.1",
-    "@chakra-ui/react": "2.10.3",
+    "@chakra-ui/react": "2.8.2",
     "@emotion/cache": "^11.10.5",
     "@emotion/react": "^11.11.1",
     "@emotion/server": "^11.11.0",
