@@ -8,12 +8,12 @@ import { useLoaderData, useNavigate } from "@remix-run/react";
 import { fetchAllKids, Item } from "~/utils/api.server";
 import {
   Box,
-  Heading,
-  Text,
   Flex,
-  Img,
   Grid,
+  Heading,
+  Img,
   Link as ChakraLink,
+  Text,
 } from "@chakra-ui/react";
 import { getFromCache } from "~/utils/caching.server";
 import type { GetPlaiceholderReturn } from "plaiceholder";
@@ -59,6 +59,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     timeZone = getTimeZoneFromCookie(cookies) || "America/Los_Angeles";
   }
 
+  // Fetch the story with all comments
   const story = await fetchAllKids(id);
   const OGImagePlaceholder: GetPlaiceholderReturn | null = story?.url
     ? await getFromCache(`ogimage:placeholder:${story.url}`)
@@ -84,23 +85,38 @@ const getDateFormatter = (timeZone: string) =>
   });
 
 // Recursively render all comments and their children
-function renderNestedComments(kids: Item[], originalPoster?: string) {
+function renderNestedComments(
+  kids: (Item | number)[],
+  originalPoster?: string,
+) {
   return (
     <>
-      {kids?.map((kid) =>
-        !kid || kid.dead || !kid.text || kid.deleted ? null : (
+      {kids?.map((kid) => {
+        // Skip ID-only comments (not loaded yet)
+        if (typeof kid === "number") {
+          return null;
+        }
+
+        // Skip dead, deleted or empty comments
+        if (!kid || kid.dead || !kid.text || kid.deleted) {
+          return null;
+        }
+
+        return (
           <Comment key={kid.id} comment={kid} originalPoster={originalPoster}>
-            {kid.kids?.length && renderNestedComments(kid.kids, originalPoster)}
+            {kid.kids?.length && Array.isArray(kid.kids) &&
+              renderNestedComments(kid.kids, originalPoster)}
           </Comment>
-        )
-      )}
+        );
+      })}
     </>
   );
 }
 
 export default function ItemPage() {
-  const { story, OGImagePlaceholder, timeZone, tweet } =
-    useLoaderData<typeof loader>();
+  const { story, OGImagePlaceholder, timeZone, tweet } = useLoaderData<
+    typeof loader
+  >();
   const navigate = useNavigate();
 
   useHotkeys("h", () => {
@@ -118,17 +134,16 @@ export default function ItemPage() {
 
     // Find the first comment that is below the current scroll position
     const nextComment = Array.from(comments).find(
-      (comment) => comment.getBoundingClientRect().top > scrollPosition
+      (comment) => comment.getBoundingClientRect().top > scrollPosition,
     );
 
     // If we found a comment, focus it
     if (nextComment) {
-      nextComment.focus();
-    }
-
-    // Otherwise, focus the first comment
+      (nextComment as HTMLElement).focus();
+    } // Otherwise, focus the first comment
     else {
-      comments[0]?.focus();
+      const firstComment = comments[0] as HTMLElement;
+      firstComment?.focus();
     }
 
     // Scroll to the focused comment
@@ -152,12 +167,11 @@ export default function ItemPage() {
 
     // If we found a comment, focus it
     if (previousComment) {
-      previousComment.focus();
-    }
-
-    // Otherwise, focus the last comment
+      (previousComment as HTMLElement).focus();
+    } // Otherwise, focus the last comment
     else {
-      comments[comments.length - 1]?.focus();
+      const lastComment = comments[comments.length - 1] as HTMLElement;
+      lastComment?.focus();
     }
 
     // Scroll to the focused comment
@@ -183,26 +197,28 @@ export default function ItemPage() {
           viewTransitionName: "story-title",
         }}
       >
-        {story.url ? (
-          <Box
-            width="full"
-            overflow="hidden"
-            borderTopRadius="lg"
-            position="relative"
-            height={["150px", "300px"]}
-            borderBottomWidth="2px"
-            borderBottomColor="gray.100"
-            borderBottomStyle="solid"
-          >
-            <a href={story.url}>
-              <HeroImage
-                story={story}
-                OGImagePlaceholder={OGImagePlaceholder}
-                tweet={tweet}
-              />
-            </a>
-          </Box>
-        ) : null}
+        {story.url
+          ? (
+            <Box
+              width="full"
+              overflow="hidden"
+              borderTopRadius="lg"
+              position="relative"
+              height={["150px", "300px"]}
+              borderBottomWidth="2px"
+              borderBottomColor="gray.100"
+              borderBottomStyle="solid"
+            >
+              <a href={story.url}>
+                <HeroImage
+                  story={story}
+                  OGImagePlaceholder={OGImagePlaceholder}
+                  tweet={tweet}
+                />
+              </a>
+            </Box>
+          )
+          : null}
         <Grid gap={1} paddingX={3} paddingY={2}>
           <Heading size="md">{story?.title}</Heading>
           <ChakraLink
@@ -219,15 +235,27 @@ export default function ItemPage() {
               {getDateFormatter(timeZone).format(new Date(story.time * 1_000))}
             </time>
           </Text>
-          {story.text ? (
-            <Text as="span" dangerouslySetInnerHTML={{ __html: story.text }} />
-          ) : null}
+          {story.text
+            ? (
+              <Text
+                as="span"
+                dangerouslySetInnerHTML={{ __html: story.text }}
+              />
+            )
+            : null}
         </Grid>
       </Box>
       {/* End story card */}
       <Flex wrap="wrap" gap={4}>
-        {story.kids?.map((comment) => {
+        {story.kids?.map((commentItem) => {
+          // Handle when the comment is just an ID (not loaded)
+          if (typeof commentItem === "number") {
+            return null;
+          }
+
+          const comment = commentItem as Item;
           if (!comment || comment.dead || comment.deleted) return null;
+
           return (
             <Comment
               key={comment.id}
@@ -243,7 +271,7 @@ export default function ItemPage() {
               originalPoster={story.by}
               data-testid="comment"
             >
-              {comment.kids?.length &&
+              {comment.kids?.length && Array.isArray(comment.kids) &&
                 renderNestedComments(comment.kids, story.by)}
             </Comment>
           );

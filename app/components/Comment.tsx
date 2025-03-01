@@ -1,4 +1,4 @@
-import { Box, Text, chakra } from "@chakra-ui/react";
+import { Box, chakra, Text } from "@chakra-ui/react";
 import { Item } from "~/utils/api.server";
 
 export function Comment(
@@ -8,23 +8,29 @@ export function Comment(
     boxProps?: React.ComponentProps<typeof Box>;
     originalPoster?: string;
     "data-testid"?: string;
-  } & React.ComponentProps<typeof chakra.details>
+  } & React.ComponentProps<typeof chakra.details>,
 ) {
   const { comment, children, boxProps, originalPoster, ...rest } = props;
+
+  // Fix type issue with e.nativeEvent.target
+  const handleClick = (e: React.MouseEvent<HTMLDetailsElement>) => {
+    const target = e.nativeEvent.target as HTMLElement;
+
+    // Close the details element unless the user clicks on a link or summary
+    if (
+      target &&
+      target.tagName !== "A" &&
+      target.tagName !== "SUMMARY"
+    ) {
+      e.currentTarget.removeAttribute("open");
+      e.stopPropagation(); // don't bubble up to the next details
+    }
+  };
 
   return (
     <chakra.details
       key={comment.id}
-      onClick={(e) => {
-        // close the details element unless the user clicks on a link or summary
-        if (
-          e.nativeEvent.target.tagName !== "A" &&
-          e.nativeEvent.target.tagName !== "SUMMARY"
-        ) {
-          e.currentTarget.removeAttribute("open");
-          e.stopPropagation(); // don't bubble up to the next details
-        }
-      }}
+      onClick={handleClick}
       open
       cursor="pointer"
       marginTop={2}
@@ -49,8 +55,10 @@ export function Comment(
         >
           {comment.by}
         </chakra.span>{" "}
-        | {comment.kids?.length || "0"}{" "}
-        {comment.kids?.length === 1 ? "comment" : "comments"}
+        | {Array.isArray(comment.kids) ? comment.kids?.length || "0" : "0"}{" "}
+        {Array.isArray(comment.kids) && comment.kids?.length === 1
+          ? "comment"
+          : "comments"}
         {" | "}
         {comment.relativeTime}
       </chakra.summary>
