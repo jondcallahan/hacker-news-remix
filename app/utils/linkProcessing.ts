@@ -1,4 +1,9 @@
 export function replaceHnLinksWithReader(html: string): string {
+  // Always log that function is being called (for debugging)
+  if (typeof window !== 'undefined') {
+    console.log('replaceHnLinksWithReader called with:', html);
+  }
+  
   if (!html) return html;
   
   // Replace HN item links with reader links
@@ -8,15 +13,17 @@ export function replaceHnLinksWithReader(html: string): string {
   // - https://news.ycombinator.com/item?id=12345&other=param
   // - https://news.ycombinator.com/item?id=12345#comment
   
-  // Add debugging to see if function is being called
   const result = html.replace(
     /https?:\/\/news\.ycombinator\.com\/item\?id=(\d+)(?:[&?#][^"\s<>]*)?/g,
     'https://hn.joncallahan.com/item/$1'
   );
   
-  // Log when we find and replace HN links (only in development)
-  if (typeof window !== 'undefined' && html !== result) {
-    console.log('HN link replacement:', { original: html, replaced: result });
+  // Log the result always (for debugging)
+  if (typeof window !== 'undefined') {
+    console.log('replaceHnLinksWithReader result:', result);
+    if (html !== result) {
+      console.log('🎯 HN LINK REPLACED!', { original: html, replaced: result });
+    }
   }
   
   return result;
