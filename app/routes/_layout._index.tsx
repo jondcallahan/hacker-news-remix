@@ -5,6 +5,7 @@ import {
   useNavigate,
   NavLink,
 } from "@remix-run/react";
+import { haptic } from "ios-haptics";
 import { getTopStories } from "~/utils/api.server";
 import {
   Box,
@@ -164,6 +165,7 @@ export default function Index() {
                   }}
                   aria-label={`View comments for ${story.title}`}
                   unstable_viewTransition
+                  onClick={() => haptic()}
                 >
                   <Tag size="lg">
                     <TagLeftIcon

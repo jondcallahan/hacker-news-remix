@@ -1,5 +1,6 @@
 import { Box, chakra, Text } from "@chakra-ui/react";
 import { Item } from "~/utils/api.server";
+import { haptic } from "ios-haptics";
 
 export function Comment(
   props: {
@@ -22,6 +23,7 @@ export function Comment(
       target.tagName !== "A" &&
       target.tagName !== "SUMMARY"
     ) {
+      haptic.confirm();
       e.currentTarget.removeAttribute("open");
       e.stopPropagation(); // don't bubble up to the next details
     }
