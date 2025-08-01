@@ -1,5 +1,6 @@
 import { Box, chakra, Text } from "@chakra-ui/react";
 import { Item } from "~/utils/api.server";
+import { replaceHnLinksWithReader } from "~/utils/linkProcessing";
 
 export function Comment(
   props: {
@@ -79,7 +80,7 @@ export function Comment(
           as="div"
           fontFamily="serif"
           marginX={4}
-          dangerouslySetInnerHTML={{ __html: comment.text || "" }}
+          dangerouslySetInnerHTML={{ __html: replaceHnLinksWithReader(comment.text || "") }}
         />
         {children && <Box paddingX={2}>{children}</Box>}
       </Box>
