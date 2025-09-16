@@ -10,15 +10,21 @@ import {
   Text,
 } from "@chakra-ui/react";
 import {
-  Link as RemixLink,
+  Link as RouterLink,
   NavLink,
   Outlet,
   useMatches,
   useNavigation,
-} from "@remix-run/react";
+} from "react-router";
+import type { Item } from "~/utils/api.server";
+
+type LayoutMatch = {
+  data?: { story: Item };
+  handle?: { showBreadcrumb?: boolean };
+};
 
 export default function Layout() {
-  const matches = useMatches();
+  const matches = useMatches() as LayoutMatch[];
   const navigation = useNavigation();
 
   return (
@@ -34,17 +40,17 @@ export default function Layout() {
             <Breadcrumb as="section" colorScheme="white">
               <BreadcrumbItem>
                 <BreadcrumbLink
-                  as={RemixLink}
+                  as={RouterLink}
                   to="/"
                   color={"white"}
                   _visited={{ color: "white" }}
-                  unstable_viewTransition
+                  viewTransition
                 >
                   Home
                 </BreadcrumbLink>
               </BreadcrumbItem>
               {matches.map(({ data, handle }) => {
-                if (handle?.showBreadcrumb) {
+                if (handle?.showBreadcrumb && data?.story) {
                   return (
                     <BreadcrumbItem key={data.story.id}>
                       {data.story.url ? (

@@ -1,12 +1,11 @@
-import { LinksFunction, type MetaFunction } from "@remix-run/node";
+import type { LinksFunction, MetaFunction } from "react-router";
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "@remix-run/react";
+} from "react-router";
 import { type KeyboardEvent } from "react";
 import { ChakraProvider, chakra } from "@chakra-ui/react";
 import { theme } from "./chakraTheme";

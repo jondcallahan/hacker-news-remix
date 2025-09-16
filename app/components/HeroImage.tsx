@@ -10,6 +10,7 @@ import {
   chakra,
 } from "@chakra-ui/react";
 import type { Tweet } from "react-tweet/api";
+import type { GetPlaiceholderReturn } from "plaiceholder";
 import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
 import { Item } from "~/utils/api.server";
 import { formatDate } from "~/utils/time";
@@ -111,9 +112,11 @@ export default function HeroImage({
   tweet,
 }: {
   story: Item;
-  OGImagePlaceholder: IGetPlaiceholderReturn | null;
+  OGImagePlaceholder: GetPlaiceholderReturn | null;
   tweet: Tweet | undefined;
 }) {
+  const storyUrl = story.url ?? "https://news.ycombinator.com";
+
   if (tweet && Object.keys(tweet).length > 0) {
     return <TweetEmbed tweet={tweet} />;
   }
@@ -127,11 +130,11 @@ export default function HeroImage({
         backgroundSize="cover"
         backgroundPosition="center"
         backgroundImage={`data:image/svg+xml;base64,${btoa(
-          getOGImagePlaceholderContent(new URL(story.url).hostname)
+          getOGImagePlaceholderContent(new URL(storyUrl).hostname)
         )}`}
       />
       <chakra.iframe
-        src={`/api/ogImage-frame?url=${story.url}`}
+        src={`/api/ogImage-frame?url=${storyUrl}`}
         position="absolute"
         top={0}
         left={0}
