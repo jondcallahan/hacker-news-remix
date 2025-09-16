@@ -1,12 +1,9 @@
-import { vitePlugin as remix } from "@remix-run/dev";
-import { installGlobals } from "@remix-run/node";
+import { reactRouter } from "@react-router/dev/vite";
 import morgan from "morgan";
 import { defineConfig, type ViteDevServer } from "vite";
 
-installGlobals();
-
 export default defineConfig({
-  plugins: [requestLogger(), remix()],
+  plugins: [requestLogger(), reactRouter()],
   optimizeDeps: {
     exclude: ["sharp"],
   },

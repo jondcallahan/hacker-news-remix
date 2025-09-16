@@ -1,10 +1,10 @@
-import { json, LoaderFunction } from "@remix-run/node";
 import {
-  Link as RemixLink,
+  Link as RouterLink,
   useLoaderData,
   useNavigate,
   NavLink,
-} from "@remix-run/react";
+} from "react-router";
+import type { Item } from "~/utils/api.server";
 import { haptic } from "ios-haptics";
 import { getTopStories } from "~/utils/api.server";
 import {
@@ -22,31 +22,19 @@ import {
   Code,
 } from "@chakra-ui/react";
 
-type StoryType = {
-  by: string;
-  descendants: number;
-  id: number;
-  kids: number[];
-  score: number;
-  time: number;
-  relativeTime: string;
-  title: string;
-  type: string;
-  url: string;
-};
-
-export const loader: LoaderFunction = async () => {
+export async function loader() {
   const timerStart = process.hrtime();
 
   const storiesPerPage = 30;
-  const allStories = await getTopStories(storiesPerPage);
+  const allStories = (await getTopStories(storiesPerPage)) ?? [];
+  const stories = allStories.filter((story): story is Item => story != null);
 
   // Log the time it took to get the value in ms
   const timerEnd = process.hrtime(timerStart);
   console.log(`topstories took ${timerEnd[0] * 1e3 + timerEnd[1] / 1e6}ms`);
 
-  return json({ allStories });
-};
+  return { allStories: stories };
+}
 
 export function ErrorBoundary({ error }: { error: Error }) {
   return (
@@ -58,13 +46,14 @@ export function ErrorBoundary({ error }: { error: Error }) {
 }
 
 export default function Index() {
-  const data = useLoaderData();
+  const data = useLoaderData<typeof loader>();
   const navigate = useNavigate();
+  const stories = data?.allStories ?? [];
 
   return (
     <>
       <Flex wrap="wrap" gap="4" justifyContent="center">
-        {data?.allStories.map((story: StoryType) => {
+        {stories.map((story) => {
           let storyUrl;
           if (story.url) storyUrl = new URL(story.url);
 
@@ -96,7 +85,7 @@ export default function Index() {
                     </Text>
                   </Flex>
                 )}
-                <RemixLink to={story.url || `/item/${story.id}`}>
+                <RouterLink to={story.url || `/item/${story.id}`}>
                   <Heading
                     size="md"
                     scrollMarginY="64px"
@@ -145,7 +134,7 @@ export default function Index() {
                   >
                     {story.title}
                   </Heading>
-                </RemixLink>
+                </RouterLink>
 
                 <Text>
                   By {story.by} {story.relativeTime}
@@ -164,7 +153,7 @@ export default function Index() {
                     textDecoration: "none",
                   }}
                   aria-label={`View comments for ${story.title}`}
-                  unstable_viewTransition
+                  viewTransition
                   onClick={() => haptic()}
                 >
                   <Tag size="lg">

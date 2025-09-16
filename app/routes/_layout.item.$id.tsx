@@ -1,10 +1,9 @@
 import {
-  json,
-  LoaderFunctionArgs,
-  MetaFunction,
+  type LoaderFunctionArgs,
+  type MetaFunction,
   redirect,
-} from "@remix-run/node";
-import { useLoaderData, useNavigate } from "@remix-run/react";
+} from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
 import { fetchAllKids, Item } from "~/utils/api.server";
 import {
   Box,
@@ -47,7 +46,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => [
   },
 ];
 
-export const loader = async ({ params, request }: LoaderFunctionArgs) => {
+export async function loader({ params, request }: LoaderFunctionArgs) {
   const timerStart = process.hrtime();
   const { id } = params;
 
@@ -75,8 +74,8 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   }
   console.log(`item:${id} took ${timerEnd[0] * 1e3 + timerEnd[1] / 1e6}ms`);
 
-  return json({ story, OGImagePlaceholder, timeZone, tweet });
-};
+  return { story, OGImagePlaceholder, timeZone, tweet };
+}
 
 const getDateFormatter = (timeZone: string) =>
   new Intl.DateTimeFormat("en", {
@@ -121,7 +120,7 @@ export default function ItemPage() {
 
   useHotkeys("h", () => {
     navigate("/", {
-      unstable_viewTransition: true,
+      viewTransition: true,
     });
   });
 

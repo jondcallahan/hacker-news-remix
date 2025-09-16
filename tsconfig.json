@@ -10,10 +10,11 @@
       "DOM.Iterable",
       "ES2019"
     ],
+    "module": "esnext",
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "target": "ES2019",
     "strict": true,
@@ -24,6 +25,7 @@
       ]
     },
     "noEmit": true,
+    "skipLibCheck": true,
     "allowJs": true,
     "forceConsistentCasingInFileNames": true
   }

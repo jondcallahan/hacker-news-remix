@@ -1,36 +1,36 @@
-import { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "react-router";
 import { getOgImageUrlFromUrl } from "~/utils/api.server";
 import { getOrSetToCache } from "~/utils/caching.server";
 import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
 // import { getOgImageUrlFromUrl } from "./api/ogImage";
 
-export const loader: LoaderFunction = async ({ request }) => {
-  // Request will come in like /api/ogImage?url=https://remix.run
-  // Get the url from the request
-  const { searchParams } = new URL(request.url);
-  const url = searchParams.get("url");
+export async function loader({ request }: LoaderFunctionArgs) {
+	// Request will come in like /api/ogImage?url=https://remix.run
+	// Get the url from the request
+	const { searchParams } = new URL(request.url);
+	const url = searchParams.get("url");
 
-  if (!url) return new Response(null, { status: 400 });
+	if (!url) return new Response(null, { status: 400 });
 
-  // Get the og:image from the html text
-  let ogImageUrl = await getOrSetToCache(
-    `ogimage:${url}`,
-    async () => {
-      return getOgImageUrlFromUrl(url);
-    },
-    60 * 60 * 24 // Cache OG Image for 1 day
-  );
+	// Get the og:image from the html text
+	let ogImageUrl = await getOrSetToCache(
+		`ogimage:${url}`,
+		async () => {
+			return getOgImageUrlFromUrl(url);
+		},
+		60 * 60 * 24, // Cache OG Image for 1 day
+	);
 
-  // If we couldn't find an og:image, return a default image
-  if (!ogImageUrl) {
-    ogImageUrl = `data:image/svg+xml;base64,${btoa(
-      getOGImagePlaceholderContent(new URL(url).hostname)
-    )}`;
-  }
+	// If we couldn't find an og:image, return a default image
+	if (!ogImageUrl) {
+		ogImageUrl = `data:image/svg+xml;base64,${btoa(
+			getOGImagePlaceholderContent(new URL(url).hostname),
+		)}`;
+	}
 
-  // Return an html string that gets iframe'd into the $id page via HeroImage component
-  return new Response(
-    `
+	// Return an html string that gets iframe'd into the $id page via HeroImage component
+	return new Response(
+		`
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -41,10 +41,10 @@ export const loader: LoaderFunction = async ({ request }) => {
     </body>
     </html>
     `,
-    {
-      headers: {
-        "content-type": "text/html",
-      },
-    }
-  );
-};
+		{
+			headers: {
+				"content-type": "text/html",
+			},
+		},
+	);
+}

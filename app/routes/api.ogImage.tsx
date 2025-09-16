@@ -1,11 +1,11 @@
-import { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "react-router";
 import { getPlaiceholder } from "plaiceholder";
 import { getOrSetToCache } from "~/utils/caching.server";
 import { trytm } from "@bdsqqq/try";
 import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
 import { getOgImageUrlFromUrl } from "~/utils/api.server";
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderFunctionArgs) {
   // Request will come in like /api/ogImage?url=https://remix.run
   // Get the url from the request
   const { searchParams } = new URL(request.url);
@@ -89,4 +89,4 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   return imageRes;
-};
+}

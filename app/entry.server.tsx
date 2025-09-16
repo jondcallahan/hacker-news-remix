@@ -1,12 +1,12 @@
-import { PassThrough } from "node:stream";
+import { PassThrough, Readable } from "node:stream";
 import createEmotionCache from "@emotion/cache";
 import { CacheProvider as EmotionCacheProvider } from "@emotion/react";
 import createEmotionServer from "@emotion/server/create-instance";
-import type { AppLoadContext, EntryContext } from "@remix-run/node";
-import { RemixServer } from "@remix-run/react";
-import isbot from "isbot";
+import { createReadableStreamFromReadable } from "@react-router/node";
+import type { AppLoadContext, EntryContext } from "react-router";
+import { ServerRouter } from "react-router";
+import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
-import "dotenv/config";
 
 const ABORT_DELAY = 5000;
 
@@ -44,7 +44,7 @@ const handleBotRequest = (
 
     const { pipe, abort } = renderToPipeableStream(
       <EmotionCacheProvider value={emotionCache}>
-        <RemixServer context={remixContext} url={request.url} />
+        <ServerRouter context={remixContext} url={request.url} />
       </EmotionCacheProvider>,
       {
         onAllReady: () => {
@@ -53,11 +53,14 @@ const handleBotRequest = (
 
           const bodyWithStyles = emotionServer.renderStylesToNodeStream();
           reactBody.pipe(bodyWithStyles);
+          const stream = createReadableStreamFromReadable(
+            bodyWithStyles as unknown as Readable,
+          );
 
           responseHeaders.set("Content-Type", "text/html");
 
           resolve(
-            new Response(bodyWithStyles, {
+            new Response(stream, {
               headers: responseHeaders,
               status: didError ? 500 : responseStatusCode,
             })
@@ -111,7 +114,7 @@ const handleBrowserRequest = (
 
     const { pipe, abort } = renderToPipeableStream(
       <EmotionCacheProvider value={emotionCache}>
-        <RemixServer context={remixContext} url={request.url} />
+        <ServerRouter context={remixContext} url={request.url} />
       </EmotionCacheProvider>,
       {
         onShellReady: () => {
@@ -120,11 +123,14 @@ const handleBrowserRequest = (
 
           const bodyWithStyles = emotionServer.renderStylesToNodeStream();
           reactBody.pipe(bodyWithStyles);
+          const stream = createReadableStreamFromReadable(
+            bodyWithStyles as unknown as Readable,
+          );
 
           responseHeaders.set("Content-Type", "text/html");
 
           resolve(
-            new Response(bodyWithStyles, {
+            new Response(stream, {
               headers: responseHeaders,
               status: didError ? 500 : responseStatusCode,
             })
