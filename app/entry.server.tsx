@@ -5,7 +5,7 @@ import createEmotionServer from "@emotion/server/create-instance";
 import { createReadableStreamFromReadable } from "@react-router/node";
 import type { AppLoadContext, EntryContext } from "react-router";
 import { ServerRouter } from "react-router";
-import isbot from "isbot";
+import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 
 const ABORT_DELAY = 5000;
