@@ -2,7 +2,7 @@ import type { LinksFunction, MetaFunction } from "react-router";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import { type KeyboardEvent } from "react";
 import { ChakraProvider, chakra } from "@chakra-ui/react";
-import { Analytics } from "@vercel/analytics/remix";
+import { Analytics } from "@vercel/analytics/react";
 import { theme } from "./chakraTheme";
 
 import "@fontsource/vollkorn/latin.css";
