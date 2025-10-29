@@ -1,7 +1,5 @@
-import { trytm } from "@bdsqqq/try";
 import { getOrSetToCache } from "./caching.server";
 import { getRelativeTimeString } from "./time";
-import { DomHandler, DomUtils, Parser } from "htmlparser2";
 import { Agent } from "http";
 import https from "https";
 import ky from "ky";
@@ -138,11 +136,6 @@ export async function getOgImageUrlFromUrl(url: string) {
       retry: 2,
     }).text();
 
-    const handler = new DomHandler();
-    new Parser(handler).end(text);
-
-    const metaTags = DomUtils.findAll((el) => el.name === "meta", handler.dom);
-
     // Cast a wide net for og:image, any of these can be used but they are in priority order
     const imgUrls: Record<string, string> = {
       "og:image": "",
@@ -151,18 +144,24 @@ export async function getOgImageUrlFromUrl(url: string) {
       "twitter:image:src": "",
     };
 
-    metaTags.forEach((metaTag) => {
-      const property = metaTag.attribs.property;
-      let content = metaTag.attribs.content;
+    // Use Bun's native HTMLRewriter to extract meta tags
+    const rewriter = new HTMLRewriter().on('meta[property], meta[name]', {
+      element(el) {
+        const property = el.getAttribute('property') || el.getAttribute('name');
+        let content = el.getAttribute('content');
 
-      if (property && content && property in imgUrls) {
-        // ogImageUrl may be a relative path, if so prepend the url to get the full path
-        if (!content.startsWith("http")) {
-          content = new URL(content, url).href;
+        if (property && content && property in imgUrls) {
+          // ogImageUrl may be a relative path, if so prepend the url to get the full path
+          if (!content.startsWith('http')) {
+            content = new URL(content, url).href;
+          }
+          imgUrls[property] = content;
         }
-        imgUrls[property] = content;
-      }
+      },
     });
+
+    // Transform the HTML to extract the data
+    rewriter.transform(text);
 
     return (
       imgUrls["og:image"] ||
