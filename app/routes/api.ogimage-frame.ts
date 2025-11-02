@@ -1,44 +1,23 @@
 import type { LoaderFunctionArgs } from "react-router";
-import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
 
-// Minimal full-bleed image tile
+// Render image using background-image (matches original UI)
 function tileHtml(src: string): string {
 	return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    html,body{width:100%;height:100%;overflow:hidden}
-    img{width:100%;height:100%;object-fit:cover;display:block}
-  </style>
 </head>
-<body>
-  <img src="${src}" alt="Preview"/>
+<body style="margin:0;padding:0;">
+  <div style="min-height:100cqh;height:100%;width:100%;background-image:url(${src});background-size:cover;background-position:center;"></div>
 </body>
 </html>`.trim();
 }
 
-// Fallback: HN-style placeholder
+// Fallback using original SVG placeholder (matches original UI)
 function fallbackHtml(domain: string): string {
-	return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <style>
-    *{margin:0;padding:0}
-    html,body{width:100%;height:100%;overflow:hidden}
-    .placeholder{width:100%;height:100%;background:#ff6600;color:white;display:flex;align-items:center;justify-content:center;font:bold 32px sans-serif;flex-direction:column;gap:8px}
-    .domain{font-size:16px;font-weight:normal;opacity:0.9}
-  </style>
-</head>
-<body>
-  <div class="placeholder">
-    <div>HN</div>
-    <div class="domain">${domain}</div>
-  </div>
-</body>
-</html>`.trim();
+	const svg = `<svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='1200' height='600' viewBox='0 0 1200 600'><rect fill='lightgrey' width='1200' height='600'></rect><text dy='22.4' x='50%' y='50%' text-anchor='middle' font-weight='bold' fill='rgba(0,0,0,0.5)' font-size='64' font-family='sans-serif'>${domain}</text></svg>`;
+	const dataUrl = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+	return tileHtml(dataUrl);
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
