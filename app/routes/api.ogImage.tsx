@@ -36,11 +36,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return placeholderImageRes;
   }
 
-  // ogImageUrl may be a relative path, if so prepend the url to get the full path
-  if (!ogImageUrl.startsWith("http")) {
-    ogImageUrl = new URL(ogImageUrl, url).href;
-  }
-
+  // getOgImageUrlFromUrl() already returns absolute URLs, so fetch directly
   const [imageRes, error] = await trytm(
     fetch(ogImageUrl, {
       headers: {
