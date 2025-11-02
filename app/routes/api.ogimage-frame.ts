@@ -45,13 +45,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
 			});
 		}
 
-		// Extract og:image using streaming HTMLRewriter
+		// Extract og:image using streaming HTMLRewriter with early exit
 		const imgUrls: Record<string, string> = {
 			"og:image": "",
 			"og:image:url": "",
 			"twitter:image": "",
 			"twitter:image:src": "",
 		};
+
+		let foundImage = false;
 
 		const rewriter = new HTMLRewriter().on("meta[property], meta[name]", {
 			element(el) {
@@ -64,17 +66,47 @@ export async function loader({ request }: LoaderFunctionArgs) {
 						content = new URL(content, url).href;
 					}
 					imgUrls[property] = content;
+
+					// Mark that we found an image (prioritize og:image)
+					if (property === "og:image" || property === "og:image:url") {
+						foundImage = true;
+					}
 				}
 			},
 		});
 
-		// Transform response to extract meta tags
-		// Note: HTMLRewriter processes the stream but we need to consume it
-		const transformed = rewriter.transform(response);
+		// Stream chunks and stop early when we find og:image
+		const reader = response.body.getReader();
+		const decoder = new TextDecoder();
+		let buffer = "";
+		const MAX_CHUNKS = 50; // Limit to ~50KB-200KB of HTML (meta tags are in <head>)
+		let chunkCount = 0;
 
-		// Read the transformed response to trigger HTMLRewriter processing
-		// We discard the transformed HTML since we only need the extracted data
-		await transformed.arrayBuffer();
+		try {
+			while (!foundImage && chunkCount < MAX_CHUNKS) {
+				const { done, value } = await reader.read();
+				if (done) break;
+
+				chunkCount++;
+				buffer += decoder.decode(value, { stream: true });
+
+				// Process accumulated buffer through HTMLRewriter
+				// We create a minimal response to satisfy HTMLRewriter's API
+				const mockResponse = new Response(buffer);
+				const transformed = rewriter.transform(mockResponse);
+
+				// Consume the transformed response to trigger element handlers
+				await transformed.arrayBuffer();
+
+				// Early exit if we found og:image
+				if (foundImage) {
+					break;
+				}
+			}
+		} finally {
+			// Cancel the reader to stop downloading
+			await reader.cancel();
+		}
 
 		// Get the first available image URL
 		ogImageUrl =
