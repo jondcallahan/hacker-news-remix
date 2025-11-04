@@ -162,40 +162,44 @@ export async function getOgImageUrlFromUrl(url: string): Promise<string | null> 
     };
 
     let foundImage = false;
+    let headClosed = false;
 
-    const rewriter = new HTMLRewriter().on("meta[property], meta[name]", {
-      element(el) {
-        const property = el.getAttribute("property") || el.getAttribute("name");
-        let content = el.getAttribute("content");
+    const rewriter = new HTMLRewriter()
+      .on("meta[property], meta[name]", {
+        element(el) {
+          const property = el.getAttribute("property") || el.getAttribute("name");
+          let content = el.getAttribute("content");
 
-        if (property && content && property in imgUrls) {
-          // Handle relative URLs
-          if (!content.startsWith("http")) {
-            content = new URL(content, url).href;
+          if (property && content && property in imgUrls) {
+            // Handle relative URLs
+            if (!content.startsWith("http")) {
+              content = new URL(content, url).href;
+            }
+            imgUrls[property] = content;
+
+            // Mark that we found an image (prioritize og:image)
+            if (property === "og:image" || property === "og:image:url") {
+              foundImage = true;
+            }
           }
-          imgUrls[property] = content;
+        },
+      })
+      .on("head", {
+        end() {
+          headClosed = true;
+        },
+      });
 
-          // Mark that we found an image (prioritize og:image)
-          if (property === "og:image" || property === "og:image:url") {
-            foundImage = true;
-          }
-        }
-      },
-    });
-
-    // Stream chunks and stop early when we find og:image
+    // Stream chunks and stop when we find og:image or reach </head>
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
-    const MAX_CHUNKS = 50; // Limit to ~50KB-200KB of HTML (meta tags are in <head>)
-    let chunkCount = 0;
 
     try {
-      while (!foundImage && chunkCount < MAX_CHUNKS) {
+      while (!foundImage && !headClosed) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        chunkCount++;
         buffer += decoder.decode(value, { stream: true });
 
         // Process accumulated buffer through HTMLRewriter
@@ -205,8 +209,8 @@ export async function getOgImageUrlFromUrl(url: string): Promise<string | null> 
         // Consume the transformed response to trigger element handlers
         await transformed.arrayBuffer();
 
-        // Early exit if we found og:image
-        if (foundImage) {
+        // Early exit if we found og:image or closed </head>
+        if (foundImage || headClosed) {
           break;
         }
       }
