@@ -2,7 +2,8 @@ import type { LoaderFunctionArgs } from "react-router";
 import { getOgImageUrlFromUrl } from "~/utils/api.server";
 import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
 
-// Render image using background-image (matches original UI)
+// Returns HTML document with og:image rendered as background-image
+// Used in HeroImage component iframe for visual rendering on story pages
 function tileHtml(src: string): string {
 	return `<!DOCTYPE html>
 <html lang="en">
@@ -15,7 +16,7 @@ function tileHtml(src: string): string {
 </html>`.trim();
 }
 
-// Fallback using shared utility (matches original UI)
+// Returns HTML with SVG placeholder when no og:image is found
 function fallbackHtml(domain: string): string {
 	const svg = getOGImagePlaceholderContent(domain);
 	const dataUrl = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
@@ -30,10 +31,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 	const targetUrl = new URL(url);
 
-	// Use shared streaming extraction utility
+	// Extract og:image URL using shared streaming utility
 	const ogImageUrl = await getOgImageUrlFromUrl(url);
 
-	// Return the image tile or fallback
 	const html = ogImageUrl ? tileHtml(ogImageUrl) : fallbackHtml(targetUrl.hostname);
 
 	return new Response(html, {

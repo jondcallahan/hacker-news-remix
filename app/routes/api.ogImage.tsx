@@ -6,20 +6,18 @@ import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderConte
 import { getOgImageUrlFromUrl } from "~/utils/api.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  // Request will come in like /api/ogImage?url=https://remix.run
-  // Get the url from the request
   const { searchParams } = new URL(request.url);
   const url = searchParams.get("url");
 
   if (!url) return new Response(null, { status: 400 });
 
-  // Get the og:image from the html text
+  // Extract and cache og:image URL (1 day TTL)
   let ogImageUrl = await getOrSetToCache(
     `ogimage:${url}`,
     async () => {
       return getOgImageUrlFromUrl(url);
     },
-    60 * 60 * 24 // Cache OG Image for 1 day
+    60 * 60 * 24
   );
 
   const text = new URL(url).hostname;
@@ -31,12 +29,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
     },
   });
 
-  // If there is no og:image, return the placeholder image
   if (!ogImageUrl) {
     return placeholderImageRes;
   }
 
-  // getOgImageUrlFromUrl() already returns absolute URLs, so fetch directly
+  // Fetch and proxy the og:image (getOgImageUrlFromUrl returns absolute URLs)
   const [imageRes, error] = await trytm(
     fetch(ogImageUrl, {
       headers: {
