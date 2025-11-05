@@ -140,14 +140,18 @@ export const fetchAllKids = async (id: string) => {
   return item;
 };
 
-export async function getOgImageUrlFromUrl(url: string) {
+// Stream og:image extraction with early exit
+// Reads HTML in chunks and stops as soon as og:image is found
+export async function getOgImageUrlFromUrl(url: string): Promise<string | null> {
   try {
     const response = await fetchWithRetry(url, {
       timeout: 5000,
       retry: 2,
     });
 
-    const text = await response.text();
+    if (!response.ok || !response.body) {
+      return null;
+    }
 
     // Cast a wide net for og:image, any of these can be used but they are in priority order
     const imgUrls: Record<string, string> = {
@@ -157,24 +161,62 @@ export async function getOgImageUrlFromUrl(url: string) {
       "twitter:image:src": "",
     };
 
-    // Use Bun's native HTMLRewriter to extract meta tags
-    const rewriter = new HTMLRewriter().on('meta[property], meta[name]', {
+    let foundImage = false;
+    let headClosed = false;
+
+    const rewriter = new HTMLRewriter().on("meta[property], meta[name]", {
       element(el) {
-        const property = el.getAttribute('property') || el.getAttribute('name');
-        let content = el.getAttribute('content');
+        const property = el.getAttribute("property") || el.getAttribute("name");
+        let content = el.getAttribute("content");
 
         if (property && content && property in imgUrls) {
-          // ogImageUrl may be a relative path, if so prepend the url to get the full path
-          if (!content.startsWith('http')) {
+          // Handle relative URLs
+          if (!content.startsWith("http")) {
             content = new URL(content, url).href;
           }
           imgUrls[property] = content;
+
+          // Mark that we found an image (prioritize og:image)
+          if (property === "og:image" || property === "og:image:url") {
+            foundImage = true;
+          }
         }
       },
     });
 
-    // Transform the HTML to extract the data
-    rewriter.transform(text);
+    // Stream chunks and stop when we find og:image or reach </head>
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    try {
+      while (!foundImage && !headClosed) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        // Check if we've reached the closing </head> tag
+        if (buffer.includes("</head>")) {
+          headClosed = true;
+        }
+
+        // Process accumulated buffer through HTMLRewriter
+        const mockResponse = new Response(buffer);
+        const transformed = rewriter.transform(mockResponse);
+
+        // Consume the transformed response to trigger element handlers
+        await transformed.arrayBuffer();
+
+        // Early exit if we found og:image or closed </head>
+        if (foundImage || headClosed) {
+          break;
+        }
+      }
+    } finally {
+      // Cancel the reader to stop downloading
+      await reader.cancel();
+    }
 
     return (
       imgUrls["og:image"] ||
