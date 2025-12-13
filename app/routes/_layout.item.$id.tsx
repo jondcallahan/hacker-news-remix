@@ -8,10 +8,10 @@ import { fetchAllKids, Item } from "~/utils/api.server";
 import {
   Box,
   Flex,
-  Grid,
   Heading,
   Img,
   Link as ChakraLink,
+  Stack,
   Text,
 } from "@chakra-ui/react";
 import { getFromCache } from "~/utils/caching.server";
@@ -192,6 +192,7 @@ export default function ItemPage() {
         borderRadius="lg"
         marginBottom={4}
         boxShadow="md"
+        overflow="hidden"
         style={{
           viewTransitionName: "story-title",
         }}
@@ -218,16 +219,11 @@ export default function ItemPage() {
             </Box>
           )
           : null}
-        <Grid gap={1} paddingX={3} paddingY={2}>
+        <Stack spacing={1} paddingX={3} paddingY={2}>
           <Heading size="md">{story?.title}</Heading>
-          <ChakraLink
-            whiteSpace="nowrap"
-            overflow="hidden"
-            textOverflow="ellipsis"
-            href={story.url}
-          >
-            {story.url}
-          </ChakraLink>
+          <Text isTruncated>
+            <ChakraLink href={story.url}>{story.url}</ChakraLink>
+          </Text>
           <Text>
             By {story.by} at{" "}
             <time>
@@ -242,7 +238,7 @@ export default function ItemPage() {
               />
             )
             : null}
-        </Grid>
+        </Stack>
       </Box>
       {/* End story card */}
       <Flex wrap="wrap" gap={4}>
