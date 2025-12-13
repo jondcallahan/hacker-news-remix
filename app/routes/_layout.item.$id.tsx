@@ -222,9 +222,11 @@ export default function ItemPage() {
         <Grid gap={1} paddingX={3} paddingY={2}>
           <Heading size="md">{story?.title}</Heading>
           <ChakraLink
+            display="block"
             whiteSpace="nowrap"
             overflow="hidden"
             textOverflow="ellipsis"
+            maxWidth="100%"
             href={story.url}
           >
             {story.url}
