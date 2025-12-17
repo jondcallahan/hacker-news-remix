@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import {
   Link as RouterLink,
   useLoaderData,
@@ -21,6 +22,7 @@ import {
   TagLabel,
   Code,
 } from "@chakra-ui/react";
+import { useHotkeys } from "react-hotkeys-hook";
 
 export async function loader() {
   const timerStart = process.hrtime();
@@ -49,26 +51,117 @@ export default function Index() {
   const data = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const stories = data?.allStories ?? [];
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Scroll selected card into view
+  useEffect(() => {
+    if (selectedIndex !== null && cardRefs.current[selectedIndex]) {
+      cardRefs.current[selectedIndex]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [selectedIndex]);
+
+  // j - move down to next story
+  useHotkeys(
+    "j",
+    () => {
+      setSelectedIndex((prev) => {
+        if (prev === null) return 0;
+        return Math.min(prev + 1, stories.length - 1);
+      });
+    },
+    { preventDefault: true }
+  );
+
+  // k - move up to previous story
+  useHotkeys(
+    "k",
+    () => {
+      setSelectedIndex((prev) => {
+        if (prev === null) return stories.length - 1;
+        return Math.max(prev - 1, 0);
+      });
+    },
+    { preventDefault: true }
+  );
+
+  // c - go to comments for selected story
+  useHotkeys(
+    "c",
+    () => {
+      if (selectedIndex !== null && stories[selectedIndex]) {
+        haptic();
+        navigate(`/item/${stories[selectedIndex].id}`, {
+          viewTransition: true,
+        });
+      }
+    },
+    { preventDefault: true },
+    [selectedIndex, stories]
+  );
+
+  // Enter - open story URL (or comments if no URL)
+  useHotkeys(
+    "enter",
+    () => {
+      if (selectedIndex !== null && stories[selectedIndex]) {
+        const story = stories[selectedIndex];
+        haptic();
+        if (story.url) {
+          window.open(story.url, "_blank");
+        } else {
+          navigate(`/item/${story.id}`, { viewTransition: true });
+        }
+      }
+    },
+    { preventDefault: true },
+    [selectedIndex, stories]
+  );
+
+  // Escape - clear selection
+  useHotkeys(
+    "escape",
+    () => {
+      setSelectedIndex(null);
+    },
+    { preventDefault: true }
+  );
 
   return (
     <>
       <Flex wrap="wrap" gap="4" justifyContent="center">
-        {stories.map((story) => {
+        {stories.map((story, index) => {
           let storyUrl;
           if (story.url) storyUrl = new URL(story.url);
+          const isSelected = selectedIndex === index;
 
           return (
             <Box
               key={story.id}
+              ref={(el) => {
+                cardRefs.current[index] = el;
+              }}
               borderRadius="lg"
               display={"grid"}
               _hover={{
                 boxShadow: "lg",
               }}
-              transition="box-shadow 0.2s ease-in-out"
+              transition="all 0.2s ease-in-out"
               backgroundColor="orange.50"
               padding="4"
               width="full"
+              outline={isSelected ? "3px solid" : "none"}
+              outlineColor={isSelected ? "blue.500" : "transparent"}
+              outlineOffset="2px"
+              boxShadow={isSelected ? "lg" : "none"}
+              onClick={() => setSelectedIndex(index)}
+              cursor="pointer"
+              tabIndex={0}
+              onFocus={() => setSelectedIndex(index)}
+              data-story-card
             >
               <Grid gap="2">
                 {story.url && (
@@ -89,47 +182,6 @@ export default function Index() {
                   <Heading
                     size="md"
                     scrollMarginY="64px"
-                    onKeyPress={(e) => {
-                      // J key will advance to the next story
-                      // K will go to previous
-                      // C will go to comments
-                      if (e.key === "j") {
-                        try {
-                          document
-                            .querySelectorAll<HTMLAnchorElement>(
-                              "a[data-link-type=story]"
-                            )
-                            .forEach((val, idx, list) => {
-                              if (val === document.activeElement) {
-                                list[idx + 1].focus();
-                                e.stopPropagation(); // Stop propogation so the listener on the <body> doesn't pick up the event
-                                throw "stop"; // Using a throw to break the forEach loop
-                              }
-                            });
-                        } catch {}
-                      } else if (e.key === "k") {
-                        // Go to previous story or last if on first
-                        try {
-                          document
-                            .querySelectorAll<HTMLAnchorElement>(
-                              "a[data-link-type=story]"
-                            )
-                            .forEach((val, idx, list) => {
-                              if (val === document.activeElement) {
-                                if (idx === 0) {
-                                  list[list.length - 1].focus();
-                                } else {
-                                  list[idx - 1].focus();
-                                }
-
-                                throw "stop"; // Using a throw to break the forEach loop
-                              }
-                            });
-                        } catch {}
-                      } else if (e.key === "c") {
-                        navigate(`/item/${story.id}`);
-                      }
-                    }}
                     data-link-type="story"
                   >
                     {story.title}
