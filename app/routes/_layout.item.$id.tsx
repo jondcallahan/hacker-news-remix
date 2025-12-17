@@ -125,10 +125,12 @@ export default function ItemPage() {
   // Get top-level comments only
   const topLevelComments = useMemo(() => {
     if (!story?.kids) return [];
-    return story.kids.filter(
-      (kid): kid is Item =>
-        typeof kid !== "number" && kid !== null && !kid.dead && !kid.deleted
-    );
+    return story.kids.filter((kid): kid is Item => {
+      if (typeof kid === "number") return false;
+      if (!kid) return false;
+      if (kid.dead || kid.deleted) return false;
+      return true;
+    });
   }, [story?.kids]);
 
   // Scroll selected comment into view
@@ -136,7 +138,7 @@ export default function ItemPage() {
     if (selectedIndex !== null && commentRefs.current[selectedIndex]) {
       commentRefs.current[selectedIndex]?.scrollIntoView({
         behavior: "smooth",
-        block: "center",
+        block: "start",
       });
     }
   }, [selectedIndex]);
@@ -279,6 +281,7 @@ export default function ItemPage() {
               outline={isSelected ? "3px solid" : "none"}
               outlineColor={isSelected ? "blue.500" : "transparent"}
               outlineOffset="2px"
+              scrollMarginY="80px"
               boxProps={{
                 paddingY: 2,
               }}
