@@ -1,17 +1,19 @@
+import { forwardRef } from "react";
 import { Box, chakra, Text } from "@chakra-ui/react";
 import { Item } from "~/utils/api.server";
 import { haptic } from "ios-haptics";
 
-export function Comment(
-  props: {
-    comment: Item;
-    children?: React.ReactNode;
-    boxProps?: React.ComponentProps<typeof Box>;
-    originalPoster?: string;
-    "data-testid"?: string;
-  } & React.ComponentProps<typeof chakra.details>,
-) {
-  const { comment, children, boxProps, originalPoster, ...rest } = props;
+type CommentProps = {
+  comment: Item;
+  children?: React.ReactNode;
+  boxProps?: React.ComponentProps<typeof Box>;
+  originalPoster?: string;
+  "data-testid"?: string;
+} & React.ComponentProps<typeof chakra.details>;
+
+export const Comment = forwardRef<HTMLDetailsElement, CommentProps>(
+  function Comment(props, ref) {
+    const { comment, children, boxProps, originalPoster, ...rest } = props;
 
   // Handle clicking on the comment body (not summary)
   const handleClick = (e: React.MouseEvent<HTMLDetailsElement>) => {
@@ -44,15 +46,16 @@ export function Comment(
     }
   };
 
-  return (
-    <chakra.details
-      key={comment.id}
-      onClick={handleClick}
-      open
-      cursor="pointer"
-      marginTop={2}
-      {...rest}
-    >
+    return (
+      <chakra.details
+        ref={ref}
+        key={comment.id}
+        onClick={handleClick}
+        open
+        cursor="pointer"
+        marginTop={2}
+        {...rest}
+      >
       <chakra.summary
         fontWeight="semibold"
         flex="1"
@@ -101,6 +104,7 @@ export function Comment(
         />
         {children && <Box paddingX={2}>{children}</Box>}
       </Box>
-    </chakra.details>
-  );
-}
+      </chakra.details>
+    );
+  }
+);

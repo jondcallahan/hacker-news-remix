@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState, useMemo } from "react";
 import {
   type LoaderFunctionArgs,
   type MetaFunction,
@@ -21,6 +22,7 @@ import { getTimeZoneFromCookie } from "~/utils/time";
 import HeroImage from "~/components/HeroImage";
 import { getTweet, Tweet } from "react-tweet/api";
 import { useHotkeys } from "react-hotkeys-hook";
+import { haptic } from "ios-haptics";
 
 export const handle = {
   showBreadcrumb: true,
@@ -117,68 +119,86 @@ export default function ItemPage() {
     typeof loader
   >();
   const navigate = useNavigate();
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const commentRefs = useRef<(HTMLDetailsElement | null)[]>([]);
 
-  useHotkeys("h", () => {
-    navigate("/", {
-      viewTransition: true,
-    });
-  });
-
-  useHotkeys("j", () => {
-    // Get the current scroll position
-    const scrollPosition = window.scrollY;
-
-    // Get all the comments
-    const comments = document.querySelectorAll("[data-testid=comment]");
-
-    // Find the first comment that is below the current scroll position
-    const nextComment = Array.from(comments).find(
-      (comment) => comment.getBoundingClientRect().top > scrollPosition,
+  // Get top-level comments only
+  const topLevelComments = useMemo(() => {
+    if (!story?.kids) return [];
+    return story.kids.filter(
+      (kid): kid is Item =>
+        typeof kid !== "number" && kid !== null && !kid.dead && !kid.deleted
     );
+  }, [story?.kids]);
 
-    // If we found a comment, focus it
-    if (nextComment) {
-      (nextComment as HTMLElement).focus();
-    } // Otherwise, focus the first comment
-    else {
-      const firstComment = comments[0] as HTMLElement;
-      firstComment?.focus();
+  // Scroll selected comment into view
+  useEffect(() => {
+    if (selectedIndex !== null && commentRefs.current[selectedIndex]) {
+      commentRefs.current[selectedIndex]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
     }
+  }, [selectedIndex]);
 
-    // Scroll to the focused comment
-    window.scrollTo({
-      top: nextComment?.getBoundingClientRect().top,
-      behavior: "smooth",
-    });
-  });
+  // h - go back home
+  useHotkeys(
+    "h",
+    () => {
+      haptic();
+      navigate("/", { viewTransition: true });
+    },
+    { preventDefault: true }
+  );
 
-  useHotkeys("k", () => {
-    // Get the current scroll position
-    const scrollPosition = window.scrollY;
+  // j - move down to next comment
+  useHotkeys(
+    "j",
+    () => {
+      setSelectedIndex((prev) => {
+        if (prev === null) return 0;
+        return Math.min(prev + 1, topLevelComments.length - 1);
+      });
+    },
+    { preventDefault: true }
+  );
 
-    // Get all the comments
-    const comments = document.querySelectorAll("[data-testid=comment]");
+  // k - move up to previous comment
+  useHotkeys(
+    "k",
+    () => {
+      setSelectedIndex((prev) => {
+        if (prev === null) return topLevelComments.length - 1;
+        return Math.max(prev - 1, 0);
+      });
+    },
+    { preventDefault: true }
+  );
 
-    // Find the last comment that is above the current scroll position
-    const previousComment = Array.from(comments)
-      .reverse()
-      .find((comment) => comment.getBoundingClientRect().top < scrollPosition);
+  // Enter - toggle open/close selected comment
+  useHotkeys(
+    "enter",
+    () => {
+      if (selectedIndex !== null && commentRefs.current[selectedIndex]) {
+        const details = commentRefs.current[selectedIndex];
+        if (details) {
+          haptic();
+          details.open = !details.open;
+        }
+      }
+    },
+    { preventDefault: true },
+    [selectedIndex]
+  );
 
-    // If we found a comment, focus it
-    if (previousComment) {
-      (previousComment as HTMLElement).focus();
-    } // Otherwise, focus the last comment
-    else {
-      const lastComment = comments[comments.length - 1] as HTMLElement;
-      lastComment?.focus();
-    }
-
-    // Scroll to the focused comment
-    window.scrollTo({
-      top: previousComment?.getBoundingClientRect().top,
-      behavior: "smooth",
-    });
-  });
+  // Escape - clear selection
+  useHotkeys(
+    "escape",
+    () => {
+      setSelectedIndex(null);
+    },
+    { preventDefault: true }
+  );
 
   if (!story) {
     return null;
@@ -242,23 +262,23 @@ export default function ItemPage() {
       </Box>
       {/* End story card */}
       <Flex wrap="wrap" gap={4}>
-        {story.kids?.map((commentItem) => {
-          // Handle when the comment is just an ID (not loaded)
-          if (typeof commentItem === "number") {
-            return null;
-          }
-
-          const comment = commentItem as Item;
-          if (!comment || comment.dead || comment.deleted) return null;
+        {topLevelComments.map((comment, index) => {
+          const isSelected = selectedIndex === index;
 
           return (
             <Comment
               key={comment.id}
+              ref={(el) => {
+                commentRefs.current[index] = el;
+              }}
               comment={comment}
               borderRadius="lg"
               backgroundColor="orange.50"
               width="full"
-              boxShadow="md"
+              boxShadow={isSelected ? "lg" : "md"}
+              outline={isSelected ? "3px solid" : "none"}
+              outlineColor={isSelected ? "blue.500" : "transparent"}
+              outlineOffset="2px"
               boxProps={{
                 paddingY: 2,
               }}
