@@ -157,10 +157,6 @@ export default function Index() {
               outlineColor={isSelected ? "blue.500" : "transparent"}
               outlineOffset="2px"
               boxShadow={isSelected ? "lg" : "none"}
-              onClick={() => setSelectedIndex(index)}
-              cursor="pointer"
-              tabIndex={0}
-              onFocus={() => setSelectedIndex(index)}
               data-story-card
             >
               <Grid gap="2">
