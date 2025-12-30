@@ -59,7 +59,7 @@ function TweetEmbed({ tweet }: { tweet: Tweet }) {
           <Text fontWeight="bold" fontSize={["xs", "md"]}>{handle}</Text>
         </Flex>
         <Heading
-          size={["xs", "md"]}
+          size={["sm", "md"]}
           lineHeight="shorter"
           noOfLines={[3, 4]}
           overflow="hidden"
