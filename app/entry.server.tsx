@@ -3,7 +3,9 @@ import { createReadableStreamFromReadable } from "@react-router/node";
 import type { AppLoadContext, EntryContext } from "react-router";
 import { ServerRouter } from "react-router";
 import { isbot } from "isbot";
-import { renderToPipeableStream } from "react-dom/server";
+// React 19 resolves react-dom/server to the Web Streams API under Bun.
+// This handler uses Node streams, so select that entry point explicitly.
+import { renderToPipeableStream } from "react-dom/server.node";
 
 const ABORT_DELAY = 5000;
 

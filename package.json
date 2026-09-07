@@ -7,7 +7,8 @@
     "dev": "bun run --bun react-router dev --port=3000 --host",
     "build": "bun run --bun react-router build",
     "start": "bun run --bun react-router-serve build/server/index.js",
-    "typecheck": "bun run --bun react-router typegen && tsc"
+    "typecheck": "bun run --bun react-router typegen && tsc",
+    "test:production": "bun run build && NODE_ENV=production bun scripts/check-production.ts"
   },
   "type": "module",
   "dependencies": {
