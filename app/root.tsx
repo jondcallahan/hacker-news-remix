@@ -1,9 +1,7 @@
 import type { LinksFunction, MetaFunction } from "react-router";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import { type KeyboardEvent } from "react";
-import { ChakraProvider, chakra } from "@chakra-ui/react";
 import { Analytics } from "@vercel/analytics/react";
-import { theme } from "./chakraTheme";
 
 import "@fontsource/vollkorn/latin.css";
 import "@fontsource/vollkorn/400-italic.css";
@@ -59,17 +57,15 @@ const Document = ({ children }: DocumentProps) => {
         <Meta />
         <Links />
       </head>
-      <chakra.body
+      <body
         onKeyPress={highlightFirstStoryLink}
-        display="grid"
-        gridTemplateRows="auto auto 1fr auto"
-        gridTemplateAreas="'nav' 'progress-bar' 'content' 'footer'"
+        className="grid min-h-full grid-rows-[auto_auto_1fr_auto] bg-orange-100 font-sans text-gray-800"
       >
         {children}
         <ScrollRestoration getKey={(location) => location.pathname} />
         <Scripts />
         <Analytics />
-      </chakra.body>
+      </body>
     </html>
   );
 };
@@ -77,9 +73,7 @@ const Document = ({ children }: DocumentProps) => {
 export default function App() {
   return (
     <Document>
-      <ChakraProvider theme={theme}>
-        <Outlet />
-      </ChakraProvider>
+      <Outlet />
     </Document>
   );
 }

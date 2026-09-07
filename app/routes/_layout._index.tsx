@@ -1,27 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  Link as RouterLink,
   useLoaderData,
   useNavigate,
-  NavLink,
 } from "react-router";
 import type { Item } from "~/utils/api.server";
 import { haptic } from "ios-haptics";
 import { getTopStories } from "~/utils/api.server";
-import {
-  Box,
-  Grid,
-  Heading,
-  Text,
-  Link as ChakraLink,
-  Flex,
-  Image,
-  chakra,
-  Tag,
-  TagLeftIcon,
-  TagLabel,
-  Code,
-} from "@chakra-ui/react";
+import { StoryCard } from "~/components/StoryCard";
+import { Text } from "~/components/ui";
 import { useHotkeys } from "react-hotkeys-hook";
 
 export async function loader() {
@@ -40,10 +26,10 @@ export async function loader() {
 
 export function ErrorBoundary({ error }: { error: Error }) {
   return (
-    <Box>
+    <div>
       <Text>Something went wrong</Text>
-      <Code colorScheme="red">{error?.message || "Unknown error"}</Code>
-    </Box>
+      <code className="rounded-sm bg-red-100 px-1 text-sm text-red-800">{error?.message || "Unknown error"}</code>
+    </div>
   );
 }
 
@@ -131,148 +117,11 @@ export default function Index() {
   );
 
   return (
-    <>
-      <Flex wrap="wrap" gap="4" justifyContent="center">
-        {stories.map((story, index) => {
-          let storyUrl;
-          if (story.url) storyUrl = new URL(story.url);
-          const isSelected = selectedIndex === index;
-
-          return (
-            <Box
-              key={story.id}
-              ref={(el) => {
-                cardRefs.current[index] = el;
-              }}
-              borderRadius="lg"
-              display={"grid"}
-              _hover={{
-                boxShadow: "lg",
-              }}
-              transition="all 0.2s ease-in-out"
-              backgroundColor="orange.50"
-              padding="4"
-              width="full"
-              outline={isSelected ? "3px solid" : "none"}
-              outlineColor={isSelected ? "blue.500" : "transparent"}
-              outlineOffset="2px"
-              boxShadow={isSelected ? "lg" : "none"}
-              data-story-card
-            >
-              <Grid gap="2">
-                {story.url && (
-                  <Flex alignItems="center">
-                    <Image
-                      src={`https://icons.duckduckgo.com/ip3/${storyUrl?.hostname}.ico`}
-                      boxSize="4"
-                      marginRight="2"
-                      alt={`Icon for ${storyUrl?.hostname}`}
-                      color="transparent" // Hide the alt text when the image is unavailable
-                    />
-                    <Text wordBreak="break-all">
-                      {storyUrl?.hostname?.replace("www.", "")}
-                    </Text>
-                  </Flex>
-                )}
-                <RouterLink to={story.url || `/item/${story.id}`}>
-                  <Heading
-                    size="md"
-                    scrollMarginY="64px"
-                    data-link-type="story"
-                  >
-                    {story.title}
-                  </Heading>
-                </RouterLink>
-
-                <Text>
-                  By {story.by} {story.relativeTime}
-                </Text>
-
-                <ChakraLink
-                  as={NavLink}
-                  to={`/item/${story.id}`}
-                  prefetch="intent"
-                  width="full"
-                  display="flex"
-                  justifyContent="space-between"
-                  gap="2"
-                  role="group"
-                  _hover={{
-                    textDecoration: "none",
-                  }}
-                  aria-label={`View comments for ${story.title}`}
-                  viewTransition
-                  onClick={() => haptic()}
-                >
-                  <Tag size="lg">
-                    <TagLeftIcon
-                      as={() => (
-                        <chakra.svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                          boxSize="5"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M7 11l5-5m0 0l5 5m-5-5v12"
-                          />
-                        </chakra.svg>
-                      )}
-                    />
-                    <TagLabel>{story.score} points </TagLabel>
-                  </Tag>
-                  <Tag
-                    colorScheme="blue"
-                    borderWidth="2px"
-                    borderColor="transparent"
-                    size="lg"
-                    transition="border-color ease-in 0.17s"
-                    _groupHover={{
-                      borderStyle: "solid",
-                      borderColor: "blue.500",
-                    }}
-                    sx={{
-                      "a:visited &": {
-                        color: "purple.500",
-                      },
-                    }}
-                  >
-                    <TagLeftIcon
-                      as={() => (
-                        <chakra.svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                          boxSize="4"
-                          display="inline"
-                          verticalAlign="text-top"
-                          marginInlineEnd={1}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                          />
-                        </chakra.svg>
-                      )}
-                    />
-                    <TagLabel>
-                      {story.descendants || "0"}{" "}
-                      {story.descendants === 1 ? "comment" : "comments"}
-                    </TagLabel>
-                  </Tag>
-                </ChakraLink>
-              </Grid>
-            </Box>
-          );
-        })}
-      </Flex>
-    </>
+    <div className="flex flex-wrap justify-center gap-4">
+      {stories.map((story, index) => (
+        <StoryCard key={story.id} story={story} selected={selectedIndex === index}
+          ref={(el) => { cardRefs.current[index] = el; }} />
+      ))}
+    </div>
   );
 }
