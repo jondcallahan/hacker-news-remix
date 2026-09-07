@@ -34,7 +34,7 @@ elsewhere. Stop either foreground process with Ctrl+C.
 
 ```sh
 bun run typecheck
-bun run build
+bun run test:production
 bun run start
 ```
 
@@ -50,3 +50,9 @@ and navigation indicator. There is no Chakra, Emotion, or Framer Motion runtime.
 React 19 is required: React 18's document hydration failed when the in-app browser
 inserted its sidebar element, replacing the document and discarding its styles.
 The server now streams React's markup directly, without an Emotion transform.
+
+`bun run test:production` builds the app and imports every emitted server bundle
+with Bun in production mode. This checks package exports using the deployment
+runtime rather than Vite's development resolver. The streaming handler explicitly
+imports `react-dom/server.node` because React 19's Bun entry exposes Web Streams
+instead of `renderToPipeableStream`.
