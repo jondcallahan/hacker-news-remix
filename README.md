@@ -1,53 +1,52 @@
-# Welcome to Remix!
+# Hacker News reader
 
-- [Remix Docs](https://remix.run/docs)
+Built with React Router, Bun, and Redis. Story data comes from the public Hacker
+News API; Redis caches responses for one minute.
 
-## Development
+## Local development
 
-From your terminal:
-
-```sh
-npm run dev
-```
-
-This starts your app in development mode, rebuilding assets on file changes.
-
-## Deployment
-
-First, build your app for production:
+Install Bun (the project targets 1.3.1) and Redis. On macOS, install Redis with
+`brew install redis`.
 
 ```sh
-npm run build
+bun install --frozen-lockfile
+cp .env.example .env
 ```
 
-Then run the app in production mode:
+Start Redis in a separate terminal. This local cache is bound to localhost and
+does not persist data to disk:
 
 ```sh
-npm start
+redis-server --bind 127.0.0.1 --port 6379 --save '' --appendonly no
 ```
 
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `remix build`
-
-- `build/`
-- `public/build/`
-
-### Using a Template
-
-When you ran `npx create-remix@latest` there were a few choices for hosting. You can run that again to create a new project, then copy over your `app/` folder to the new project that's pre-configured for your target server.
+Then start the app:
 
 ```sh
-cd ..
-# create a new project, and pick a pre-configured host
-npx create-remix@latest
-cd my-new-remix-app
-# remove the new project's app (not the old one!)
-rm -rf app
-# copy your app over
-cp -R ../my-old-remix-app/app app
+bun run dev
 ```
+
+Open http://localhost:3000. Internet access is required to fetch stories and images.
+The `.env` file sets `KV_URL=redis://127.0.0.1:6379`; change it if Redis runs
+elsewhere. Stop either foreground process with Ctrl+C.
+
+## Checks and production build
+
+```sh
+bun run typecheck
+bun run build
+bun run start
+```
+
+The production server also requires Redis and `KV_URL`.
+
+## Styling
+
+The UI uses Tailwind CSS 4 and local React components in `app/components`.
+`app/styles.css` contains the original reader's colors, font stacks, shadows,
+and responsive breakpoints; `ui.tsx` provides the shared headings, text, badges,
+and navigation indicator. There is no Chakra, Emotion, or Framer Motion runtime.
+
+React 19 is required: React 18's document hydration failed when the in-app browser
+inserted its sidebar element, replacing the document and discarding its styles.
+The server now streams React's markup directly, without an Emotion transform.

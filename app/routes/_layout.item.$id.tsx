@@ -6,15 +6,7 @@ import {
 } from "react-router";
 import { useLoaderData, useNavigate } from "react-router";
 import { fetchAllKids, Item } from "~/utils/api.server";
-import {
-  Box,
-  Flex,
-  Heading,
-  Img,
-  Link as ChakraLink,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Heading, Text } from "~/components/ui";
 import { getFromCache } from "~/utils/caching.server";
 import type { GetPlaiceholderReturn } from "plaiceholder";
 import { Comment } from "~/components/Comment";
@@ -55,7 +47,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   if (!id) return redirect("/");
 
   const cookies = request.headers.get("Cookie");
-  let timeZone = "";
+  let timeZone = "America/Los_Angeles";
   if (cookies) {
     timeZone = getTimeZoneFromCookie(cookies) || "America/Los_Angeles";
   }
@@ -105,7 +97,7 @@ function renderNestedComments(
 
         return (
           <Comment key={kid.id} comment={kid} originalPoster={originalPoster}>
-            {kid.kids?.length && Array.isArray(kid.kids) &&
+            {!!kid.kids?.length && Array.isArray(kid.kids) &&
               renderNestedComments(kid.kids, originalPoster)}
           </Comment>
         );
@@ -208,62 +200,22 @@ export default function ItemPage() {
 
   return (
     <>
-      {/* Story Card */}
-      <Box
-        backgroundColor="orange.50"
-        borderRadius="lg"
-        marginBottom={4}
-        boxShadow="md"
-        overflow="hidden"
-        style={{
-          viewTransitionName: "story-title",
-        }}
-      >
-        {story.url
-          ? (
-            <Box
-              width="full"
-              overflow="hidden"
-              borderTopRadius="lg"
-              position="relative"
-              height={["150px", "300px"]}
-              borderBottomWidth="2px"
-              borderBottomColor="gray.100"
-              borderBottomStyle="solid"
-            >
-              <a href={story.url}>
-                <HeroImage
-                  story={story}
-                  OGImagePlaceholder={OGImagePlaceholder}
-                  tweet={tweet}
-                />
-              </a>
-            </Box>
-          )
-          : null}
-        <Stack spacing={1} paddingX={3} paddingY={2}>
-          <Heading size="md">{story?.title}</Heading>
-          <Text isTruncated>
-            <ChakraLink href={story.url}>{story.url}</ChakraLink>
-          </Text>
-          <Text>
-            By {story.by} at{" "}
-            <time>
-              {getDateFormatter(timeZone).format(new Date(story.time * 1_000))}
-            </time>
-          </Text>
-          {story.text
-            ? (
-              <Text
-                as="span"
-                dangerouslySetInnerHTML={{ __html: story.text }}
-              />
-            )
-            : null}
-        </Stack>
-      </Box>
-      {/* End story card */}
-      <Flex wrap="wrap" gap={4}>
+      <div className="mb-4 overflow-hidden rounded-lg bg-orange-50 shadow-card" style={{ viewTransitionName: "story-title" }}>
+        {story.url && (
+          <div className="relative h-[150px] w-full overflow-hidden rounded-t-lg border-b-2 border-gray-100 sm:h-[300px]">
+            <a href={story.url}>
+              <HeroImage story={story} OGImagePlaceholder={OGImagePlaceholder} tweet={tweet} />
+            </a>
+          </div>
+        )}
+        <div className="flex flex-col gap-1 px-3 py-2">
+          <Heading>{story.title}</Heading>
+          <Text className="truncate"><a href={story.url}>{story.url}</a></Text>
+          <Text>By {story.by} at <time>{getDateFormatter(timeZone).format(new Date(story.time * 1_000))}</time></Text>
+          {story.text && <span className="text-lg leading-[1.65]" dangerouslySetInnerHTML={{ __html: story.text }} />}
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-4">
         {topLevelComments.map((comment, index) => {
           const isSelected = selectedIndex === index;
 
@@ -274,27 +226,17 @@ export default function ItemPage() {
                 commentRefs.current[index] = el;
               }}
               comment={comment}
-              borderRadius="lg"
-              backgroundColor="orange.50"
-              width="full"
-              boxShadow={isSelected ? "lg" : "md"}
-              outline={isSelected ? "3px solid" : "none"}
-              outlineColor={isSelected ? "blue.500" : "transparent"}
-              outlineOffset="2px"
-              scrollMarginY="80px"
-              boxProps={{
-                paddingY: 2,
-              }}
-              marginTop={0}
+              topLevel
+              selected={isSelected}
               originalPoster={story.by}
               data-testid="comment"
             >
-              {comment.kids?.length && Array.isArray(comment.kids) &&
+              {!!comment.kids?.length && Array.isArray(comment.kids) &&
                 renderNestedComments(comment.kids, story.by)}
             </Comment>
           );
         })}
-      </Flex>
+      </div>
     </>
   );
 }

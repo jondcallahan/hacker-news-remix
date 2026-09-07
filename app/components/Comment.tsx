@@ -1,110 +1,51 @@
-import { forwardRef } from "react";
-import { Box, chakra, Text } from "@chakra-ui/react";
-import { Item } from "~/utils/api.server";
+import { forwardRef, type ComponentProps } from "react";
+import type { Item } from "~/utils/api.server";
 import { haptic } from "ios-haptics";
 
-type CommentProps = {
+type CommentProps = ComponentProps<"details"> & {
   comment: Item;
-  children?: React.ReactNode;
-  boxProps?: React.ComponentProps<typeof Box>;
   originalPoster?: string;
-  "data-testid"?: string;
-} & React.ComponentProps<typeof chakra.details>;
+  topLevel?: boolean;
+  selected?: boolean;
+};
 
 export const Comment = forwardRef<HTMLDetailsElement, CommentProps>(
-  function Comment(props, ref) {
-    const { comment, children, boxProps, originalPoster, ...rest } = props;
-
-  // Handle clicking on the comment body (not summary)
-  const handleClick = (e: React.MouseEvent<HTMLDetailsElement>) => {
-    const target = e.nativeEvent.target as HTMLElement;
-
-    // Close the details element unless the user clicks on a link or summary
-    if (
-      target &&
-      target.tagName !== "A" &&
-      target.tagName !== "SUMMARY"
-    ) {
-      haptic.confirm();
-      e.currentTarget.removeAttribute("open");
-      e.stopPropagation(); // don't bubble up to the next details
-    }
-  };
-
-  // Handle clicking on the summary (title bar)
-  const handleSummaryClick = (e: React.MouseEvent<HTMLElement>) => {
-    const details = e.currentTarget.parentElement as HTMLDetailsElement;
-    
-    if (details && details.tagName === "DETAILS") {
-      if (details.open) {
-        // Comment is open, will be closed
+  function Comment({ comment, children, originalPoster, topLevel = false, selected = false, className = "", ...rest }, ref) {
+    const handleClick = (e: React.MouseEvent<HTMLDetailsElement>) => {
+      const target = e.target as HTMLElement;
+      // Links and the entire summary keep their native behavior, even when a
+      // nested span or emphasis element receives the click.
+      if (!target.closest("a, summary")) {
         haptic.confirm();
-      } else {
-        // Comment is closed, will be opened
-        haptic();
+        e.currentTarget.open = false;
+        e.stopPropagation();
       }
-    }
-  };
+    };
 
     return (
-      <chakra.details
+      <details
         ref={ref}
-        key={comment.id}
-        onClick={handleClick}
         open
-        cursor="pointer"
-        marginTop={2}
+        onClick={handleClick}
+        className={`cursor-pointer ${topLevel ? `w-full scroll-my-20 rounded-lg bg-orange-50 ${selected ? "shadow-raised outline-3 outline-offset-2 outline-blue-500" : "shadow-card outline-none"}` : "mt-2"} ${className}`}
         {...rest}
       >
-      <chakra.summary
-        fontWeight="semibold"
-        flex="1"
-        textAlign="left"
-        padding={4}
-        backgroundColor="gray.100"
-        borderRadius="lg"
-        onClick={handleSummaryClick}
-        sx={{
-          "details[open]>&": {
-            borderBottomRadius: "0",
-          },
-        }}
-      >
-        <chakra.span
-          // Use a custom color for the original poster
-          color={originalPoster === comment.by ? "orange.600" : undefined}
+        <summary
+          className="rounded-lg bg-gray-100 p-4 text-left font-semibold [[open]>&]:rounded-b-none"
+          onClick={(e) => {
+            const details = e.currentTarget.parentElement as HTMLDetailsElement;
+            details.open ? haptic.confirm() : haptic();
+          }}
         >
-          {comment.by}
-        </chakra.span>{" "}
-        | {Array.isArray(comment.kids) ? comment.kids?.length || "0" : "0"}{" "}
-        {Array.isArray(comment.kids) && comment.kids?.length === 1
-          ? "comment"
-          : "comments"}
-        {" | "}
-        {comment.relativeTime}
-      </chakra.summary>
-      <Box
-        {...boxProps}
-        borderLeft="1px"
-        borderColor={"transparent"}
-        transition="border-color ease-in 0.17s"
-        sx={{
-          "@media (hover: hover)": {
-            _hover: {
-              borderColor: "orange.300",
-            },
-          },
-        }}
-      >
-        <Text
-          as="div"
-          fontFamily="serif"
-          marginX={4}
-          dangerouslySetInnerHTML={{ __html: comment.text || "" }}
-        />
-        {children && <Box paddingX={2}>{children}</Box>}
-      </Box>
-      </chakra.details>
+          <span className={originalPoster === comment.by ? "text-orange-600" : undefined}>{comment.by}</span>{" "}
+          | {comment.kids?.length || "0"} {comment.kids?.length === 1 ? "comment" : "comments"}
+          {" | "}{comment.relativeTime}
+        </summary>
+        <div className={`border-l border-transparent transition-[border-color] duration-170 ease-in hover:border-orange-300 ${topLevel ? "py-2" : ""}`}>
+          <div className="mx-4 font-serif text-lg leading-[1.65]" dangerouslySetInnerHTML={{ __html: comment.text || "" }} />
+          {children && <div className="px-2">{children}</div>}
+        </div>
+      </details>
     );
-  }
+  },
 );

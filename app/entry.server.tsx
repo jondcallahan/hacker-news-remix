@@ -1,7 +1,4 @@
-import { PassThrough, Readable } from "node:stream";
-import createEmotionCache from "@emotion/cache";
-import { CacheProvider as EmotionCacheProvider } from "@emotion/react";
-import createEmotionServer from "@emotion/server/create-instance";
+import { PassThrough } from "node:stream";
 import { createReadableStreamFromReadable } from "@react-router/node";
 import type { AppLoadContext, EntryContext } from "react-router";
 import { ServerRouter } from "react-router";
@@ -40,22 +37,13 @@ const handleBotRequest = (
 ) =>
   new Promise((resolve, reject) => {
     let didError = false;
-    const emotionCache = createEmotionCache({ key: "css" });
 
     const { pipe, abort } = renderToPipeableStream(
-      <EmotionCacheProvider value={emotionCache}>
-        <ServerRouter context={remixContext} url={request.url} />
-      </EmotionCacheProvider>,
+      <ServerRouter context={remixContext} url={request.url} />,
       {
         onAllReady: () => {
           const reactBody = new PassThrough();
-          const emotionServer = createEmotionServer(emotionCache);
-
-          const bodyWithStyles = emotionServer.renderStylesToNodeStream();
-          reactBody.pipe(bodyWithStyles);
-          const stream = createReadableStreamFromReadable(
-            bodyWithStyles as unknown as Readable,
-          );
+          const stream = createReadableStreamFromReadable(reactBody);
 
           responseHeaders.set("Content-Type", "text/html");
 
@@ -110,22 +98,13 @@ const handleBrowserRequest = (
     }
 
     let didError = false;
-    const emotionCache = createEmotionCache({ key: "css" });
 
     const { pipe, abort } = renderToPipeableStream(
-      <EmotionCacheProvider value={emotionCache}>
-        <ServerRouter context={remixContext} url={request.url} />
-      </EmotionCacheProvider>,
+      <ServerRouter context={remixContext} url={request.url} />,
       {
         onShellReady: () => {
           const reactBody = new PassThrough();
-          const emotionServer = createEmotionServer(emotionCache);
-
-          const bodyWithStyles = emotionServer.renderStylesToNodeStream();
-          reactBody.pipe(bodyWithStyles);
-          const stream = createReadableStreamFromReadable(
-            bodyWithStyles as unknown as Readable,
-          );
+          const stream = createReadableStreamFromReadable(reactBody);
 
           responseHeaders.set("Content-Type", "text/html");
 

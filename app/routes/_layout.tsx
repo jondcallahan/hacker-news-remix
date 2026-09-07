@@ -1,22 +1,6 @@
-import {
-  Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Heading,
-  Link as ChakraLink,
-  Progress,
-  Container,
-  Text,
-} from "@chakra-ui/react";
-import {
-  Link as RouterLink,
-  NavLink,
-  Outlet,
-  useMatches,
-  useNavigation,
-} from "react-router";
+import { Link, NavLink, Outlet, useMatches, useNavigation } from "react-router";
 import type { Item } from "~/utils/api.server";
+import { ExternalLink, NavigationProgress, PageWidth, Text } from "~/components/ui";
 
 type LayoutMatch = {
   data?: { story: Item };
@@ -29,110 +13,38 @@ export default function Layout() {
 
   return (
     <>
-      <Box as="nav" backgroundColor="orange.400" width="full">
-        <Box
-          maxWidth="min(100vw, 72rem)"
-          marginX="auto"
-          paddingX={{ base: 4, sm: 6, lg: 8 }}
-          paddingY="4"
-        >
-          <Heading fontSize="xl" fontWeight="black">
-            <Breadcrumb as="section" colorScheme="white">
-              <BreadcrumbItem>
-                <BreadcrumbLink
-                  as={RouterLink}
-                  to="/"
-                  color={"white"}
-                  _visited={{ color: "white" }}
-                  viewTransition
-                >
-                  Home
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              {matches.map(({ data, handle }) => {
-                if (handle?.showBreadcrumb && data?.story) {
-                  return (
-                    <BreadcrumbItem key={data.story.id}>
-                      {data.story.url ? (
-                        <BreadcrumbLink
-                          href={data.story.url}
-                          as={ChakraLink}
-                          isExternal
-                          display="flex"
-                          alignItems="center"
-                          gap="1"
-                          color={"white"}
-                          _visited={{ color: "white" }}
-                        >
-                          {data.story.title} ↗
-                        </BreadcrumbLink>
-                      ) : (
-                        <>{data.story.title}</>
-                      )}
-                    </BreadcrumbItem>
-                  );
-                }
-              })}
-            </Breadcrumb>
-          </Heading>
-        </Box>
-      </Box>
-      <Progress
-        size="xs"
-        colorScheme="orange"
-        isIndeterminate
-        visibility={navigation.state === "idle" ? "hidden" : "visible"}
-        position="sticky"
-        top={0}
-        zIndex="sticky"
-      />
-
-      <Box
-        as="main"
-        marginTop="8"
-        marginBottom="9" // The progress bar is 4px tall so add 1 to the bottom padding
-        maxWidth="min(100vw, 72rem)"
-        marginX="auto"
-        paddingX={{ base: 4, sm: 6, lg: 8 }}
-      >
-        <Container
-          width={{
-            base: "full",
-            md: "prose",
-          }}
-        >
+      <nav className="w-full bg-orange-400" aria-label="Breadcrumb">
+        <PageWidth>
+          <ol className="flex items-center text-xl leading-[1.33] font-black md:leading-[1.2]">
+            <li className="inline-flex items-center">
+              <Link to="/" className="block text-white visited:text-white" viewTransition>Home</Link>
+            </li>
+            {matches.map(({ data, handle }, index) => handle?.showBreadcrumb && data?.story ? (
+              <li key={data.story.id || index} className="inline-flex items-center">
+                <span aria-hidden="true" className="mx-2">/</span>
+                {data.story.url ? (
+                  <ExternalLink href={data.story.url} className="flex items-center gap-1 text-white visited:text-white">
+                    {data.story.title} ↗
+                  </ExternalLink>
+                ) : data.story.title}
+              </li>
+            ) : null)}
+          </ol>
+        </PageWidth>
+      </nav>
+      <NavigationProgress loading={navigation.state !== "idle"} />
+      <main className="mx-auto mt-8 mb-9 max-w-[min(100vw,72rem)] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-[60ch] md:w-[60ch]">
           <Outlet />
-        </Container>
-      </Box>
-      <Box as="footer" width="full" backgroundColor="orange.400">
-        <Box
-          maxWidth="min(100vw, 72rem)"
-          marginX="auto"
-          paddingX={{ base: 4, sm: 6, lg: 8 }}
-          paddingY="4"
-        >
-          <NavLink to="/">
-            <Heading fontSize="xl" fontWeight="black" color="white">
-              Home
-            </Heading>
-          </NavLink>
-          <Text color="white">
-            All content comes from{" "}
-            <ChakraLink href="https://news.ycombinator.com" isExternal>
-              Hacker News ↗
-            </ChakraLink>
-            .
-          </Text>
-          <Text color="white">
-            Please enjoy{" "}
-            <ChakraLink href="https://joncallahan.com" isExternal>
-              my ↗
-            </ChakraLink>{" "}
-            reader. Front page intentionally limited to top 30 stories. Get back
-            to work.
-          </Text>
-        </Box>
-      </Box>
+        </div>
+      </main>
+      <footer className="w-full bg-orange-400">
+        <PageWidth>
+          <NavLink to="/"><h2 className="text-xl leading-[1.33] font-black text-white md:leading-[1.2]">Home</h2></NavLink>
+          <Text className="text-white">All content comes from <ExternalLink href="https://news.ycombinator.com">Hacker News ↗</ExternalLink>.</Text>
+          <Text className="text-white">Please enjoy <ExternalLink href="https://joncallahan.com">my ↗</ExternalLink> reader. Front page intentionally limited to top 30 stories. Get back to work.</Text>
+        </PageWidth>
+      </footer>
     </>
   );
 }
