@@ -23,7 +23,7 @@ export function StoryBadge({ kind, children }: {
   return (
     <span className={`inline-flex min-h-8 min-w-8 items-center rounded-md px-3 text-base leading-[1.2] font-medium ${
       kind === "comments"
-        ? "border-2 border-transparent bg-blue-100 text-blue-800 transition-[border-color] duration-170 ease-in group-hover:border-blue-500 group-visited:text-purple-500"
+        ? "border-2 border-transparent bg-blue-100 text-blue-800 transition-[border-color] duration-170 ease-in group-[:hover]:border-blue-500 group-visited:text-purple-500"
         : "bg-gray-100 text-gray-800"
     }`}>
       <svg

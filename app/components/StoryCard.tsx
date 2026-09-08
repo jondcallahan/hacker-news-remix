@@ -27,7 +27,7 @@ export const StoryCard = forwardRef<HTMLDivElement, { story: Item; selected: boo
           <NavLink
             to={`/item/${story.id}`}
             prefetch="intent"
-            className="group flex w-full justify-between gap-2 hover:no-underline"
+            className="group flex w-full justify-between gap-2 no-underline"
             aria-label={`View comments for ${story.title}`}
             viewTransition
             onClick={() => haptic()}
