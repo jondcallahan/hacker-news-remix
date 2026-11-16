@@ -7,12 +7,9 @@ import {
 import { useLoaderData, useNavigate } from "react-router";
 import { fetchAllKids, Item } from "~/utils/api.server";
 import { Heading, Text } from "~/components/ui";
-import { getFromCache } from "~/utils/caching.server";
-import type { GetPlaiceholderReturn } from "plaiceholder";
 import { Comment } from "~/components/Comment";
 import { getTimeZoneFromCookie } from "~/utils/time";
 import HeroImage from "~/components/HeroImage";
-import { getTweet, Tweet } from "react-tweet/api";
 import { useHotkeys } from "react-hotkeys-hook";
 import { haptic } from "ios-haptics";
 
@@ -54,21 +51,11 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   // Fetch the story with all comments
   const story = await fetchAllKids(id);
-  const OGImagePlaceholder: GetPlaiceholderReturn | null = story?.url
-    ? await getFromCache(`ogimage:placeholder:${story.url}`)
-    : null;
-
   // Log the time it took to get the value in ms
   const timerEnd = process.hrtime(timerStart);
-  let tweet: Tweet | undefined;
-  if (story?.url?.startsWith("https://twitter.com/")) {
-    const tweetId = story.url.split("/").pop()!;
-
-    tweet = await getTweet(tweetId);
-  }
   console.log(`item:${id} took ${timerEnd[0] * 1e3 + timerEnd[1] / 1e6}ms`);
 
-  return { story, OGImagePlaceholder, timeZone, tweet };
+  return { story, timeZone };
 }
 
 const getDateFormatter = (timeZone: string) =>
@@ -107,9 +94,7 @@ function renderNestedComments(
 }
 
 export default function ItemPage() {
-  const { story, OGImagePlaceholder, timeZone, tweet } = useLoaderData<
-    typeof loader
-  >();
+  const { story, timeZone } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const commentRefs = useRef<(HTMLDetailsElement | null)[]>([]);
@@ -202,9 +187,9 @@ export default function ItemPage() {
     <>
       <div className="mb-4 overflow-hidden rounded-lg bg-orange-50 shadow-card" style={{ viewTransitionName: "story-title" }}>
         {story.url && (
-          <div className="relative h-[150px] w-full overflow-hidden rounded-t-lg border-b-2 border-gray-100 sm:h-[300px]">
+          <div className="relative w-full overflow-hidden rounded-t-lg border-b-2 border-gray-100">
             <a href={story.url}>
-              <HeroImage story={story} OGImagePlaceholder={OGImagePlaceholder} tweet={tweet} />
+              <HeroImage key={story.url} story={story} />
             </a>
           </div>
         )}

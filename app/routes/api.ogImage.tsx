@@ -1,5 +1,4 @@
 import type { LoaderFunctionArgs } from "react-router";
-import { getPlaiceholder } from "plaiceholder";
 import { getOrSetToCache } from "~/utils/caching.server";
 import { trytm } from "@bdsqqq/try";
 import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
@@ -52,33 +51,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   if (!imageRes.headers.get("cache-control")) {
     imageRes.headers.set("cache-control", "public, max-age=" + 60 * 60 * 24);
-  }
-
-  if (imageRes.status === 200) {
-    await getOrSetToCache(
-      // Use getOrSetToCache to avoid computing the image placeholder if it's already in the cache
-      `ogimage:placeholder:${url}`,
-      async () => {
-        try {
-          // We need to clone the response because we need to read the body twice
-          const imageResClone = imageRes.clone();
-
-          // Get the image buffer
-          const buffer = Buffer.from(await imageResClone.arrayBuffer());
-
-          // This will fail if the image is an avif, but the filesize savings are worth not having a placeholder -- the image _should_ download quick enough
-          // Bug in dependency of plaiceholder causing failure: https://github.com/image-size/image-size/issues/125
-          return await getPlaiceholder(buffer);
-        } catch (error) {
-          console.error("Error getting placeholder", error);
-          return null;
-        }
-      },
-      60 * 60 * 24
-    );
-  } else {
-    // read the response body to prevent a memory leak
-    await imageRes.text();
   }
 
   return imageRes;

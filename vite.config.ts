@@ -5,9 +5,6 @@ import { defineConfig, type ViteDevServer } from "vite";
 
 export default defineConfig({
   plugins: [tailwindcss(), requestLogger(), reactRouter()],
-  optimizeDeps: {
-    exclude: ["sharp"],
-  },
   resolve: {
     alias: {
       "~": "/app",
