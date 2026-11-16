@@ -28,7 +28,7 @@ jobs:
         run: bun run typecheck
 
       - name: Test tweet previews
-        run: bun test scripts/tweet.test.ts
+        run: bun test scripts/tweet*.test.ts
 
       - name: Check production build
         run: bun run test:production

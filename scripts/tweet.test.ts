@@ -1,7 +1,11 @@
-import { afterEach, expect, spyOn, test } from "bun:test";
+import { afterEach, expect, spyOn, test, mock } from "bun:test";
 import { loadXeet } from "@xeet/core/node";
 import { getTweetUrl } from "../app/utils/tweet";
 import { loader } from "../app/routes/api.tweet-post";
+
+mock.module("../app/utils/caching.server", () => ({
+  getOrSetToCache: (_key: string, getter: () => Promise<unknown>) => getter(),
+}));
 
 const xeet = await loadXeet({ lazy: true });
 const post = {
