@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
 import type { Item } from "~/utils/api.server";
 import { getTweetUrl } from "~/utils/tweet";
@@ -13,6 +13,14 @@ export default function HeroImage({ story }: { story: Item }) {
   const storyUrl = story.url ?? "https://news.ycombinator.com";
   const tweetUrl = getTweetUrl(storyUrl);
   const [failed, setFailed] = useState(false);
+  const imageRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    // An SSR image can fail before React attaches the onError handler.
+    if (imageRef.current?.complete && imageRef.current.naturalWidth === 0) {
+      setFailed(true);
+    }
+  }, []);
 
   if (tweetUrl && !failed) {
     return (
@@ -22,6 +30,7 @@ export default function HeroImage({ story }: { story: Item }) {
           srcSet={`/api/tweet?url=${encodeURIComponent(tweetUrl)}&width=390`}
         />
         <img
+          ref={imageRef}
           src={`/api/tweet?url=${encodeURIComponent(tweetUrl)}`}
           alt={`X post: ${story.title}`}
           className="mx-auto block h-auto w-full max-w-[600px] bg-white"
