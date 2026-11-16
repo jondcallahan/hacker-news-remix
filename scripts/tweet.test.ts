@@ -1,7 +1,7 @@
 import { afterEach, expect, spyOn, test } from "bun:test";
 import { loadXeet } from "@xeet/core/node";
 import { getTweetUrl } from "../app/utils/tweet";
-import { loader } from "../app/routes/api.tweet";
+import { loader } from "../app/routes/api.tweet-post";
 
 const xeet = await loadXeet({ lazy: true });
 const post = {
@@ -11,10 +11,10 @@ const post = {
 let restore = () => {};
 afterEach(() => restore());
 
-function request(url: string, width = 600) {
+function request(url: string) {
   return loader({
     request: new Request(
-      `http://localhost/api/tweet?url=${encodeURIComponent(url)}&width=${width}`,
+      `http://localhost/api/tweet-post?url=${encodeURIComponent(url)}`,
     ),
     params: {},
     context: {},
@@ -51,7 +51,7 @@ test("rejects non-post links and lookalike hosts before resolving", async () => 
   expect(resolve).not.toHaveBeenCalled();
 });
 
-test("serves real PNGs with font packs and mobile/desktop dimensions", async () => {
+test("serves post data for client rendering without rasterizing on the server", async () => {
   const resolve = spyOn(xeet, "resolve").mockResolvedValue({
     post,
     links: {},
@@ -59,20 +59,17 @@ test("serves real PNGs with font packs and mobile/desktop dimensions", async () 
     source: {},
     warnings: [],
   });
-  restore = () => resolve.mockRestore();
-  for (const width of [390, 600, 99999]) {
-    const response = await request(
-      "https://twitter.com/example/status/20",
-      width,
-    );
-    expect(response.status).toBe(200);
-    expect(response.headers.get("Content-Type")).toBe("image/png");
-    expect(response.headers.get("Cache-Control")).toContain("s-maxage=3600");
-    const png = Buffer.from(await response.arrayBuffer());
-    expect(png.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
-    expect(png.readUInt32BE(16)).toBe((width === 390 ? 390 : 600) * 2);
-    expect(png.readUInt32BE(20)).toBeGreaterThan(0);
-  }
+  const render = spyOn(xeet, "render");
+  restore = () => {
+    resolve.mockRestore();
+    render.mockRestore();
+  };
+  const response = await request("https://twitter.com/example/status/20");
+  expect(response.status).toBe(200);
+  expect(response.headers.get("Content-Type")).toContain("application/json");
+  expect(response.headers.get("Cache-Control")).toContain("s-maxage=3600");
+  expect(await response.json()).toEqual({ post });
+  expect(render).not.toHaveBeenCalled();
 });
 
 test("failed upstream resolution returns an uncacheable error for the image fallback", async () => {
