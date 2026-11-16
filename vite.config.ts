@@ -1,10 +1,11 @@
+import { xeetBrowser } from "./scripts/xeet-browser";
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import morgan from "morgan";
 import { defineConfig, type ViteDevServer } from "vite";
 
 export default defineConfig({
-  plugins: [tailwindcss(), requestLogger(), reactRouter()],
+  plugins: [xeetBrowser(), tailwindcss(), requestLogger(), reactRouter()],
   resolve: {
     alias: {
       "~": "/app",
