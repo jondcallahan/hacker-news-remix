@@ -5,7 +5,6 @@ import { Analytics } from "@vercel/analytics/react";
 
 import "@fontsource/vollkorn/latin.css";
 import "@fontsource/vollkorn/400-italic.css";
-import "@fontsource-variable/inter";
 import "./styles.css";
 
 export const links: LinksFunction = () => [
