@@ -1,5 +1,5 @@
+import { getTweetPost } from "~/utils/tweet-post.client";
 import type { RenderReply, RenderRequest } from "~/workers/tweet.worker";
-import type { Post } from "@xeet/core";
 import { useEffect, useRef, useState } from "react";
 import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
 import type { Item } from "~/utils/api.server";
@@ -27,7 +27,6 @@ export default function HeroImage({ story }: { story: Item }) {
 
   useEffect(() => {
     if (!tweetUrl) return;
-    const controller = new AbortController();
     const media = window.matchMedia("(max-width: 600px)");
     let disposed = false;
     let version = 0;
@@ -36,12 +35,7 @@ export default function HeroImage({ story }: { story: Item }) {
       new URL("../workers/tweet.worker.ts", import.meta.url),
       { type: "module" },
     );
-    const ready = fetch(`/api/tweet-post?url=${encodeURIComponent(tweetUrl)}`, {
-      signal: controller.signal,
-    }).then(async (response) => {
-      if (!response.ok) throw new Error("Preview unavailable");
-      return (await response.json()) as { post: Post };
-    });
+    const ready = getTweetPost(tweetUrl);
     worker.onerror = () => {
       if (!disposed) setFailed(true);
     };
@@ -99,7 +93,6 @@ export default function HeroImage({ story }: { story: Item }) {
     media.addEventListener("change", paint);
     return () => {
       disposed = true;
-      controller.abort();
       worker.terminate();
       media.removeEventListener("change", paint);
       if (objectUrl) URL.revokeObjectURL(objectUrl);
