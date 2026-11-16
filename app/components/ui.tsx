@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react";
 
 export function Heading({ className = "", ...props }: ComponentProps<"h2">) {
-  return <h2 className={`text-xl leading-[1.2] font-bold ${className}`} {...props} />;
+  return <h2 className={`text-xl leading-[1.35] font-bold ${className}`} {...props} />;
 }
 
 export function Text({ className = "", ...props }: ComponentProps<"p">) {
