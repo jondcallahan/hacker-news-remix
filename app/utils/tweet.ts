@@ -1,3 +1,10 @@
+import type { Post } from "@xeet/core";
+
+export type TweetPreview = {
+  post: Post;
+  layout: { mobile: number; desktop: number };
+};
+
 /** Accept status links only; discard tracking queries and photo/video suffixes. */
 export function getTweetUrl(input: string): string | null {
   try {

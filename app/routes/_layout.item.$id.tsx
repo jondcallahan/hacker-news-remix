@@ -1,3 +1,4 @@
+import { getTweetPreview } from "~/utils/tweet-preview.server";
 import { useEffect, useRef, useState, useMemo } from "react";
 import {
   type LoaderFunctionArgs,
@@ -51,11 +52,12 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   // Fetch the story with all comments
   const story = await fetchAllKids(id);
+  const tweetPreview = story?.url ? await getTweetPreview(story.url) : undefined;
   // Log the time it took to get the value in ms
   const timerEnd = process.hrtime(timerStart);
   console.log(`item:${id} took ${timerEnd[0] * 1e3 + timerEnd[1] / 1e6}ms`);
 
-  return { story, timeZone };
+  return { story, timeZone, tweetPreview };
 }
 
 const getDateFormatter = (timeZone: string) =>
@@ -94,7 +96,7 @@ function renderNestedComments(
 }
 
 export default function ItemPage() {
-  const { story, timeZone } = useLoaderData<typeof loader>();
+  const { story, timeZone, tweetPreview } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const commentRefs = useRef<(HTMLDetailsElement | null)[]>([]);
@@ -188,7 +190,7 @@ export default function ItemPage() {
       <div className="mb-4 overflow-hidden rounded-lg bg-orange-50 shadow-card" style={{ viewTransitionName: "story-title" }}>
         {story.url && (
           <div className="relative w-full overflow-hidden rounded-t-lg border-b-2 border-gray-100">
-            <HeroImage key={story.url} story={story} />
+            <HeroImage key={story.url} story={story} tweetPreview={tweetPreview} />
           </div>
         )}
         <div className="flex flex-col gap-1 px-3 py-2">

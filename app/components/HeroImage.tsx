@@ -1,6 +1,6 @@
 import type { RenderReply, RenderRequest } from "~/workers/tweet.worker";
-import type { Post } from "@xeet/core";
-import { useEffect, useRef, useState } from "react";
+import type { TweetPreview } from "~/utils/tweet";
+import { useEffect, useState, type CSSProperties } from "react";
 import { getOGImagePlaceholderContent } from "~/utils/getOGImagePlaceholderContent";
 import type { Item } from "~/utils/api.server";
 import { getTweetUrl } from "~/utils/tweet";
@@ -11,12 +11,15 @@ const getBackgroundImage = (text: string) => {
   )}")`;
 };
 
-export default function HeroImage({ story }: { story: Item }) {
+export default function HeroImage({
+  story,
+  tweetPreview,
+}: {
+  story: Item;
+  tweetPreview?: TweetPreview;
+}) {
   const storyUrl = story.url ?? "https://news.ycombinator.com";
   const tweetUrl = getTweetUrl(storyUrl);
-  const frameRef = useRef<HTMLDivElement>(null);
-  const [needsExpansion, setNeedsExpansion] = useState(false);
-  const [expanded, setExpanded] = useState(false);
   const [failed, setFailed] = useState(false);
   const [image, setImage] = useState<{
     src: string;
@@ -26,8 +29,8 @@ export default function HeroImage({ story }: { story: Item }) {
   } | null>(null);
 
   useEffect(() => {
-    if (!tweetUrl) return;
-    const controller = new AbortController();
+    if (!tweetUrl || !tweetPreview) return;
+    const { post } = tweetPreview;
     const media = window.matchMedia("(max-width: 600px)");
     let disposed = false;
     let version = 0;
@@ -36,12 +39,6 @@ export default function HeroImage({ story }: { story: Item }) {
       new URL("../workers/tweet.worker.ts", import.meta.url),
       { type: "module" },
     );
-    const ready = fetch(`/api/tweet-post?url=${encodeURIComponent(tweetUrl)}`, {
-      signal: controller.signal,
-    }).then(async (response) => {
-      if (!response.ok) throw new Error("Preview unavailable");
-      return (await response.json()) as { post: Post };
-    });
     worker.onerror = () => {
       if (!disposed) setFailed(true);
     };
@@ -64,12 +61,6 @@ export default function HeroImage({ story }: { story: Item }) {
         }
         if (objectUrl) URL.revokeObjectURL(objectUrl);
         objectUrl = src;
-        const { post } = await ready;
-        setNeedsExpansion(
-          (data.height * (frameRef.current?.clientWidth ?? data.width)) /
-            data.width >
-            (window.matchMedia("(min-width: 480px)").matches ? 300 : 150),
-        );
         setImage({
           src,
           text: post.text,
@@ -81,11 +72,10 @@ export default function HeroImage({ story }: { story: Item }) {
         if (!disposed && data.id === version) setFailed(true);
       }
     };
-    async function paint() {
+    function paint() {
       const id = ++version;
       try {
-        const { post } = await ready;
-        if (disposed || id !== version) return;
+        if (disposed) return;
         worker.postMessage({
           id,
           post,
@@ -95,21 +85,27 @@ export default function HeroImage({ story }: { story: Item }) {
         if (!disposed && id === version) setFailed(true);
       }
     }
-    void paint();
+    paint();
     media.addEventListener("change", paint);
     return () => {
       disposed = true;
-      controller.abort();
       worker.terminate();
       media.removeEventListener("change", paint);
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [tweetUrl]);
+  }, [tweetUrl, tweetPreview]);
 
   return (
     <div
-      ref={frameRef}
-      className={`relative w-full bg-white ${expanded && image ? "" : "h-[150px] sm:h-[300px]"}`}
+      style={
+        tweetPreview
+          ? ({
+              "--tweet-mobile-ratio": `390 / ${tweetPreview.layout.mobile}`,
+              "--tweet-desktop-ratio": `600 / ${tweetPreview.layout.desktop}`,
+            } as CSSProperties)
+          : undefined
+      }
+      className={`relative w-full bg-white ${tweetPreview ? "mx-auto max-w-[600px] aspect-[var(--tweet-mobile-ratio)] min-[601px]:aspect-[var(--tweet-desktop-ratio)]" : "h-[150px] sm:h-[300px]"}`}
     >
       <a href={storyUrl} className="block size-full">
         {tweetUrl && image && !failed ? (
@@ -118,11 +114,7 @@ export default function HeroImage({ story }: { story: Item }) {
             alt={image.text}
             width={image.width * 2}
             height={image.height * 2}
-            className={
-              expanded
-                ? "mx-auto block h-auto w-full max-w-[600px]"
-                : "size-full object-contain"
-            }
+            className="size-full object-contain"
             onError={() => setFailed(true)}
           />
         ) : (
@@ -133,7 +125,7 @@ export default function HeroImage({ story }: { story: Item }) {
                 backgroundImage: getBackgroundImage(new URL(storyUrl).hostname),
               }}
             />
-            {(!tweetUrl || failed) && (
+            {(!tweetPreview || failed) && (
               <iframe
                 title={`Preview of ${story.title}`}
                 src={`/api/ogimage-frame?url=${encodeURIComponent(storyUrl)}`}
@@ -143,16 +135,6 @@ export default function HeroImage({ story }: { story: Item }) {
           </>
         )}
       </a>
-      {tweetUrl && image && !failed && (needsExpansion || expanded) && (
-        <button
-          type="button"
-          aria-expanded={expanded}
-          onClick={() => setExpanded((value) => !value)}
-          className="absolute right-2 bottom-2 rounded-md bg-white px-3 py-2 text-sm font-semibold shadow-card"
-        >
-          {expanded ? "Collapse post" : "Expand post"}
-        </button>
-      )}
     </div>
   );
 }
