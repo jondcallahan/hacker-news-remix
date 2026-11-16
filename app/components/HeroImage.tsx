@@ -28,6 +28,7 @@ export default function HeroImage({ story }: { story: Item }) {
   useEffect(() => {
     if (!tweetUrl) return;
     const media = window.matchMedia("(max-width: 600px)");
+    const frameMedia = window.matchMedia("(min-width: 480px)");
     let disposed = false;
     let version = 0;
     let objectUrl: string | undefined;
@@ -62,7 +63,7 @@ export default function HeroImage({ story }: { story: Item }) {
         setNeedsExpansion(
           (data.height * (frameRef.current?.clientWidth ?? data.width)) /
             data.width >
-            (window.matchMedia("(min-width: 480px)").matches ? 300 : 150),
+            (frameMedia.matches ? 300 : 150),
         );
         setImage({
           src,
@@ -91,10 +92,12 @@ export default function HeroImage({ story }: { story: Item }) {
     }
     void paint();
     media.addEventListener("change", paint);
+    frameMedia.addEventListener("change", paint);
     return () => {
       disposed = true;
       worker.terminate();
       media.removeEventListener("change", paint);
+      frameMedia.removeEventListener("change", paint);
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [tweetUrl]);
