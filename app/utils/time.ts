@@ -28,13 +28,6 @@ export function getRelativeTimeString(date: Date | number): string {
   return formatter.format(Math.floor(deltaSeconds / divider), units[unitIndex]);
 }
 
-export function formatDate(date: Date, lang = "en-us"): string {
-  return new Intl.DateTimeFormat(lang, {
-    timeStyle: "short",
-    dateStyle: "long",
-  }).format(date);
-}
-
 export function getTimeZoneFromCookie(cookies: string): string | undefined {
   const match = cookies.match(/time_zone=([^;]+)/);
   return match ? match[1] : undefined;
