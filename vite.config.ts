@@ -6,6 +6,7 @@ import { defineConfig, type ViteDevServer } from "vite";
 
 export default defineConfig({
   plugins: [xeetBrowser(), tailwindcss(), requestLogger(), reactRouter()],
+  worker: { format: "es", plugins: () => [xeetBrowser()] },
   resolve: {
     alias: {
       "~": "/app",

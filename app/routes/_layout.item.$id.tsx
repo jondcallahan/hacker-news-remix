@@ -188,9 +188,7 @@ export default function ItemPage() {
       <div className="mb-4 overflow-hidden rounded-lg bg-orange-50 shadow-card" style={{ viewTransitionName: "story-title" }}>
         {story.url && (
           <div className="relative w-full overflow-hidden rounded-t-lg border-b-2 border-gray-100">
-            <a href={story.url}>
-              <HeroImage key={story.url} story={story} />
-            </a>
+            <HeroImage key={story.url} story={story} />
           </div>
         )}
         <div className="flex flex-col gap-1 px-3 py-2">
