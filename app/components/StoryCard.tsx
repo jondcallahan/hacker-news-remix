@@ -4,7 +4,7 @@ import { forwardRef, useEffect, useRef } from "react";
 import { Link, NavLink } from "react-router";
 import { haptic } from "ios-haptics";
 import type { Item } from "~/utils/api.server";
-import { Heading, StoryBadge, Text } from "./ui";
+import { Heading, StoryBadge } from "./ui";
 
 export const StoryCard = forwardRef<
   HTMLDivElement,
@@ -39,7 +39,7 @@ export const StoryCard = forwardRef<
               alt={`Icon for ${hostname}`}
               className="mr-2 size-4 text-transparent"
             />
-            <Text className="break-all">{hostname.replace("www.", "")}</Text>
+            <p className="text-base leading-relaxed text-gray-700 break-all">{hostname.replace("www.", "")}</p>
           </div>
         )}
         <Link to={story.url || `/item/${story.id}`}>
@@ -47,13 +47,13 @@ export const StoryCard = forwardRef<
             {story.title}
           </Heading>
         </Link>
-        <Text>
+        <p className="text-base leading-relaxed text-gray-700">
           By {story.by} {story.relativeTime}
-        </Text>
+        </p>
         <NavLink
           to={`/item/${story.id}`}
           prefetch="intent"
-          className="group flex w-full justify-between gap-2 no-underline"
+          className="group flex w-full flex-wrap justify-between gap-2 no-underline"
           aria-label={`View comments for ${story.title}`}
           viewTransition
           onClick={() => haptic()}

@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react";
 
 export function Heading({ className = "", ...props }: ComponentProps<"h2">) {
-  return <h2 className={`text-xl leading-[1.35] font-bold ${className}`} {...props} />;
+  return <h2 className={`text-xl leading-[1.3] font-[650] tracking-[-0.015em] ${className}`} {...props} />;
 }
 
 export function Text({ className = "", ...props }: ComponentProps<"p">) {
@@ -21,7 +21,7 @@ export function StoryBadge({ kind, children }: {
   children: React.ReactNode;
 }) {
   return (
-    <span className={`inline-flex min-h-8 min-w-8 items-center rounded-md px-3 text-base leading-[1.2] font-medium ${
+    <span className={`inline-flex min-h-9 min-w-8 items-center gap-1 whitespace-nowrap rounded-md px-2.5 text-base leading-[1.2] font-medium ${
       kind === "comments"
         ? "border-2 border-transparent bg-blue-100 text-blue-800 transition-[border-color] duration-170 ease-in group-[:hover]:border-blue-500 group-visited:text-purple-500"
         : "bg-gray-100 text-gray-800"
@@ -33,7 +33,7 @@ export function StoryBadge({ kind, children }: {
         stroke="currentColor"
         strokeWidth={2}
         aria-hidden="true"
-        className={kind === "points" ? "size-5" : "mr-1 size-4"}
+        className={kind === "points" ? "size-5 shrink-0" : "size-4 shrink-0"}
       >
         <path strokeLinecap="round" strokeLinejoin="round" d={kind === "points"
           ? "M7 11l5-5m0 0l5 5m-5-5v12"

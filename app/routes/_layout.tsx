@@ -34,7 +34,7 @@ export default function Layout() {
       </nav>
       <NavigationProgress loading={navigation.state !== "idle"} />
       <main className="mx-auto mt-8 mb-9 max-w-[min(100vw,72rem)] px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto w-full max-w-[60ch] md:w-[60ch]">
+        <div className="mx-auto w-full max-w-[37.5rem] md:w-[37.5rem]">
           <Outlet />
         </div>
       </main>
