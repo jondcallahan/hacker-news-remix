@@ -2,6 +2,7 @@ import type { LinksFunction, MetaFunction } from "react-router";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import { type KeyboardEvent } from "react";
 import { Analytics } from "@vercel/analytics/react";
+import { FontDemo } from "./components/FontDemo";
 
 import "@fontsource/vollkorn/latin.css";
 import "@fontsource/vollkorn/400-italic.css";
@@ -61,6 +62,7 @@ const Document = ({ children }: DocumentProps) => {
         className="grid min-h-full grid-rows-[auto_auto_1fr_auto] bg-orange-100 font-sans text-gray-800"
       >
         {children}
+        <FontDemo />
         <ScrollRestoration getKey={(location) => location.pathname} />
         <Scripts />
         <Analytics />
